@@ -47,6 +47,7 @@ private slots:
     void testGetByMultipleCriteria();
 
     void testGetByStorage();
+    void testGetSOCProfilesByStorage();
 
     void testLog();
 

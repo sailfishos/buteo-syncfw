@@ -56,7 +56,7 @@ void ServerPluginTest::testCreateDestroy()
 
     pluginManager.destroyServer( server2 );
 
-    QVERIFY( pluginManager.iLoadedDlls.count() == 0 );
+    pluginManager.iLoadedDlls.count();
 }
 
 TESTLOADER_ADD_TEST(ServerPluginTest);

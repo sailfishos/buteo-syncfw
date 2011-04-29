@@ -42,10 +42,14 @@ private slots:
     void cleanupTestCase();
     void testProfileAdded();
     void testAddAccountData();
+    void testAddAccount();
+    void testRemoveAccount();
+
 
 private:
 
     Accounts::Manager iManager;
+
     Accounts::Account *iAccount;
     ProfileManager iProfileManager;
     AccountsHelper *iAccountsHelper;

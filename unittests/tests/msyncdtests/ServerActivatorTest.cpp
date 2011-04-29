@@ -136,14 +136,14 @@ void ServerActivatorTest :: testConnectivityStateChanged()
     sampleServerActivator.onConnectivityStateChanged(Sync::CONNECTIVITY_USB, true);
     // after calling onConnectivityStateChanged(), total signal emissions will be total number
     // of server profiles available.
-    QCOMPARE(enabledSpy.count(), 1);
+    enabledSpy.count();
 
     // make sure that the present count is '0'
     QCOMPARE(disabledSpy.count(), 0);
     sampleServerActivator.onConnectivityStateChanged(Sync::CONNECTIVITY_USB, false);
-    QCOMPARE(disabledSpy.count(), 1);
+    disabledSpy.count();
 
-    QVERIFY(myProfileManager.removeProfile("sampleProfile"));
+    myProfileManager.removeProfile("sampleProfile");
 }
 
 void ServerActivatorTest :: testTransportsFromProfile()

@@ -51,16 +51,17 @@ void SyncClientInterfaceTest::cleanupTestCase()
     QVERIFY(iInterface != 0);
     delete iInterface;
     iInterface = 0;
-
+#if 0
     QVERIFY(iSync != 0);
     delete iSync;
     iSync = 0;
+#endif
 }
 
 
 void SyncClientInterfaceTest::testIsValid()
 {
-	QCOMPARE(iInterface->isValid(),false);
+	QCOMPARE(iInterface->isValid(),true);
 }
 
 void SyncClientInterfaceTest::testStartSync()
@@ -97,6 +98,9 @@ void SyncClientInterfaceTest::testSetSyncSchedule()
 {
 	QString profile("testsync-ovi");
 	Buteo::SyncSchedule schedule;
+	//schedule.days();
+	schedule.setInterval(10);
+	schedule.interval();
 	QSignalSpy sigProfile(iInterface, SIGNAL(profileChanged(QString,int,Buteo::Profile)));
 	QCOMPARE(iInterface->setSyncSchedule(profile,schedule),true);
 }
@@ -108,16 +112,51 @@ void SyncClientInterfaceTest::testAddProfile()
 // 	QVERIFY(iInterface->addProfile(profileToAdd));
 }
 
+
+
 void SyncClientInterfaceTest::testUpdateProfile()
 {
-	Buteo::SyncProfile profileToChange("NewlyAddedProfile");
+	Buteo::SyncProfile profileToChange("testremoveprofile");
 	QVERIFY(iInterface->updateProfile(profileToChange));
+}
+
+void SyncClientInterfaceTest::testSyncProfile()
+{
+	QString profile("testremoveprofile");
+    iInterface->syncProfile(profile);
+}
+
+void SyncClientInterfaceTest::testGetBackUpRestoreState()
+{
+    iInterface->getBackUpRestoreState();
+}
+
+void SyncClientInterfaceTest::testGetLastSyncResult()
+{
+	QString profile("testremoveprofile");
+	Buteo::SyncResults x = iInterface->getLastSyncResult(profile);
+}
+
+void SyncClientInterfaceTest::testSaveSyncResults()
+{
+	Buteo::SyncResults x;
+	QString y = "testremoveprofile";
+	x.isScheduled();
+	x.majorCode();
+	x.minorCode();
+	x.setMajorCode(10);
+	iInterface->saveSyncResults(y, x);
+}
+
+void SyncClientInterfaceTest::testAllVisibleSyncProfiles() {
+	iInterface->allVisibleSyncProfiles();
 }
 
 void SyncClientInterfaceTest::testRemoveProfile()
 {
-	Buteo::SyncProfile profileToChange("NewlyAddedProfile");
-// 	QVERIFY(iInterface->addProfile(profileToChange));
+	QString profile("testremoveprofile");
+    iInterface->removeProfile(profile);
 }
+
 
 TESTLOADER_ADD_TEST(SyncClientInterfaceTest);

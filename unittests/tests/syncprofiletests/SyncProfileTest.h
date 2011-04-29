@@ -42,6 +42,7 @@ private slots:
     void testNextSyncTime();
 
     void testSubProfiles();
+    void testBtHelper();
 
 };
 }

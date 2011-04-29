@@ -22,6 +22,8 @@
  */
 #include "AccountsHelperTest.h"
 #include "SyncFwTestLoader.h"
+#include <LogMacros.h>
+#include <Logger.h>
 #include <Profile.h>
 #include <ProfileEngineDefs.h>
 
@@ -40,6 +42,26 @@ static const QString USERPROFILE_DIR = "syncprofiletests/testprofiles/user";
 static const QString SYSTEMPROFILE_DIR = "syncprofiletests/testprofiles/system";
 static const QString SERVICE_SYNC = "Sync";
 static const QString SERVICE_NAME = "testsync-ovi";
+
+const QString LOGGER_CONFIG_FILE( "/etc/sync/set_sync_log_level" );
+const QString TEST_SYNC_LOG_FILE_PATH( QDir::homePath () + QDir::separator() + ".sync" + QDir::separator() + "testsynchronizer.log");
+
+void setLogLevelFromFile(Buteo::Logger *aLogger)
+{
+    if(QFile::exists(LOGGER_CONFIG_FILE)) {
+    	// read the config level from the file and set
+    	// that level
+    	QFile file(LOGGER_CONFIG_FILE);
+    	if(file.open(QIODevice::ReadOnly)) {
+            int level = file.readLine().simplified().toInt();
+    		qDebug()  << "Setting Log Level to " << level;
+    		if(!aLogger->setLogLevel(level)) {
+    			qDebug() << "Invalid Log Level Read from the file" ;
+    		}
+    		file.close();
+    	}
+    }
+}
 
 AccountsHelperTest::AccountsHelperTest()
 :   QObject(NULL),
@@ -70,6 +92,8 @@ void AccountsHelperTest::cleanupTestCase()
         iAccount->sync();
         delete iAccount;
         iAccount = NULL;
+        delete iAccountsHelper;
+        iAccountsHelper = NULL;
     } // no else
 }
 
@@ -79,12 +103,71 @@ void AccountsHelperTest::testProfileAdded()
     SyncProfile *syncProfile = iProfileManager.syncProfile(SERVICE_NAME + "-" +
                                                             iAccount->displayName());
     //QVERIFY(syncProfile != 0);
+    QString newName("newName");
+    iAccountsHelper->slotAccountNameChanged(newName);
+    Accounts::AccountId id;
+    iAccountsHelper->slotAccountUpdated(id);
     Q_UNUSED(syncProfile);
 }
 
 void AccountsHelperTest::testAddAccountData()
 {
-
+    Buteo::Logger::createInstance(TEST_SYNC_LOG_FILE_PATH);
+    Buteo::Logger *logger = Buteo::Logger::instance();
+    if (logger) {
+        setLogLevelFromFile(logger);
+        qDebug() << "Current log level is " <<
+            (logger->getLogLevelArray().count(true));
+        qDebug() << "Logs will be logged to " << TEST_SYNC_LOG_FILE_PATH;
+    }
+    logger->push();
+    logger->pop();
+    delete logger;
 }
+
+void AccountsHelperTest::testAddAccount()
+{
+    QEventLoop loop(this);
+    QTimer::singleShot(10000, &loop, SLOT(quit()));
+
+    Accounts::Account *tmpAccount = iManager.createAccount(OVI_PROVIDER);
+	tmpAccount->setDisplayName(DUMMY_USER);
+	tmpAccount->setEnabled(true);
+	Accounts::Service *service = iManager.service(SERVICE_NAME);
+	tmpAccount->selectService(service);
+	tmpAccount->setEnabled(true);
+	tmpAccount->selectService(0);
+	QVERIFY(tmpAccount != NULL);
+	tmpAccount->sync();
+
+	connect(&iManager, SIGNAL(accountCreated(Accounts::AccountId)),
+				 &loop, SLOT(quit()));
+    loop.exec();
+	iAccount->remove();
+    delete tmpAccount;
+}
+
+void AccountsHelperTest::testRemoveAccount()
+{
+    QEventLoop loop(this);
+    QTimer::singleShot(10000, &loop, SLOT(quit()));
+
+    Accounts::Account *tmpAccount = iManager.createAccount("test");
+	tmpAccount->setDisplayName(DUMMY_USER);
+	tmpAccount->setEnabled(true);
+	Accounts::Service *service = iManager.service(SERVICE_NAME);
+	tmpAccount->selectService(service);
+	tmpAccount->setEnabled(true);
+	tmpAccount->selectService(0);
+	QVERIFY(tmpAccount != NULL);
+	tmpAccount->sync();
+
+	connect(&iManager, SIGNAL(accountRemoved(Accounts::AccountId)),
+				 &loop, SLOT(quit()));
+	iAccount->remove();
+    loop.exec();
+    delete tmpAccount;
+}
+
 
 TESTLOADER_ADD_TEST(AccountsHelperTest);

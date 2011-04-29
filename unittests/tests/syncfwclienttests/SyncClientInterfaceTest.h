@@ -46,6 +46,11 @@ class SyncClientInterfaceTest: public QObject
 	void testGetRunningSyncList();
 	void testSetSyncSchedule();
 	void testUpdateProfile();
+	void testSyncProfile();
+	void testGetBackUpRestoreState();
+	void testGetLastSyncResult();
+	void testSaveSyncResults();
+	void testAllVisibleSyncProfiles();
 	void testRemoveProfile();
 
 	private:

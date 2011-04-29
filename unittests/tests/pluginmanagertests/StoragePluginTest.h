@@ -34,6 +34,7 @@ Q_OBJECT
 private slots:
 
     void testCreateDestroy();
+    void testCreateStorageChangeNotifier();
 
 private:
 

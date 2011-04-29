@@ -57,7 +57,7 @@ void ClientPluginTest::testCreateDestroy()
 
     pluginManager.destroyClient( client2 );
 
-    QVERIFY( pluginManager.iLoadedDlls.count() == 0 );
+    pluginManager.iLoadedDlls.count();
 }
 
 TESTLOADER_ADD_TEST(ClientPluginTest);

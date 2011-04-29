@@ -81,9 +81,27 @@ void DeletedItemsIdStorageTest::testItemIdStoring()
 
     iDeletedItems->addDeletedItem(itemId, creationTime, deletionTime);
 
+
+
     QDateTime fetchTime = QDateTime::fromTime_t(5000000);
     QList<QString> itemIdList;
     bool success = iDeletedItems->getDeletedItems(itemIdList, fetchTime);
+
+    QDateTime now = QDateTime::currentDateTime();
+    QDateTime then = QDateTime::currentDateTime();
+
+    // Zero milliseconds.
+    now.setTime(now.time().addMSecs(-now.time().msec()));
+    then = now.addDays(2);
+
+    QList<QString> aItems;
+    aItems << "ajay" << "vinod" << "sravan";
+    QList<QDateTime> aCreationTimes;
+    aCreationTimes << now << now << now;
+    QList<QDateTime> aDeleteTimes;
+    aDeleteTimes << then << then << then;
+
+    iDeletedItems->addDeletedItems(aItems, aCreationTimes, aDeleteTimes);
 
     QVERIFY(success);
     QVERIFY(itemIdList.size() > 0);

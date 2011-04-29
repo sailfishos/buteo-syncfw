@@ -42,6 +42,12 @@ class SynchronizerTest: public QObject
 	void testInitialize();
 	void testSync();
 	void testSignals();
+	void  testSetSyncSchedule();
+	void testSaveSyncResults();
+	void testRemoveProfile();
+	void testUpdateProfile();
+	void testOnStorageAccquired();
+	void testStopServers();
 	
 	private:
 	Synchronizer *iSync;
