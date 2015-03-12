@@ -1,6 +1,6 @@
 Name: buteo-syncfw-qt5
 Version: 0.7.16
-Release: 1
+Release: 2
 Summary: Synchronization backend
 Group: System/Libraries
 URL: https://github.com/nemomobile/buteo-syncfw
