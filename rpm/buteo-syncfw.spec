@@ -101,17 +101,14 @@ chmod +x %{buildroot}/opt/tests/buteo-syncfw/*.pl %{buildroot}/opt/tests/buteo-s
 mkdir -p %{buildroot}%{_libdir}/systemd/user/user-session.target.wants
 ln -s ../msyncd.service %{buildroot}%{_libdir}/systemd/user/user-session.target.wants/
 
-
 %post
 /sbin/ldconfig
 if [ "$1" -ge 1 ]; then
-    systemctl-user daemon-reload || true
-    systemctl-user restart msyncd.service || true
+    echo "if you manually installed the package, you should invoke 'systemctl --user daemon-reload' and then 'systemctl --user restart msyncd'" || :
 fi
 
 %postun
 /sbin/ldconfig
 if [ "$1" -eq 0 ]; then
-    systemctl-user stop msyncd.service || true
-    systemctl-user daemon-reload || true
+    echo "if you manually uninstalled the package, you should invoke 'systemctl --user stop msyncd' and then 'systemctl --user daemon-reload'" || :
 fi
