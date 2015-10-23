@@ -654,14 +654,28 @@ QProcess* PluginManager::startOOPPlugin( const QString &aPath,
                " with plugin name " << aPluginName <<
                " and profile name " << aProfileName);
 
+    QEventLoop serviceWaitLoop;
+    QString pluginDBUSServiceName(QString("com.buteo.msyncd.plugin.profile-%1").arg(aProfileName));
+    QDBusServiceWatcher watcher(pluginDBUSServiceName,
+                                QDBusConnection::sessionBus(),
+                                QDBusServiceWatcher::WatchForRegistration);
+    connect(&watcher, SIGNAL(serviceRegistered(QString)), &serviceWaitLoop, SLOT(quit()));
+    // timeout in case of the service never appears on DBUS
+    QTimer::singleShot(30000, &serviceWaitLoop, SLOT(quit()));
+
+    // start plugin process
     QProcess *process = new QProcess();
     process->setProcessChannelMode( QProcess::ForwardedChannels );
     process->start( aPath, args );
 
-    // This check is a workaround for the bug https://codereview.qt-project.org/#change,62897
-    QThread::sleep(1);         // The process state does not seem be in a proper state immediately
+    // wait until the service is available or timeout
+    LOG_DEBUG("Waiting for DBUS service:" << pluginDBUSServiceName);
+    serviceWaitLoop.exec();
+
     if( process->state() == QProcess::Starting ) {
         started = process->waitForStarted();
+    } else  {
+        started = (process->state() == QProcess::Running);
     }
 
     if (started == true) {
