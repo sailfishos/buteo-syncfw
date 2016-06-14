@@ -1,10 +1,8 @@
 isEmpty(TESTS_COMMON_PRI_INCLUDED) {
 TESTS_COMMON_PRI_INCLUDED = 1
 
-equals(QT_MAJOR_VERSION, 4): DASH_QT_VERSION = ""
-equals(QT_MAJOR_VERSION, 5): DASH_QT_VERSION = "-qt5"
-equals(QT_MAJOR_VERSION, 4): NODASH_QT_VERSION = ""
-equals(QT_MAJOR_VERSION, 5): NODASH_QT_VERSION = "5"
+DASH_QT_VERSION = "-qt5"
+NODASH_QT_VERSION = "5"
 
 tests_subdir = $$relative_path($$dirname(_PRO_FILE_), $${PWD})
 tests_subdir_r = $$relative_path($${PWD}, $$dirname(_PRO_FILE_))
@@ -21,8 +19,7 @@ QT -= gui
 
 CONFIG += link_pkgconfig link_prl
 
-PKGCONFIG += dbus-1
-equals(QT_MAJOR_VERSION, 5): PKGCONFIG += Qt5SystemInfo
+PKGCONFIG += dbus-1 Qt5SystemInfo
 
 LIBS += -lgcov
 
@@ -52,7 +49,7 @@ INCLUDEPATH = \
     $${PWD}/../../msyncd \
 
 # This way time to run qmake is reduced by ~30%
-equals(QT_MAJOR_VERSION, 5): CONFIG -= depend_includepath
+CONFIG -= depend_includepath
 DEPENDPATH = \
     $${PWD}/../../libbuteosyncfw/clientfw \
     $${PWD}/../../libbuteosyncfw/common \

@@ -42,11 +42,7 @@
 #include "LogMacros.h"
 #include "BtHelper.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QBatteryInfo>
-#else
-#include <QtSystemInfo/QSystemDeviceInfo>
-#endif
 #include <QtDebug>
 #include <fcntl.h>
 #include <termios.h>
@@ -61,27 +57,12 @@ static const QString BT_PROPERTIES_NAME = "Name";
 class Buteo::BatteryInfo
 {
 public:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QBatteryInfo iBatteryInfo;
-#else
-    QtMobility::QSystemDeviceInfo iDeviceInfo;
-#endif
 
     bool isLowPower() {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        QBatteryInfo::LevelStatus batteryStat;
-#  if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
-        batteryStat = iBatteryInfo.levelStatus();
-#  else
-        batteryStat = iBatteryInfo.batteryStatus(0);
-#  endif
+        QBatteryInfo::LevelStatus batteryStat = iBatteryInfo.levelStatus();
         return (batteryStat == QBatteryInfo::LevelEmpty) ||
                (batteryStat == QBatteryInfo::LevelLow);
-#else
-        QtMobility::QSystemDeviceInfo::BatteryStatus batteryStat = iDeviceInfo.batteryStatus();
-        return (batteryStat != QtMobility::QSystemDeviceInfo::BatteryNormal) &&
-               (batteryStat != QtMobility::QSystemDeviceInfo::BatteryLow);
-#endif
     }
 };
 
