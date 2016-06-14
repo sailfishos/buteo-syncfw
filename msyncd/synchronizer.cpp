@@ -40,7 +40,11 @@
 #include "ProfileFactory.h"
 #include "ProfileEngineDefs.h"
 #include "LogMacros.h"
-#include "BtHelper.h"
+
+// BluezQt
+#include <manager.h>
+#include <device.h>
+#include <initmanagerjob.h>
 
 #include <QBatteryInfo>
 #include <QtDebug>
@@ -52,7 +56,6 @@ using namespace Buteo;
 
 static const QString SYNC_DBUS_OBJECT = "/synchronizer";
 static const QString SYNC_DBUS_SERVICE = "com.meego.msyncd";
-static const QString BT_PROPERTIES_NAME = "Name";
 
 class Buteo::BatteryInfo
 {
@@ -76,7 +79,8 @@ Synchronizer::Synchronizer( QCoreApplication* aApplication )
     iClosing(false),
     iSOCEnabled(false),
     iSyncUIInterface(NULL),
-    iBatteryInfo(new BatteryInfo)
+    iBatteryInfo(new BatteryInfo),
+    iBluetoothManager(new BluezQt::Manager(this))
 {
     iSettings = g_settings_new_with_path("com.meego.msyncd", "/com/meego/msyncd/");
     FUNCTION_CALL_TRACE;
@@ -142,6 +146,7 @@ bool Synchronizer::initialize()
         connect(iTransportTracker,
                 SIGNAL(networkStateChanged(bool,Sync::InternetConnectionType)),
                 SLOT(onNetworkStateChanged(bool,Sync::InternetConnectionType)));
+        iTransportTracker->initialize();
     }
 
     // Initialize account manager.
@@ -162,6 +167,12 @@ bool Synchronizer::initialize()
             this, SLOT(onStorageReleased()), Qt::QueuedConnection);
 
     startServers();
+
+    // Initialize bluetooth manager
+    BluezQt::InitManagerJob *job = iBluetoothManager->init();
+    if (!job->exec()) {
+        LOG_WARNING("Unable to initialize Bluetooth manager: " << job->errorText());
+    }
 
     // Initialize scheduler
     initializeScheduler();
@@ -2038,8 +2049,8 @@ QString Synchronizer::getValue(const QString& aAddress, const QString& aKey)
         }
         else
         {
-            BtHelper btHelper(aAddress);
-            iRemoteName = btHelper.getDeviceProperties().value(BT_PROPERTIES_NAME).toString();
+            BluezQt::DevicePtr device = iBluetoothManager->deviceForAddress(aAddress);
+            iRemoteName = device ? device->address() : "";
         }
         value = iRemoteName;
     }

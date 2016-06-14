@@ -21,7 +21,7 @@ INCLUDEPATH += . \
 
 PKGCONFIG += dbus-1 gio-2.0
 
-PKGCONFIG += libsignon-qt5 accounts-qt5 Qt5SystemInfo
+PKGCONFIG += libsignon-qt5 accounts-qt5 Qt5SystemInfo KF5BluezQt
 LIBS += -lbuteosyncfw5
 packagesExist(qt5-boostable) {
     DEFINES += HAS_BOOSTER

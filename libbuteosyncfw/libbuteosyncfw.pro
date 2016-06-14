@@ -12,7 +12,10 @@ QT -= gui
 
 CONFIG += dll \
     create_pc \
-    create_prl
+    create_prl \
+    link_pkgconfig
+
+PKGCONFIG += KF5BluezQt
 
 #DEFINES += BUTEO_ENABLE_DEBUG
 
@@ -34,7 +37,6 @@ HEADERS += common/Logger.h \
            pluginmgr/StorageItem.h \
            pluginmgr/StoragePlugin.h \
            pluginmgr/SyncPluginBase.h \
-           profile/BtHelper.h \
            profile/Profile.h \
            profile/Profile_p.h \
            profile/ProfileEngineDefs.h \
@@ -64,7 +66,6 @@ SOURCES += common/Logger.cpp \
            pluginmgr/StorageItem.cpp \
            pluginmgr/StoragePlugin.cpp \
            pluginmgr/SyncPluginBase.cpp \
-           profile/BtHelper.cpp \
            profile/Profile.cpp \
            profile/ProfileFactory.cpp \
            profile/ProfileField.cpp \
@@ -129,7 +130,6 @@ headers.files = common/Logger.h \
            pluginmgr/ButeoPluginIfaceAdaptor.h \
            pluginmgr/ButeoPluginIface.h \
            pluginmgr/PluginCbImpl.h \
-           profile/BtHelper.h \
            profile/Profile.h \
            profile/Profile_p.h \
            profile/ProfileEngineDefs.h \

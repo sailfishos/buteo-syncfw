@@ -38,6 +38,9 @@
 #include "PluginCbInterface.h"
 #include "ClientPlugin.h"
 
+// BluezQt
+#include <types.h>
+
 #include <QVector>
 #include <QMutex>
 #include <QCoreApplication>
@@ -471,6 +474,8 @@ private:
     QDBusInterface *iSyncUIInterface;
     _GSettings *iSettings;
     BatteryInfo *iBatteryInfo;
+
+    BluezQt::Manager *iBluetoothManager;
 };
 
 }

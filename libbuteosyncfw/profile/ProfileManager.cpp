@@ -28,12 +28,16 @@
 #include <QTextStream>
 #include <QDomDocument>
 
+// BluezQt
+#include <manager.h>
+#include <device.h>
+#include <initmanagerjob.h>
+
 #include "ProfileFactory.h"
 #include "ProfileEngineDefs.h"
 #include "SyncCommonDefs.h"
 
 #include "LogMacros.h"
-#include "BtHelper.h"
 
 namespace Buteo {
 
@@ -54,6 +58,7 @@ class ProfileManagerPrivate
 public:
     ProfileManagerPrivate(const QString &aPrimaryPath,
             const QString &aSecondaryPath);
+    ~ProfileManagerPrivate();
 
     /*! \brief Loads a profile from persistent storage.
      *
@@ -101,7 +106,7 @@ public:
     // Secondary path for profiles.
     QString iSecondaryPath;
 
-
+    BluezQt::Manager *iBluetoothManager;
 };
 
 }
@@ -111,7 +116,8 @@ using namespace Buteo;
 ProfileManagerPrivate::ProfileManagerPrivate(const QString &aPrimaryPath,
         const QString &aSecondaryPath)
 :   iPrimaryPath(aPrimaryPath),
-    iSecondaryPath(aSecondaryPath)
+    iSecondaryPath(aSecondaryPath),
+    iBluetoothManager(new BluezQt::Manager)
 {
 
     if (iPrimaryPath.endsWith(QDir::separator()))
@@ -123,8 +129,16 @@ ProfileManagerPrivate::ProfileManagerPrivate(const QString &aPrimaryPath,
         iSecondaryPath.chop(1);
     } // no else
 
+    BluezQt::InitManagerJob *job = iBluetoothManager->init();
+    job->start();
+
     LOG_DEBUG("Primary profile path set to" << iPrimaryPath);
     LOG_DEBUG("Secondary profile path set to" << iSecondaryPath);
+}
+
+ProfileManagerPrivate::~ProfileManagerPrivate()
+{
+    delete iBluetoothManager;
 }
 
 Profile *ProfileManagerPrivate::load(const QString &aName, const QString &aType)
@@ -775,8 +789,9 @@ SyncProfile *ProfileManager::createTempSyncProfile (const QString &destAddress, 
     }
 
     saveNewProfile = true;
-    BtHelper btHelp(destAddress);
-    QString profileDisplayName = btHelp.getDeviceProperties().value("Name").toString();
+
+    BluezQt::DevicePtr device = d_ptr->iBluetoothManager->deviceForAddress(destAddress);
+    QString profileDisplayName = device ? device->address() : "";
     if (profileDisplayName.isEmpty()) {
         //Fixes 171340
         profileDisplayName = QString ("qtn_sync_dest_name_device_default");

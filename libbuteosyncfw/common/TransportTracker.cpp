@@ -27,6 +27,12 @@
 #endif
 #include "NetworkManager.h"
 #include "LogMacros.h"
+
+// BluezQt
+#include <manager.h>
+#include <adapter.h>
+#include <initmanagerjob.h>
+
 #include <QMutexLocker>
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -38,7 +44,8 @@ TransportTracker::TransportTracker(QObject *aParent) :
     QObject(aParent),
     iUSBProxy(0),
     iInternet(0),
-    iSystemBus(0)
+    iSystemBus(0),
+    iBluetoothManager(0)
 {
     FUNCTION_CALL_TRACE;
 
@@ -65,23 +72,11 @@ TransportTracker::TransportTracker(QObject *aParent) :
 #endif
 
     // BT
-
     // Set the bluetooth state
-    iTransportStates[Sync::CONNECTIVITY_BT] = btConnectivityStatus();
-
-    // Add signal to track the bluetooth state changes
-    iSystemBus = new QDBusConnection(QDBusConnection::connectToBus(QDBusConnection::SystemBus,
-                                                                    QStringLiteral("buteo_system_bus")));
-    if (!iSystemBus->connect("org.bluez",
-                     "",
-                     "org.bluez.Adapter",
-                     "PropertyChanged",
-                     this,
-                     SLOT(onBtStateChanged(QString, QDBusVariant)
-                     )))
-    {
-        LOG_WARNING("Unable to connect to system bus for org.bluez.Adapter");
-    }
+    iTransportStates[Sync::CONNECTIVITY_BT] = false;
+    iBluetoothManager = new BluezQt::Manager(this);
+    connect(iBluetoothManager, &BluezQt::Manager::usableAdapterChanged,
+            this, &TransportTracker::bluetoothUsableAdapterChanged);
 
     // Internet
     // @todo: enable when internet state is reported correctly.
@@ -104,6 +99,35 @@ TransportTracker::~TransportTracker()
 {
     FUNCTION_CALL_TRACE;
     delete iSystemBus;
+}
+
+void TransportTracker::initialize()
+{
+    FUNCTION_CALL_TRACE;
+
+    BluezQt::InitManagerJob *job = iBluetoothManager->init();
+    if (!job->exec()) { // blocks synchronously
+        LOG_WARNING("Unable to initialize Bluetooth manager: " << job->errorText());
+    }
+}
+
+void TransportTracker::bluetoothUsableAdapterChanged(BluezQt::AdapterPtr adapter)
+{
+    if (iBluetoothAdapter) {
+        iBluetoothAdapter->disconnect(this);
+    }
+    iBluetoothAdapter = adapter;
+    if (iBluetoothAdapter) {
+        connect(iBluetoothAdapter.data(), &BluezQt::Adapter::poweredChanged,
+                this, &TransportTracker::bluetoothPoweredChanged);
+    }
+
+    iTransportStates[Sync::CONNECTIVITY_BT] = (adapter && adapter->isPowered());
+}
+
+void TransportTracker::bluetoothPoweredChanged(bool powered)
+{
+    iTransportStates[Sync::CONNECTIVITY_BT] = powered;
 }
 
 bool TransportTracker::isConnectivityAvailable(Sync::ConnectivityType aType) const
@@ -163,64 +187,4 @@ void TransportTracker::updateState(Sync::ConnectivityType aType,
             emit connectivityStateChanged(aType, aState);
         }
     }
-}
-
-bool TransportTracker::btConnectivityStatus()
-{
-    FUNCTION_CALL_TRACE;
-
-    bool btOn = false;
-    QDBusConnection *systemBus = new QDBusConnection(QDBusConnection::connectToBus(QDBusConnection::SystemBus,
-                                                                                    QStringLiteral("buteo_system_bus2")));
-    QDBusMessage methodCallMsg = QDBusMessage::createMethodCall("org.bluez",
-                                                                "/",
-                                                                "org.bluez.Manager",
-                                                                "DefaultAdapter");
-
-    QDBusMessage reply = systemBus->call(methodCallMsg);
-    if (reply.type() == QDBusMessage::ErrorMessage)
-    {
-        LOG_WARNING("This device does not have a BT adapter");
-        delete systemBus;
-        return btOn;
-    }
-
-    QList<QVariant> adapterList = reply.arguments();
-    // We will take the first adapter in the list
-    QString adapterPath = qdbus_cast<QDBusObjectPath>(adapterList.at(0)).path();
-
-    if (!adapterPath.isEmpty() || !adapterPath.isNull())
-    {
-        // Retrive the properties of the adapter and check for "Powered" key
-        methodCallMsg = QDBusMessage::createMethodCall("org.bluez",
-                                                       adapterPath,
-                                                       "org.bluez.Adapter",
-                                                       "GetProperties");
-        reply = systemBus->call(methodCallMsg);
-        if (reply.type() == QDBusMessage::ErrorMessage)
-        {
-            LOG_WARNING("Error in retrieving bluetooth properties");
-            delete systemBus;
-            return btOn;
-        }
-
-        QDBusArgument arg = reply.arguments().at(0).value<QDBusArgument>();
-        if (arg.currentType() == QDBusArgument::MapType)
-        {
-            // Scan through the dict returned and check for "Powered" entry
-            QMap<QString,QVariant> dict = qdbus_cast<QMap<QString,QVariant> >(arg);
-            QMap<QString,QVariant>::iterator iter;
-            for(iter = dict.begin(); iter != dict.end(); ++iter)
-            {
-                if (iter.key() == "Powered")
-                {
-                    btOn = iter.value().toBool();
-                    LOG_DEBUG ("Bluetooth powered on? " << btOn);
-                    break;
-                }
-            }
-        }
-    }
-    delete systemBus;
-    return btOn;
 }

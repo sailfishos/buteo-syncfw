@@ -31,6 +31,9 @@
 #include <QDBusVariant>
 #include <QDBusConnection>
 
+// BluezQt
+#include <types.h>
+
 namespace Buteo {
 
 class USBModedProxy;
@@ -62,6 +65,10 @@ public:
          * @return True if available, false if not
          */
         bool isConnectivityAvailable(Sync::ConnectivityType aType) const;
+
+        /*! \brief Initializes the transport tracker
+         */
+        void initialize();
 
 signals:
 
@@ -96,6 +103,8 @@ private slots:
     void onInternetStateChanged(bool aConnected, Sync::InternetConnectionType aType);
 
 private:
+    void bluetoothUsableAdapterChanged(BluezQt::AdapterPtr adapter);
+    void bluetoothPoweredChanged(bool powered);
 
     QMap<Sync::ConnectivityType, bool> iTransportStates;
 
@@ -103,6 +112,8 @@ private:
 
     NetworkManager *iInternet;
     QDBusConnection *iSystemBus;
+    BluezQt::Manager *iBluetoothManager;
+    BluezQt::AdapterPtr iBluetoothAdapter;
 
     mutable QMutex iMutex;
 
@@ -117,9 +128,6 @@ private:
     friend class TransportTrackerTest;
     friend class SynchronizerTest;
 #endif
-
-    bool btConnectivityStatus();
-
 };
 
 }
