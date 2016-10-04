@@ -25,6 +25,7 @@ BuildRequires: doxygen
 Requires: mapplauncherd-qt5
 Requires: oneshot
 Requires: glib2
+Requires: pkgconfig(KF5BluezQt)
 %{_oneshot_requires_post}
 
 %description
