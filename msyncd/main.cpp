@@ -31,12 +31,15 @@
 #include <grp.h>
 #include <pwd.h>
 #include <unistd.h>
+#include <error.h>
 
 #include "LogMacros.h"
 #include "Logger.h"
 #include "synchronizer.h"
 #include "SyncSigHandler.h"
 #include "SyncCommonDefs.h"
+
+#define PRIVILEGED_USER "privileged"
 
 Q_DECL_EXPORT int main( int argc, char* argv[] )
 {
@@ -94,6 +97,21 @@ Q_DECL_EXPORT int main( int argc, char* argv[] )
     // Make sure we have the msyncd/sync directory
     QDir syncDir(msyncCacheSyncDir);
     if (syncDir.mkpath(msyncCacheSyncDir)) {
+        // Get privileged user id and group
+        struct passwd *pwd;
+        pwd = getpwnam(PRIVILEGED_USER);
+        if (!pwd) {
+            error(ENOENT, ENOENT, "User %s not found", PRIVILEGED_USER);
+        }
+
+        // Set permissions
+        if (chown(Sync::syncCacheDir().toLatin1().data(), pwd->pw_uid, pwd->pw_gid)) {
+            perror("chown");
+        }
+        if (chown(msyncCacheSyncDir.toLatin1().data(), pwd->pw_uid, pwd->pw_gid)) {
+            perror("chown");
+        }
+
         QFile::setPermissions(Sync::syncCacheDir(), permissions);
         QFile::setPermissions(msyncCacheSyncDir, permissions);
     }
