@@ -42,6 +42,7 @@ const QString ATTR_DELETED("deleted");
 const QString ATTR_MODIFIED("modified");
 const QString ATTR_TIME("time");
 const QString ATTR_INTERVAL("interval");
+const QString ATTR_EXTENDED_INTERVAL("extendedinterval");
 const QString ATTR_BEGIN("begin");
 const QString ATTR_END("end");
 const QString ATTR_DAYS("days");

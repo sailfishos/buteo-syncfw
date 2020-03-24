@@ -89,6 +89,8 @@ public:
     //! Time interval
     unsigned iInterval;
 
+    QString iExtendedInterval;
+
     bool iEnabled;
 
     // ============ RUSH HOUR SETTINGS =========== 

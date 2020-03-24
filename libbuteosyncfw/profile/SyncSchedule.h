@@ -2,7 +2,8 @@
  * This file is part of buteo-syncfw package
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
- * Copyright (C) 2014-2015 Jolla Ltd
+ * Copyright (C) 2014-2019 Jolla Ltd.
+ * Copyright (C) 2020 Open Mobile Platform LLC.
  *
  * Contact: Sateesh Kavuri <sateesh.kavuri@nokia.com>
  *
@@ -45,6 +46,10 @@ const QString SYNC_SCHEDULE_PEAK_START_TIME_KEY_INT ("scheduler/schedule_peak_st
 const QString SYNC_SCHEDULE_PEAK_END_TIME_KEY_INT ("scheduler/schedule_peak_end_time");
 const QString SYNC_SCHEDULE_PEAK_SCHEDULE_KEY_INT ("scheduler/schedule_peak");
 const QString SYNC_SCHEDULE_OFFPEAK_SCHEDULE_KEY_INT ("scheduler/schedule_off_peak");
+
+const QString SYNC_SCHEDULE_EXTENDED_INTERVAL_MONTH("month_interval");
+const QString SYNC_SCHEDULE_EXTENDED_INTERVAL_MONTH_START("month_start");
+const QString SYNC_SCHEDULE_EXTENDED_INTERVAL_MONTH_END("month_end");
 
 /*! \brief Class for handling sync schedule settings.
  *
@@ -125,7 +130,6 @@ public:
      */
     void setTime(const QTime &aTime);
 
-
     /*! \brief Sets scheduled config time.
     *
     * \param QDateTime Sync time.
@@ -150,6 +154,10 @@ public:
      * \param aInterval Interval.
      */
     void setInterval(unsigned aInterval);
+
+    QString extendedInterval() const;
+
+    void setExtendedInterval(const QString &aExtendedInterval);
 
     /*! \brief Checks if normal schedule is obeyed.
      *
@@ -244,7 +252,6 @@ public:
     /*! \brief Gets next sync time based on the sync schedule settings.
      *
      * \param aPrevSync Previous sync time.
-     * \param aPrevious sync time.
      * \return Next sync time. Null object if schedule is not defined.
      */
     QDateTime nextSyncTime(const QDateTime &aPrevSync) const;
@@ -259,10 +266,11 @@ public:
 
     /*! \brief Returns true if aDateTime is within a scheduled period.
      *
-     * \param aDateTime a give date time.
-     * \return true if at aDateTime, the synchronization is possible.
+     * \param aActualDateTime the actual sync date time to be tested.
+     * \param aPreviousSyncTime the previous sync time, for calculation where a sync interval is used.
+     * \return true if at aActualDateTime, the synchronization is possible.
      */
-    bool isSyncScheduled(const QDateTime &aDateTime) const;
+    bool isSyncScheduled(const QDateTime &aActualDateTime, const QDateTime &aPreviousSyncTime = QDateTime()) const;
 
 private:
 
