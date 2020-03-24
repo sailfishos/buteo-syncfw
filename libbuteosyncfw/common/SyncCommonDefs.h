@@ -100,6 +100,14 @@ enum InternetConnectionType {
     INTERNET_CONNECTION_LTE = QNetworkConfiguration::BearerLTE
 };
 
+// These can be used as sync schedule intervals to specify unusual types of sync intervals.
+enum ExtendedSyncInterval {
+    // start the named interval values at an unlikely interval (2 years)
+    MonthInterval = (365*24*60) * 2,    // 2 years = 1051200 minutes
+    FirstDayOfMonthInterval,
+    LastDayOfMonthInterval
+};
+
 } // namespace Sync
 
 Q_DECLARE_METATYPE( Sync::SyncStatus );
