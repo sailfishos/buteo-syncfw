@@ -28,6 +28,9 @@
 
 #include "profile/SyncResults.h"
 #include "profile/SyncSchedule.h"
+#include "syncresultmodel.h"
+#include "multisyncresultmodel.h"
+#include "syncprofilewatcher.h"
 
 class Q_DECL_EXPORT ButeoProfilesPlugin : public QQmlExtensionPlugin
 {
@@ -50,10 +53,13 @@ public:
     {
         Q_ASSERT(uri == QLatin1String("Buteo.Profiles"));
 
+        qmlRegisterType<SyncProfileWatcher>(uri, 0, 1, "SyncProfileWatcher");
         qRegisterMetaType<Buteo::SyncSchedule>("SyncSchedule");
         qmlRegisterUncreatableType<Buteo::SyncSchedule>(uri, 0, 1, "SyncSchedule",
                                                         "SyncSchedule is retrieved from a SyncProfileWatcher");
 
+        qmlRegisterType<SyncResultModel>(uri, 0, 1, "SyncResultModel");
+        qmlRegisterType<MultiSyncResultModel>(uri, 0, 1, "MultiSyncResultModel");
         qRegisterMetaType<Buteo::SyncResults>();
         qmlRegisterUncreatableType<Buteo::SyncResults>(uri, 0, 1, "SyncResults",
                                                        "SyncResults are retrieved from a SyncResultModel or a MultiSyncResultModel");
