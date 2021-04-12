@@ -105,7 +105,7 @@ SyncSchedule &SyncSchedule::operator=(const SyncSchedule &aRhs)
     return *this;
 }
 
-bool SyncSchedule::operator==(const SyncSchedule &aRhs)
+bool SyncSchedule::operator==(const SyncSchedule &aRhs) const
 {
     if (&aRhs == this)
         return true;

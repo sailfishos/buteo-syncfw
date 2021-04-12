@@ -25,6 +25,7 @@
 
 #include <QString>
 #include <QList>
+#include <QObject>
 
 class QDomDocument;
 class QDomElement;
@@ -35,6 +36,12 @@ class TargetResultsPrivate;
 
 //! \brief Container for number of items added, deleted and modified.
 struct ItemCounts {
+    Q_GADGET
+    Q_PROPERTY(unsigned added MEMBER added)
+    Q_PROPERTY(unsigned deleted MEMBER deleted)
+    Q_PROPERTY(unsigned modified MEMBER modified)
+
+public:
     //! No. of Items added
     unsigned added;
 
@@ -59,6 +66,19 @@ struct ItemCounts {
  */
 class TargetResults
 {
+    Q_GADGET
+    Q_PROPERTY(QString target READ targetName)
+    Q_PROPERTY(Buteo::ItemCounts local READ localItems)
+    Q_PROPERTY(Buteo::ItemCounts remote READ remoteItems)
+    Q_PROPERTY(QStringList localAdditions READ localAdditions)
+    Q_PROPERTY(QStringList localDeletions READ localDeletions)
+    Q_PROPERTY(QStringList localModifications READ localModifications)
+    Q_PROPERTY(QStringList localFailures READ localFailures)
+    Q_PROPERTY(QStringList remoteAdditions READ remoteAdditions)
+    Q_PROPERTY(QStringList remoteDeletions READ remoteDeletions)
+    Q_PROPERTY(QStringList remoteModifications READ remoteModifications)
+    Q_PROPERTY(QStringList remoteFailures READ remoteFailures)
+
 public:
     enum ItemOperation {
         ITEM_ADDED,
@@ -70,6 +90,8 @@ public:
         ITEM_OPERATION_SUCCEEDED,
         ITEM_OPERATION_FAILED
     };
+
+    TargetResults();
 
     /*! \brief Copy constructor.
      *
@@ -203,9 +225,22 @@ public:
 
 private:
 
+    QStringList localAdditions() const { return localDetails(ITEM_ADDED, ITEM_OPERATION_SUCCEEDED); }
+    QStringList localDeletions() const { return localDetails(ITEM_DELETED, ITEM_OPERATION_SUCCEEDED); }
+    QStringList localModifications() const { return localDetails(ITEM_MODIFIED, ITEM_OPERATION_SUCCEEDED); }
+    QStringList localFailures() const { return localDetails(ITEM_ADDED, ITEM_OPERATION_FAILED) + localDetails(ITEM_MODIFIED, ITEM_OPERATION_FAILED) + localDetails(ITEM_DELETED, ITEM_OPERATION_FAILED); }
+
+    QStringList remoteAdditions() const { return remoteDetails(ITEM_ADDED, ITEM_OPERATION_SUCCEEDED); }
+    QStringList remoteDeletions() const { return remoteDetails(ITEM_DELETED, ITEM_OPERATION_SUCCEEDED); }
+    QStringList remoteModifications() const { return remoteDetails(ITEM_MODIFIED, ITEM_OPERATION_SUCCEEDED); }
+    QStringList remoteFailures() const { return remoteDetails(ITEM_ADDED, ITEM_OPERATION_FAILED) + remoteDetails(ITEM_MODIFIED, ITEM_OPERATION_FAILED) + remoteDetails(ITEM_DELETED, ITEM_OPERATION_FAILED); }
+
     TargetResultsPrivate *d_ptr;
 };
 
 }
+
+Q_DECLARE_METATYPE(Buteo::ItemCounts)
+Q_DECLARE_METATYPE(Buteo::TargetResults)
 
 #endif // TARGETRESULTS_H
