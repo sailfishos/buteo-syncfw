@@ -2,6 +2,7 @@
  * This file is part of buteo-syncfw package
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+ * Copyright (C) 2013 - 2021 Jolla Ltd.
  *
  * Contact: Sateesh Kavuri <sateesh.kavuri@nokia.com>
  *
@@ -30,6 +31,10 @@
 #include <QDir>
 
 #include <syslog.h>
+
+Q_LOGGING_CATEGORY(lcButeoCore, "com.buteo.core", QtWarningMsg)
+Q_LOGGING_CATEGORY(lcButeoMsyncd, "com.buteo.msyncd", QtWarningMsg)
+Q_LOGGING_CATEGORY(lcButeoPlugin, "com.buteo.plugin", QtWarningMsg)
 
 using namespace Buteo;
 
