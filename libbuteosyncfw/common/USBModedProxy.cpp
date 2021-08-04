@@ -61,7 +61,7 @@ void USBModedProxy::initUsbModeTracking()
 {
     if (!QObject::connect(this, &USBModedProxy::sig_usb_state_ind,
                           this, &USBModedProxy::slotModeChanged)) {
-        LOG_CRITICAL("Failed to connect to USB moded signal! USB notifications will not be available.");
+        qCCritical(lcButeoCore) << "Failed to connect to USB moded signal! USB notifications will not be available.";
     }
 
     QDBusPendingReply<QString> reply = this->mode_request();
@@ -75,7 +75,7 @@ void USBModedProxy::handleUsbModeReply(QDBusPendingCallWatcher *call)
     QDBusPendingReply<QString> reply = *call;
 
     if (reply.isError()) {
-        LOG_WARNING("Call to" << USB_MODE_SERVICE << "failed:" << reply.error());
+        qCWarning(lcButeoCore) << "Call to" << USB_MODE_SERVICE << "failed:" << reply.error();
     } else {
         slotModeChanged(reply.value());
     }

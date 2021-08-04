@@ -48,7 +48,7 @@ BtHelper::BtHelper(const QString &deviceAddress,
 
     QDBusReply<ObjectsMap> reply = managerInterface.call(BT::GETMANAGEDOBJECTS);
     if (!reply.isValid()) {
-        LOG_WARNING( "Failed to connect to ObjectManager: " << reply.error().message() );
+        qCWarning(lcButeoCore) << "Failed to connect to ObjectManager: " << reply.error().message() ;
     } else {
 
         ObjectsMap objects = reply.value();
@@ -67,9 +67,9 @@ BtHelper::BtHelper(const QString &deviceAddress,
                             &&
                             dev.property("Address").toString() == deviceAddress) {
 
-                        LOG_DEBUG ( "[BtHelper]Device connected("
+                        qCDebug(lcButeoCore) << "[BtHelper]Device connected("
                                 << dev.property("Address").toString()
-                                << ") at" << path );
+                                << ") at" << path;
                         m_devicePath = path;
                     }
                 }
@@ -97,20 +97,20 @@ QVariantMap BtHelper::getDeviceProperties()
             BT::BLUEZ_PROPERTIES_INTERFACE,
             m_SystemBus );
     if (!deviceInterface.isValid()) {
-        LOG_DEBUG ("Device interface is not valid");
+        qCDebug(lcButeoCore) << "Device interface is not valid";
         return QVariantMap();
     }
 
     QDBusReply<QVariantMap> reply =
             deviceInterface.call(BT::GETPROPERTIES, BT::BLUEZ_DEVICE_INTERFACE);
     if (!reply.isValid()) {
-        LOG_WARNING( "Failed to get device properties: " << reply.error().message() );
+        qCWarning(lcButeoCore) << "Failed to get device properties: " << reply.error().message() ;
         return QVariantMap();
     }
 
     return reply.value();
 #else
-    LOG_DEBUG ("Bluetooth is not supported");
+    qCDebug(lcButeoCore) << "Bluetooth is not supported";
     return QVariantMap();
 #endif
 }

@@ -93,7 +93,7 @@ bool OOPClientPlugin::init()
     QDBusPendingReply<bool> reply = iOopPluginIface->init();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for init from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for init from plugin" ;
         return false;
     }
 
@@ -107,7 +107,7 @@ bool OOPClientPlugin::uninit()
     QDBusPendingReply<bool> reply = iOopPluginIface->uninit();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for uninit from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for uninit from plugin" ;
         return false;
     }
 
@@ -121,7 +121,7 @@ bool OOPClientPlugin::startSync()
     QDBusPendingReply<bool> reply = iOopPluginIface->startSync();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for startSync from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for startSync from plugin" ;
         return false;
     }
 
@@ -135,7 +135,7 @@ void OOPClientPlugin::abortSync(Sync::SyncStatus aStatus)
     QDBusPendingReply<void> reply = iOopPluginIface->abortSync((uchar) aStatus);
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for abortSync from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for abortSync from plugin" ;
 }
 
 bool OOPClientPlugin::cleanUp()
@@ -145,7 +145,7 @@ bool OOPClientPlugin::cleanUp()
     QDBusPendingReply<bool> reply = iOopPluginIface->cleanUp();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for cleanUp from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for cleanUp from plugin" ;
         return false;
     }
 
@@ -159,7 +159,7 @@ SyncResults OOPClientPlugin::getSyncResults() const
     QDBusPendingReply<QString> reply = iOopPluginIface->getSyncResults();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for getSyncResults from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for getSyncResults from plugin" ;
         return SyncResults(QDateTime::currentDateTime(),
                            SyncResults::SYNC_RESULT_INVALID, SyncResults::PLUGIN_ERROR);
     }
@@ -170,7 +170,7 @@ SyncResults OOPClientPlugin::getSyncResults() const
         SyncResults syncResult(doc.documentElement());
         return syncResult;
     } else {
-        LOG_CRITICAL( "Invalid sync results returned from plugin" );
+        qCCritical(lcButeoCore) << "Invalid sync results returned from plugin" ;
         return SyncResults(QDateTime::currentDateTime(),
                            SyncResults::SYNC_RESULT_INVALID, SyncResults::NO_ERROR);
     }
@@ -183,7 +183,7 @@ void OOPClientPlugin::connectivityStateChanged(Sync::ConnectivityType aType, boo
     QDBusPendingReply<void> reply = iOopPluginIface->connectivityStateChanged(aType, aState);
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for connectivityStateChanged from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for connectivityStateChanged from plugin" ;
 }
 
 void OOPClientPlugin::onProcessError(QProcess::ProcessError error)

@@ -151,7 +151,7 @@ void SyncClientInterfacePrivate::resultsAvailable(QString aProfileId,
         Buteo::SyncResults results(doc.documentElement());
         emit resultsAvailable(aProfileId, results);
     } else {
-        LOG_DEBUG("Invalid Profile Xml Received from msyncd");
+        qCDebug(lcButeoCore) << "Invalid Profile Xml Received from msyncd";
     }
 }
 
@@ -211,7 +211,7 @@ Buteo::SyncResults SyncClientInterfacePrivate::getLastSyncResult(const QString &
             Buteo::SyncResults result(doc.documentElement());
             return result;
         } else {
-            LOG_CRITICAL("Invalid Profile Xml Received from msyncd");
+            qCCritical(lcButeoCore) << "Invalid Profile Xml Received from msyncd";
         }
     }
     return SyncResults(QDateTime(),
@@ -230,7 +230,7 @@ QList<QString /*profilesAsXml*/> SyncClientInterfacePrivate::allVisibleSyncProfi
             }
         }
     }
-    LOG_DEBUG("allVisibleSyncProfiles " << profilesAsXml);
+    qCDebug(lcButeoCore) << "allVisibleSyncProfiles " << profilesAsXml;
     return profilesAsXml;
 }
 
@@ -244,7 +244,7 @@ QString SyncClientInterfacePrivate::syncProfile(const QString &aProfileId)
         profileAsXml = iSyncDaemon->syncProfile(aProfileId);
     }
 
-    LOG_DEBUG("syncProfile " << profileAsXml);
+    qCDebug(lcButeoCore) << "syncProfile " << profileAsXml;
     return profileAsXml;
 }
 

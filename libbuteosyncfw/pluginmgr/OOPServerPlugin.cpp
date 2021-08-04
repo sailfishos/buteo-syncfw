@@ -92,7 +92,7 @@ bool OOPServerPlugin::init()
     QDBusPendingReply<bool> reply = iOopPluginIface->init();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for init from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for init from plugin" ;
         return false;
     }
 
@@ -106,7 +106,7 @@ bool OOPServerPlugin::uninit()
     QDBusPendingReply<bool> reply = iOopPluginIface->uninit();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for startSync from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for startSync from plugin" ;
         return false;
     }
 
@@ -120,7 +120,7 @@ bool OOPServerPlugin::startListen()
     QDBusPendingReply<bool> reply = iOopPluginIface->startListen();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for startListen from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for startListen from plugin" ;
         return false;
     }
 
@@ -134,7 +134,7 @@ void OOPServerPlugin::stopListen()
     QDBusPendingReply<bool> reply = iOopPluginIface->stopListen();
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for stopListen from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for stopListen from plugin" ;
 }
 
 void OOPServerPlugin::suspend()
@@ -144,7 +144,7 @@ void OOPServerPlugin::suspend()
     QDBusPendingReply<bool> reply = iOopPluginIface->suspend();
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for suspend from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for suspend from plugin" ;
 }
 
 void OOPServerPlugin::resume()
@@ -154,7 +154,7 @@ void OOPServerPlugin::resume()
     QDBusPendingReply<bool> reply = iOopPluginIface->resume();
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for resume from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for resume from plugin" ;
 }
 
 bool OOPServerPlugin::cleanUp()
@@ -164,7 +164,7 @@ bool OOPServerPlugin::cleanUp()
     QDBusPendingReply<bool> reply = iOopPluginIface->cleanUp();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for cleanUp from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for cleanUp from plugin" ;
         return false;
     }
 
@@ -178,7 +178,7 @@ void OOPServerPlugin::connectivityStateChanged(Sync::ConnectivityType aType, boo
     QDBusPendingReply<void> reply = iOopPluginIface->connectivityStateChanged(aType, aState);
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for connectivityStateChanged from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for connectivityStateChanged from plugin" ;
 }
 
 void OOPServerPlugin::onProcessError(QProcess::ProcessError error)

@@ -122,8 +122,8 @@ ProfileManagerPrivate::ProfileManagerPrivate(const QString &aPrimaryPath,
         iSecondaryPath.chop(1);
     }
 
-    LOG_DEBUG("Primary profile path set to" << iPrimaryPath);
-    LOG_DEBUG("Secondary profile path set to" << iSecondaryPath);
+    qCDebug(lcButeoCore) << "Primary profile path set to" << iPrimaryPath;
+    qCDebug(lcButeoCore) << "Secondary profile path set to" << iSecondaryPath;
 }
 
 Profile *ProfileManagerPrivate::load(const QString &aName, const QString &aType)
@@ -144,7 +144,7 @@ Profile *ProfileManagerPrivate::load(const QString &aName, const QString &aType)
             QFile::remove(backupProfilePath);
         }
     } else {
-        LOG_DEBUG("Failed to load profile:" << aName);
+        qCDebug(lcButeoCore) << "Failed to load profile:" << aName;
     }
 
     return profile;
@@ -161,16 +161,16 @@ SyncLog *ProfileManagerPrivate::loadLog(const QString &aProfileName)
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly)) {
-        LOG_WARNING("Failed to open sync log file for reading:"
-                    << file.fileName());
+        qCWarning(lcButeoCore) << "Failed to open sync log file for reading:"
+                    << file.fileName();
         return 0;
     }
 
     QDomDocument doc;
     if (!doc.setContent(&file)) {
         file.close();
-        LOG_WARNING("Failed to parse XML from sync log file:"
-                    << file.fileName());
+        qCWarning(lcButeoCore) << "Failed to parse XML from sync log file:"
+                    << file.fileName();
         return 0;
     }
     file.close();
@@ -337,9 +337,9 @@ SyncProfile *ProfileManager::syncProfile(const QString &aName)
             syncProfile->setLog(log);
         }
     } else {
-        LOG_DEBUG("did not find a valid sync profile with the given name:" << aName);
+        qCDebug(lcButeoCore) << "did not find a valid sync profile with the given name:" << aName;
         if (p != 0) {
-            LOG_DEBUG("but found a profile of type:" << p->type() << "with the given name:" << aName);
+            qCDebug(lcButeoCore) << "but found a profile of type:" << p->type() << "with the given name:" << aName;
             delete p;
         }
     }
@@ -610,7 +610,7 @@ bool ProfileManagerPrivate::save(const Profile &aProfile)
 
     QDomDocument doc = constructProfileDocument(aProfile);
     if (doc.isNull()) {
-        LOG_WARNING("No profile data to write");
+        qCWarning(lcButeoCore) << "No profile data to write";
         return false;
     }
 
@@ -626,7 +626,7 @@ bool ProfileManagerPrivate::save(const Profile &aProfile)
 
     if (QFile::exists(oldProfilePath) &&
             !createBackup(oldProfilePath, backupPath)) {
-        LOG_WARNING("Failed to create profile backup");
+        qCWarning(lcButeoCore) << "Failed to create profile backup";
     }
 
     bool profileWritten = false;
@@ -634,7 +634,7 @@ bool ProfileManagerPrivate::save(const Profile &aProfile)
         QFile::remove(backupPath);
         profileWritten = true;
     } else {
-        LOG_WARNING("Failed to save profile:" << aProfile.name());
+        qCWarning(lcButeoCore) << "Failed to save profile:" << aProfile.name();
         profileWritten = false;
     }
 
@@ -653,7 +653,7 @@ Profile *ProfileManager::profileFromXml(const QString &aProfileAsXml)
             ProfileFactory pf;
             profile = pf.createProfile(doc.documentElement());
         } else {
-            LOG_WARNING("Cannot parse profile: " + error);
+            qCWarning(lcButeoCore) << "Cannot parse profile: " + error;
         }
     }
     return profile;
@@ -665,7 +665,7 @@ QString ProfileManager::updateProfile(const Profile &aProfile)
 
     // Don't save invalid profiles.
     if (aProfile.name().isEmpty() || aProfile.type().isEmpty()) {
-        LOG_WARNING("Malformed profile, missing name or type.");
+        qCWarning(lcButeoCore) << "Malformed profile, missing name or type.";
         return QString();
     }
 
@@ -695,14 +695,14 @@ QString ProfileManager::updateProfile(const Profile &aProfile)
 SyncProfile *ProfileManager::createTempSyncProfile (const QString &destAddress, bool &saveNewProfile)
 {
     FUNCTION_CALL_TRACE;
-    LOG_DEBUG("createTempSyncProfile(" << destAddress << ")");
+    qCDebug(lcButeoCore) << "createTempSyncProfile(" << destAddress << ")";
 
     if (destAddress.contains("USB")) { //USB - PCSUite no requirement to save profile
-        LOG_INFO("USB connect - pc");
+        qCInfo(lcButeoCore) << "USB connect - pc";
         SyncProfile *profile = new SyncProfile(PC_SYNC);
         profile->setBoolKey(KEY_HIDDEN, true);
         profile->setKey(KEY_DISPLAY_NAME, PC_SYNC);
-        LOG_DEBUG("USB connect does not require a sync profile to be created.");
+        qCDebug(lcButeoCore) << "USB connect does not require a sync profile to be created.";
         return profile;
     }
 
@@ -714,7 +714,7 @@ SyncProfile *ProfileManager::createTempSyncProfile (const QString &destAddress, 
         profileDisplayName = QString ("qtn_sync_dest_name_device_default");
     }
 
-    LOG_INFO("Profile Name :" << profileDisplayName);
+    qCInfo(lcButeoCore) << "Profile Name :" << profileDisplayName;
     SyncProfile *tProfile = syncProfile(BT_PROFILE_TEMPLATE);
     tProfile->setKey(KEY_DISPLAY_NAME, profileDisplayName);
     QStringList keys ;
@@ -743,7 +743,7 @@ void ProfileManager::enableStorages(Profile &aProfile,
     FUNCTION_CALL_TRACE;
 
     QMapIterator<QString, bool> i(aStorageMap);
-    LOG_INFO("ProfileManager::enableStorages");
+    qCInfo(lcButeoCore) << "ProfileManager::enableStorages";
     while (i.hasNext()) {
         i.next();
         Profile *profile = aProfile.subProfile(i.key(), Profile::TYPE_STORAGE);
@@ -755,7 +755,7 @@ void ProfileManager::enableStorages(Profile &aProfile,
                 }
             }
         } else {
-            LOG_WARNING("No storage profile by key :" << i.key());
+            qCWarning(lcButeoCore) << "No storage profile by key :" << i.key();
         }
     }
     return ;
@@ -768,7 +768,7 @@ void ProfileManager::setStoragesVisible(Profile &aProfile,
     FUNCTION_CALL_TRACE;
 
     QMapIterator<QString, bool> i(aStorageMap);
-    LOG_INFO("ProfileManager::enableStorages");
+    qCInfo(lcButeoCore) << "ProfileManager::enableStorages";
     while (i.hasNext()) {
         i.next();
         Profile *profile = aProfile.subProfile(i.key(), Profile::TYPE_STORAGE);
@@ -782,7 +782,7 @@ void ProfileManager::setStoragesVisible(Profile &aProfile,
                 }
             }
         } else {
-            LOG_WARNING("No storage profile by key :" << i.key());
+            qCWarning(lcButeoCore) << "No storage profile by key :" << i.key();
         }
     }
     return ;
@@ -826,12 +826,12 @@ bool ProfileManagerPrivate::remove(const QString &aName, const QString &aType)
                 QFile::remove(logFilePath);
             }
         } else {
-            LOG_DEBUG( "Cannot remove protected profile:" << aName );
+            qCDebug(lcButeoCore) << "Cannot remove protected profile:" << aName ;
         }
         delete p;
         p = 0;
     } else {
-        LOG_DEBUG( "Profile not found from the primary path, cannot remove:" << aName );
+        qCDebug(lcButeoCore) << "Profile not found from the primary path, cannot remove:" << aName ;
     }
 
     return success;
@@ -857,10 +857,10 @@ void ProfileManager::expand(Profile &aProfile)
                     loadedProfile = 0;
                 } else {
                     // No separate profile file for the sub-profile.
-                    LOG_DEBUG( "Referenced sub-profile not found:" <<
-                               sub->name() );
-                    LOG_DEBUG( "Referenced from:" << aProfile.name() <<
-                               aProfile.type() );
+                    qCDebug(lcButeoCore) << "Referenced sub-profile not found:" <<
+                               sub->name();
+                    qCDebug(lcButeoCore) << "Referenced from:" << aProfile.name() <<
+                               aProfile.type();
                 }
                 sub->setLoaded(true);
             }
@@ -887,8 +887,8 @@ bool ProfileManager::saveLog(const SyncLog &aLog)
     QFile file(fullPath + QDir::separator() + aLog.profileName() + LOG_EXT + FORMAT_EXT);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        LOG_WARNING("Failed to open sync log file for writing:"
-                    << file.fileName());
+        qCWarning(lcButeoCore) << "Failed to open sync log file for writing:"
+                    << file.fileName();
         return false;
     }
 
@@ -900,7 +900,7 @@ bool ProfileManager::saveLog(const SyncLog &aLog)
 
     QDomElement root = aLog.toXml(doc);
     if (root.isNull()) {
-        LOG_WARNING("Failed to convert sync log to XML");
+        qCWarning(lcButeoCore) << "Failed to convert sync log to XML";
         return false;
     }
 
@@ -919,7 +919,7 @@ void ProfileManager::saveRemoteTargetId(Profile &aProfile, const QString &aTarge
 {
     FUNCTION_CALL_TRACE;
 
-    LOG_DEBUG("saveRemoteTargetId :" << aTargetId);
+    qCDebug(lcButeoCore) << "saveRemoteTargetId :" << aTargetId;
     aProfile.setKey (KEY_REMOTE_ID, aTargetId);
     updateProfile(aProfile);
     //addProfile(aProfile);
@@ -950,7 +950,7 @@ bool ProfileManager::rename(const QString &aName, const QString &aNewName)
         }
     }
     if (false == ret) {
-        LOG_WARNING("Failed to rename profile" << aName);
+        qCWarning(lcButeoCore) << "Failed to rename profile" << aName;
     }
     return ret;
 }
@@ -996,7 +996,7 @@ bool ProfileManager::setSyncSchedule(QString aProfileId, QString aScheduleAsXml)
         delete profile;
         profile = nullptr;
     } else {
-        LOG_WARNING("Invalid Profile Supplied");
+        qCWarning(lcButeoCore) << "Invalid Profile Supplied";
     }
     return status;
 }
@@ -1015,13 +1015,13 @@ bool ProfileManagerPrivate::parseFile(const QString &aPath, QDomDocument &aDoc)
             file.close();
 
             if (!parsingOk) {
-                LOG_WARNING("Failed to parse profile XML: " << aPath);
+                qCWarning(lcButeoCore) << "Failed to parse profile XML: " << aPath;
             }
         } else {
-            LOG_WARNING("Failed to open profile file for reading:" << aPath);
+            qCWarning(lcButeoCore) << "Failed to open profile file for reading:" << aPath;
         }
     } else {
-        LOG_DEBUG("Profile file not found:" << aPath);
+        qCDebug(lcButeoCore) << "Profile file not found:" << aPath;
     }
 
 
@@ -1037,7 +1037,7 @@ QDomDocument ProfileManagerPrivate::constructProfileDocument(const Profile &aPro
     QDomElement root = aProfile.toXml(doc);
 
     if (root.isNull()) {
-        LOG_WARNING("Failed to convert profile to XML");
+        qCWarning(lcButeoCore) << "Failed to convert profile to XML";
     } else {
         QDomProcessingInstruction xmlHeading =
             doc.createProcessingInstruction("xml",
@@ -1054,7 +1054,7 @@ bool ProfileManagerPrivate::writeProfileFile(const QString &aProfilePath,
                                              const QDomDocument &aDoc)
 {
     FUNCTION_CALL_TRACE;
-    LOG_WARNING("writeProfileFile() called, forcing disk write:" << aProfilePath);
+    qCWarning(lcButeoCore) << "writeProfileFile() called, forcing disk write:" << aProfilePath;
 
     QFile file(aProfilePath);
     bool profileWritten = false;
@@ -1065,7 +1065,7 @@ bool ProfileManagerPrivate::writeProfileFile(const QString &aProfilePath,
         file.close();
         profileWritten = true;
     } else {
-        LOG_WARNING("Failed to open profile file for writing:" << aProfilePath);
+        qCWarning(lcButeoCore) << "Failed to open profile file for writing:" << aProfilePath;
         profileWritten = false;
     }
 
@@ -1078,16 +1078,16 @@ void ProfileManagerPrivate::restoreBackupIfFound(const QString &aProfilePath,
     //FUNCTION_CALL_TRACE;
 
     if (QFile::exists(aBackupPath)) {
-        LOG_WARNING("Profile backup file found. The actual profile may be corrupted.");
+        qCWarning(lcButeoCore) << "Profile backup file found. The actual profile may be corrupted.";
 
         QDomDocument doc;
         if (parseFile(aBackupPath, doc)) {
-            LOG_DEBUG("Restoring profile from backup");
+            qCDebug(lcButeoCore) << "Restoring profile from backup";
             QFile::remove(aProfilePath);
             QFile::copy(aBackupPath, aProfilePath);
         } else {
-            LOG_WARNING("Failed to parse backup file");
-            LOG_DEBUG("Removing backup file");
+            qCWarning(lcButeoCore) << "Failed to parse backup file";
+            qCDebug(lcButeoCore) << "Removing backup file";
             QFile::remove(aBackupPath);
         }
     }
@@ -1120,7 +1120,7 @@ QString ProfileManagerPrivate::findProfileFile(const QString &aName, const QStri
 bool ProfileManagerPrivate::profileExists(const QString &aProfileId, const QString &aType)
 {
     QString profileFile = iPrimaryPath + QDir::separator() + aType + QDir::separator() + aProfileId + FORMAT_EXT;
-    LOG_DEBUG("profileFile:" << profileFile);
+    qCDebug(lcButeoCore) << "profileFile:" << profileFile;
     return QFile::exists(profileFile);
 }
 
@@ -1129,7 +1129,7 @@ void ProfileManager::addRetriesInfo(const SyncProfile *profile)
     FUNCTION_CALL_TRACE;
     if (profile) {
         if (profile->hasRetries() && !iSyncRetriesInfo.contains(profile->name())) {
-            LOG_DEBUG("syncretries : retries info present for profile" << profile->name());
+            qCDebug(lcButeoCore) << "syncretries : retries info present for profile" << profile->name();
             iSyncRetriesInfo[profile->name()] = profile->retryIntervals();
         }
     }
@@ -1144,8 +1144,8 @@ QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
             !iSyncRetriesInfo[aProfile->name()].isEmpty()) {
         quint32 mins = iSyncRetriesInfo[aProfile->name()].takeFirst();
         nextRetryInterval = QDateTime::currentDateTime().addSecs(mins * 60);
-        LOG_DEBUG("syncretries : retry for profile" << aProfile->name() << "in" << mins << "minutes");
-        LOG_DEBUG("syncretries :" << iSyncRetriesInfo[aProfile->name()].count() << "attempts remain");
+        qCDebug(lcButeoCore) << "syncretries : retry for profile" << aProfile->name() << "in" << mins << "minutes";
+        qCDebug(lcButeoCore) << "syncretries :" << iSyncRetriesInfo[aProfile->name()].count() << "attempts remain";
     }
     return nextRetryInterval;
 }
@@ -1155,6 +1155,6 @@ void ProfileManager::retriesDone(const QString &aProfileName)
     FUNCTION_CALL_TRACE;
     if (iSyncRetriesInfo.contains(aProfileName)) {
         iSyncRetriesInfo.remove(aProfileName);
-        LOG_DEBUG("syncretries : retry success for" << aProfileName);
+        qCDebug(lcButeoCore) << "syncretries : retry success for" << aProfileName;
     }
 }

@@ -254,7 +254,7 @@ void TargetResults::addLocalDetails(const QString &aUid,
                                     const QString &aMessage)
 {
     if (aUid.isEmpty()) {
-        LOG_WARNING("Cannot add details with empty uid.");
+        qCWarning(lcButeoCore) << "Cannot add details with empty uid.";
         return;
     }
     switch (aOperation) {
@@ -282,7 +282,7 @@ void TargetResults::addRemoteDetails(const QString &aUid,
                                      const QString &aMessage)
 {
     if (aUid.isEmpty()) {
-        LOG_WARNING("Cannot add details with empty uid.");
+        qCWarning(lcButeoCore) << "Cannot add details with empty uid.";
         return;
     }
     switch (aOperation) {

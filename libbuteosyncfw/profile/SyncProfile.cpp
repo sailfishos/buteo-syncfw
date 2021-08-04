@@ -237,7 +237,7 @@ QDateTime SyncProfile::lastSyncTime() const
         lastSync = d_ptr->iLog->lastResults()->syncTime();
     }
 
-    LOG_DEBUG("lastSync:" << lastSync);
+    qCDebug(lcButeoCore) << "lastSync:" << lastSync;
     return lastSync;
 }
 
@@ -558,7 +558,7 @@ quint32 SyncProfile::syncOnChangeAfter() const
         }
     }
     //}
-    LOG_DEBUG("Sync on change after time from profile :" << syncOnChangeAfterTime);
+    qCDebug(lcButeoCore) << "Sync on change after time from profile :" << syncOnChangeAfterTime;
     return syncOnChangeAfterTime;
 }
 
@@ -589,8 +589,8 @@ void SyncProfile::setSyncDirection(SyncDirection aDirection)
     if (client) {
         client->setKey(KEY_SYNC_DIRECTION, dirStr);
     } else {
-        LOG_WARNING("Profile" << name() << "has no client profile");
-        LOG_WARNING("Failed to set sync direction");
+        qCWarning(lcButeoCore) << "Profile" << name() << "has no client profile";
+        qCWarning(lcButeoCore) << "Failed to set sync direction";
     }
 }
 
@@ -638,8 +638,8 @@ void SyncProfile::setConflictResolutionPolicy(ConflictResolutionPolicy aPolicy)
     if (client) {
         client->setKey(KEY_CONFLICT_RESOLUTION_POLICY, policyStr);
     } else {
-        LOG_WARNING("Profile" << name() << "has no client profile");
-        LOG_WARNING("Failed to set conflict resolution policy");
+        qCWarning(lcButeoCore) << "Profile" << name() << "has no client profile";
+        qCWarning(lcButeoCore) << "Failed to set conflict resolution policy";
     }
 }
 

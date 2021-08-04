@@ -290,13 +290,13 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
     QDateTime scheduleConfiguredTime = d_ptr->iScheduleConfiguredTime;
     QDateTime now = QDateTime::currentDateTime();
 
-    LOG_DEBUG("aPrevSync" << aPrevSync.toString() << "Last Configured Time " << scheduleConfiguredTime.toString()
-              << "CurrentDateTime" << now);
+    qCDebug(lcButeoCore) << "aPrevSync" << aPrevSync.toString() << "Last Configured Time " << scheduleConfiguredTime.toString()
+              << "CurrentDateTime" << now;
 
     if (d_ptr->iTime.isValid() && d_ptr->iDays != SyncSchedule::NoDays) {
         // The sync time is defined explicitly (for ex. every Mon, Wed, at
         // 5:30PM). So choose the next applicable day from now.
-        LOG_DEBUG("Explicit sync time defined.");
+        qCDebug(lcButeoCore) << "Explicit sync time defined.";
         nextSync.setTime(d_ptr->iTime);
         nextSync.setDate(now.date());
         if (now.time() > d_ptr->iTime) {
@@ -305,7 +305,7 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
         d_ptr->adjustDate(nextSync, d_ptr->iDays);
     } else if (d_ptr->iInterval > 0 && d_ptr->iEnabled) {
         // Sync time is defined in terms of interval (for ex. every 15 minutes)
-        LOG_DEBUG("Sync interval defined as" << d_ptr->iInterval);
+        qCDebug(lcButeoCore) << "Sync interval defined as" << d_ptr->iInterval;
 
         // Last sync time is not available/valid (Could happen if the device
         // is shut down for an extended period before the first sync can be
@@ -316,11 +316,11 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
         reference = (aPrevSync.isValid()) ? aPrevSync : scheduleConfiguredTime;
         if (reference > now) {
             // If the clock was rolled back...
-            LOG_DEBUG("Setting reference to now");
+            qCDebug(lcButeoCore) << "Setting reference to now";
             reference = now;
         } else if (!reference.isValid()) {
             //It means configuring first time account. Need to sync now only.
-            LOG_DEBUG("Reference is not valid returning current date time");
+            qCDebug(lcButeoCore) << "Reference is not valid returning current date time";
             return QDateTime::currentDateTime();
         }
 
@@ -329,7 +329,7 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             nextSync.setTime(d_ptr->iTime);
 
             if (QDateTime::currentDateTime().secsTo(nextSync) < 0) {
-                LOG_DEBUG("Named interval is in the past, so sync now");
+                qCDebug(lcButeoCore) << "Named interval is in the past, so sync now";
                 // The next sync time has passed, so schedule it to happen shortly.
                 return QDateTime::currentDateTime();
             }
@@ -341,8 +341,8 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             nextSync.setDate(date);
             nextSync.setTime(d_ptr->iTime);
             if (now.secsTo(nextSync) < 0) {
-                LOG_DEBUG("Named interval to" << nextSync
-                          << "is in the past, so use date for next month instead");
+                qCDebug(lcButeoCore) << "Named interval to" << nextSync
+                          << "is in the past, so use date for next month instead";
                 // The next sync time has passed, so schedule it in the month following the
                 // current date.
                 while (nextSync < now) {
@@ -354,16 +354,16 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             const int secs = reference.secsTo(now) + 1;
             const int numberOfIntervals = (secs / (d_ptr->iInterval * 60))
                                           + (((secs % (d_ptr->iInterval * 60)) != 0) ? 1 : 0);
-            LOG_DEBUG("numberOfInterval:" << numberOfIntervals << "interval time" << d_ptr->iInterval);
+            qCDebug(lcButeoCore) << "numberOfInterval:" << numberOfIntervals << "interval time" << d_ptr->iInterval;
             nextSync = reference.addSecs(numberOfIntervals * d_ptr->iInterval * 60);
         }
     }
 
-    LOG_DEBUG("next non rush hour sync is at:: " << nextSync);
+    qCDebug(lcButeoCore) << "next non rush hour sync is at:: " << nextSync;
 
     // Rush is controlled by a external process(e.g always-up-to-date), buteo controls the switch between rush and offRush
     if (d_ptr->iRushEnabled && d_ptr->iExternalRushEnabled) {
-        LOG_DEBUG("Rush Interval is controlled by a external process.");
+        qCDebug(lcButeoCore) << "Rush Interval is controlled by a external process.";
         // Set next sync to rush end
         const bool isRush(d_ptr->isRush(now));
         QDateTime nextSyncRush;
@@ -373,8 +373,8 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             nextSyncRush = nextSyncRush.addDays(1);
         }
         d_ptr->adjustDate(nextSyncRush, d_ptr->iRushDays);
-        LOG_DEBUG("Rush controlled by external process, next scheduled sync at rush " << (isRush ? "end" : "begin") <<
-                  nextSyncRush.toString());
+        qCDebug(lcButeoCore) << "Rush controlled by external process, next scheduled sync at rush " << (isRush ? "end" : "begin") <<
+                  nextSyncRush.toString();
         // Use next sync time calculated with rush settings if necessary.
         if (nextSyncRush.isValid()) {
             // check to see if we should use it, or instead use the next non-rush sync time.
@@ -387,27 +387,27 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
                 // doesn't fall within the rush period itself or the
                 // next rush sync time is in the next rush period.
                 // we should use the non-rush schedule.
-                LOG_DEBUG("Using non-rush time as the next sync time");
+                qCDebug(lcButeoCore) << "Using non-rush time as the next sync time";
             } else {
                 nextSync = nextSyncRush;
             }
         }
     } else if (d_ptr->iRushEnabled && d_ptr->iRushInterval > 0 && !d_ptr->iExternalRushEnabled) {
-        LOG_DEBUG("Calculating next sync time with rush settings. Rush Interval is " << d_ptr->iRushInterval);
+        qCDebug(lcButeoCore) << "Calculating next sync time with rush settings. Rush Interval is " << d_ptr->iRushInterval;
         // Calculate next sync time with rush settings.
         QDateTime nextSyncRush;
         bool nextSyncRushInNextRushPeriod = false;
         if (d_ptr->isRush(now)) {
-            LOG_DEBUG("Current time is in rush");
+            qCDebug(lcButeoCore) << "Current time is in rush";
             // We are in rush hour
             if (aPrevSync.isValid()) {
-                LOG_DEBUG("PrevSync is valid and isRush true.. ");
+                qCDebug(lcButeoCore) << "PrevSync is valid and isRush true.. ";
                 nextSyncRush = aPrevSync.addSecs(d_ptr->iRushInterval * 60);
                 if ((nextSyncRush < now) || (aPrevSync > now)) {
                     // Use current time if the previous sync time is too old, or
                     // the clock has been rolled back
                     nextSyncRush = now.addSecs(d_ptr->iRushInterval * 60);
-                    LOG_DEBUG("nextsyncRush based on aPrevSync" << nextSyncRush);
+                    qCDebug(lcButeoCore) << "nextsyncRush based on aPrevSync" << nextSyncRush;
                 }
             } else {
                 nextSyncRush = now.addSecs(d_ptr->iRushInterval * 60);
@@ -417,7 +417,7 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
                 // If the calculated rush time does not lie in the rush
                 // interval, choose the next available rush time as the begin
                 // time for the rush interval
-                LOG_DEBUG("isRush False");
+                qCDebug(lcButeoCore) << "isRush False";
                 nextSyncRushInNextRushPeriod = true;
                 nextSyncRush.setTime(d_ptr->iRushBegin);
                 if (nextSyncRush < now) {
@@ -426,7 +426,7 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
                 d_ptr->adjustDate(nextSyncRush, d_ptr->iRushDays);
             }
         } else {
-            LOG_DEBUG("Current Time is Not Rush");
+            qCDebug(lcButeoCore) << "Current Time is Not Rush";
             nextSyncRush.setTime(d_ptr->iRushBegin);
             nextSyncRush.setDate(now.date());
             if (now.time() > d_ptr->iRushBegin) {
@@ -435,7 +435,7 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             d_ptr->adjustDate(nextSyncRush, d_ptr->iRushDays);
         }
 
-        LOG_DEBUG("nextSyncRush" << nextSyncRush.toString());
+        qCDebug(lcButeoCore) << "nextSyncRush" << nextSyncRush.toString();
         // Use next sync time calculated with rush settings if necessary.
         if (nextSyncRush.isValid()) {
             // check to see if we should use it, or instead use the next non-rush sync time.
@@ -448,10 +448,10 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
                 // doesn't fall within the rush period itself or the
                 // next rush sync time is in the next rush period.
                 // we should use the non-rush schedule.
-                LOG_DEBUG("Using non-rush time as the next sync time");
+                qCDebug(lcButeoCore) << "Using non-rush time as the next sync time";
             } else {
                 // we should use the rush schedule.
-                LOG_DEBUG("Using rush time as the next sync time");
+                qCDebug(lcButeoCore) << "Using rush time as the next sync time";
                 nextSync = nextSyncRush;
             }
         }
@@ -460,11 +460,11 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
     //For safer side checking nextSyncTime should not be behind currentDateTime.
     if (QDateTime::currentDateTime().secsTo(nextSync) < 0) {
         //If it is the case making it to currentTime.
-        LOG_WARNING("Something went wrong in nextSyncTime calculation resetting to current time");
+        qCWarning(lcButeoCore) << "Something went wrong in nextSyncTime calculation resetting to current time";
         nextSync = QDateTime::currentDateTime();
     }
 
-    LOG_DEBUG("nextSync" << nextSync.toString());
+    qCDebug(lcButeoCore) << "nextSync" << nextSync.toString();
     return nextSync;
 }
 
@@ -472,7 +472,7 @@ QDateTime SyncSchedule::nextRushSwitchTime(const QDateTime &aFromTime) const
 {
     if (rushEnabled() && scheduleEnabled()) {
         if (d_ptr->iRushInterval == d_ptr->iInterval && !d_ptr->iExternalRushEnabled) {
-            LOG_DEBUG("Rush interval is the same as normal interval no need to switch");
+            qCDebug(lcButeoCore) << "Rush interval is the same as normal interval no need to switch";
             return QDateTime();
         }
         if (d_ptr->isRush(aFromTime)) {
@@ -494,7 +494,7 @@ QDateTime SyncSchedule::nextRushSwitchTime(const QDateTime &aFromTime) const
 
 bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDateTime &aPreviousSyncTime) const
 {
-    LOG_DEBUG("Check if sync is scheduled against" << aActualDateTime.toString());
+    qCDebug(lcButeoCore) << "Check if sync is scheduled against" << aActualDateTime.toString();
 
     // Simple case, aDateTime is the defined sync time.
     if (d_ptr->iTime.isValid() && d_ptr->iDays != SyncSchedule::NoDays) {
@@ -519,13 +519,13 @@ bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDate
     }
 
     if (!scheduleEnabled() || !d_ptr->iInterval) {
-        LOG_DEBUG("Scheduled by interval: schedule is disabled or not syncing by interval");
+        qCDebug(lcButeoCore) << "Scheduled by interval: schedule is disabled or not syncing by interval";
         return false;
     }
 
     QDateTime reference = (aPreviousSyncTime.isValid()) ? aPreviousSyncTime : d_ptr->iScheduleConfiguredTime;
     if (!reference.isValid()) {
-        LOG_DEBUG("Schedule has no reference past date, sync now");
+        qCDebug(lcButeoCore) << "Schedule has no reference past date, sync now";
         return true;
     }
 

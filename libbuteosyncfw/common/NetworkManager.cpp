@@ -105,9 +105,9 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
 
     // check connection status on startup
     idleRefresh();
-    LOG_INFO("Network status:");
-    LOG_INFO("\tOnline::" << m_isOnline);
-    LOG_INFO("\tConnection::" << m_connectionType);
+    qCInfo(lcButeoCore) << "Network status:";
+    qCInfo(lcButeoCore) << "\tOnline::" << m_isOnline;
+    qCInfo(lcButeoCore) << "\tConnection::" << m_connectionType;
 
     m_sessionTimer = new QTimer(this);
     m_sessionTimer->setSingleShot(true);
@@ -139,7 +139,7 @@ void NetworkManager::connectSession(bool connectInBackground /* = false*/)
 {
     FUNCTION_CALL_TRACE;
     if (m_isSessionActive) {
-        LOG_DEBUG("Network session already active, ignoring connect call");
+        qCDebug(lcButeoCore) << "Network session already active, ignoring connect call";
         m_refCount++;
         emit connectionSuccess();
         return;
@@ -168,7 +168,7 @@ void NetworkManager::sessionConnectionTimeout()
 {
     if (!m_errorEmitted && m_networkSession) {
         if (!m_networkSession->isOpen()) {
-            LOG_WARNING("No network reply received after 10 seconds, emitting session error.");
+            qCWarning(lcButeoCore) << "No network reply received after 10 seconds, emitting session error.";
             slotSessionError(m_networkSession->error());
         }
     }
@@ -207,7 +207,7 @@ void NetworkManager::idleRefresh()
     }
 
     const Sync::InternetConnectionType convertedConnectionType = convertNetworkConnectionType(connectionType);
-    LOG_INFO("New network state:" << isOnline << " New type: " << bearerTypeName << "(" << convertedConnectionType << ")");
+    qCInfo(lcButeoCore) << "New network state:" << isOnline << " New type: " << bearerTypeName << "(" << convertedConnectionType << ")";
     if (isOnline != m_isOnline || convertedConnectionType != m_connectionType) {
         m_isOnline = isOnline;
         m_connectionType = convertedConnectionType;
@@ -236,20 +236,20 @@ void NetworkManager::slotSessionState(QNetworkSession::State status)
     FUNCTION_CALL_TRACE;
     switch (status) {
     case QNetworkSession::Invalid:
-        LOG_WARNING("QNetworkSession::Invalid");
+        qCWarning(lcButeoCore) << "QNetworkSession::Invalid";
         m_isSessionActive = false;
         break;
     case QNetworkSession::NotAvailable:
-        LOG_WARNING("QNetworkSession::NotAvailable");
+        qCWarning(lcButeoCore) << "QNetworkSession::NotAvailable";
         m_isSessionActive = false;
         emit connectionError();
         break;
     case QNetworkSession::Connecting:
-        LOG_DEBUG("QNetworkSession::Connecting");
+        qCDebug(lcButeoCore) << "QNetworkSession::Connecting";
         m_isSessionActive = false;
         break;
     case QNetworkSession::Connected:
-        LOG_WARNING("QNetworkSession::Connected");
+        qCWarning(lcButeoCore) << "QNetworkSession::Connected";
         if (m_networkSession->isOpen() &&
                 m_networkSession->state() == QNetworkSession::Connected) {
             m_isSessionActive = true;
@@ -259,19 +259,19 @@ void NetworkManager::slotSessionState(QNetworkSession::State status)
         }
         break;
     case QNetworkSession::Closing:
-        LOG_WARNING("QNetworkSession::Closing");
+        qCWarning(lcButeoCore) << "QNetworkSession::Closing";
         m_isSessionActive = false;
         break;
     case QNetworkSession::Disconnected:
-        LOG_DEBUG("QNetworkSession::Disconnected");
+        qCDebug(lcButeoCore) << "QNetworkSession::Disconnected";
         m_isSessionActive = false;
         break;
     case QNetworkSession::Roaming:
-        LOG_WARNING("QNetworkSession::Roaming");
+        qCWarning(lcButeoCore) << "QNetworkSession::Roaming";
         m_isSessionActive = false;
         break;
     default:
-        LOG_WARNING("QNetworkSession:: Unknown status change");
+        qCWarning(lcButeoCore) << "QNetworkSession:: Unknown status change";
         m_isSessionActive = false;
         break;
     }
@@ -291,27 +291,27 @@ void NetworkManager::slotSessionError(QNetworkSession::SessionError error)
 
     switch (error) {
     case QNetworkSession::UnknownSessionError:
-        LOG_WARNING("QNetworkSession::UnknownSessionError");
+        qCWarning(lcButeoCore) << "QNetworkSession::UnknownSessionError";
         emit connectionError();
         break;
     case QNetworkSession::SessionAbortedError:
-        LOG_DEBUG("QNetworkSession::SessionAbortedError");
+        qCDebug(lcButeoCore) << "QNetworkSession::SessionAbortedError";
         emit connectionError();
         break;
     case QNetworkSession::RoamingError:
-        LOG_WARNING("QNetworkSession::RoamingError");
+        qCWarning(lcButeoCore) << "QNetworkSession::RoamingError";
         emit connectionError();
         break;
     case QNetworkSession::OperationNotSupportedError:
-        LOG_WARNING("QNetworkSession::OperationNotSupportedError");
+        qCWarning(lcButeoCore) << "QNetworkSession::OperationNotSupportedError";
         emit connectionError();
         break;
     case QNetworkSession::InvalidConfigurationError:
-        LOG_WARNING("QNetworkSession::InvalidConfigurationError");
+        qCWarning(lcButeoCore) << "QNetworkSession::InvalidConfigurationError";
         emit connectionError();
         break;
     default:
-        LOG_WARNING("QNetworkSession:: Invalid error code");
+        qCWarning(lcButeoCore) << "QNetworkSession:: Invalid error code";
         emit connectionError();
         break;
     }
