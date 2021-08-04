@@ -44,7 +44,7 @@ SyncAlarmInventory::SyncAlarmInventory():
 
 bool SyncAlarmInventory::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     static unsigned connectionNumber = 0;
     iConnectionName = ALARM_CONNECTION_NAME + QString::number(connectionNumber++);
@@ -84,7 +84,7 @@ bool SyncAlarmInventory::init()
 
 SyncAlarmInventory::~SyncAlarmInventory()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iDbHandle.close();
     iDbHandle = QSqlDatabase();
@@ -96,7 +96,7 @@ SyncAlarmInventory::~SyncAlarmInventory()
 
 int SyncAlarmInventory::addAlarm(QDateTime alarmDate)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Check if alarmDate < QDateTime::currentDateTime()
     if (QDateTime::currentDateTime().secsTo(alarmDate) < 0) {
@@ -152,7 +152,7 @@ int SyncAlarmInventory::addAlarm(QDateTime alarmDate)
 
 bool SyncAlarmInventory::removeAlarm(int alarmId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (alarmId <= 0)
         return false;
@@ -162,7 +162,7 @@ bool SyncAlarmInventory::removeAlarm(int alarmId)
 
 void SyncAlarmInventory::removeAllAlarms()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QSqlQuery deleteAllQuery(QString("DELETE FROM alarms"), iDbHandle);
     qCDebug(lcButeoMsyncd) << "SQL Query::" << deleteAllQuery.lastQuery();
@@ -173,7 +173,7 @@ void SyncAlarmInventory::removeAllAlarms()
 
 void SyncAlarmInventory::timerTriggered()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Decrement the alarm counter
     triggerCount--;
@@ -215,7 +215,7 @@ void SyncAlarmInventory::timerTriggered()
 
 bool SyncAlarmInventory::deleteAlarmFromDb(int alarmId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QSqlQuery removeQuery (iDbHandle);
     removeQuery.prepare("DELETE FROM alarms WHERE alarmid=:alarmid");
@@ -230,7 +230,7 @@ bool SyncAlarmInventory::deleteAlarmFromDb(int alarmId)
 
 int SyncAlarmInventory::addAlarmToDb(QDateTime timeStamp)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QSqlQuery insertQuery(iDbHandle);
     insertQuery.prepare("INSERT INTO alarms(synctime) VALUES(:synctime)");

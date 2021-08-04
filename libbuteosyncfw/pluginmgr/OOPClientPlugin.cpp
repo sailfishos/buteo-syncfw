@@ -34,7 +34,7 @@ OOPClientPlugin::OOPClientPlugin(const QString &aPluginName,
                                  QProcess &aProcess)
     : ClientPlugin(aPluginName, aProfile, aCbInterface), iDone(false)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
@@ -89,7 +89,7 @@ OOPClientPlugin::~OOPClientPlugin()
 
 bool OOPClientPlugin::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QDBusPendingReply<bool> reply = iOopPluginIface->init();
     reply.waitForFinished();
     if (!reply.isValid()) {
@@ -102,7 +102,7 @@ bool OOPClientPlugin::init()
 
 bool OOPClientPlugin::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->uninit();
     reply.waitForFinished();
@@ -116,7 +116,7 @@ bool OOPClientPlugin::uninit()
 
 bool OOPClientPlugin::startSync()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->startSync();
     reply.waitForFinished();
@@ -130,7 +130,7 @@ bool OOPClientPlugin::startSync()
 
 void OOPClientPlugin::abortSync(Sync::SyncStatus aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<void> reply = iOopPluginIface->abortSync((uchar) aStatus);
     reply.waitForFinished();
@@ -140,7 +140,7 @@ void OOPClientPlugin::abortSync(Sync::SyncStatus aStatus)
 
 bool OOPClientPlugin::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->cleanUp();
     reply.waitForFinished();
@@ -154,7 +154,7 @@ bool OOPClientPlugin::cleanUp()
 
 SyncResults OOPClientPlugin::getSyncResults() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<QString> reply = iOopPluginIface->getSyncResults();
     reply.waitForFinished();
@@ -178,7 +178,7 @@ SyncResults OOPClientPlugin::getSyncResults() const
 
 void OOPClientPlugin::connectivityStateChanged(Sync::ConnectivityType aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<void> reply = iOopPluginIface->connectivityStateChanged(aType, aState);
     reply.waitForFinished();

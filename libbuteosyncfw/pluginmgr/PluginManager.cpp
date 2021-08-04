@@ -95,7 +95,7 @@ PluginManager::PluginManager()
 PluginManager::PluginManager(const QString &aPluginPath)
     : iPluginPath(aPluginPath)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPluginPath.isEmpty() && !iPluginPath.endsWith('/')) {
         iPluginPath.append('/');
@@ -113,7 +113,7 @@ PluginManager::PluginManager(const QString &aPluginPath)
 
 PluginManager::~PluginManager()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     for (int i = 0; i < iLoadedDlls.count(); ++i) {
         iLoadedDlls[i].cleanUp();
@@ -122,7 +122,7 @@ PluginManager::~PluginManager()
 
 StorageChangeNotifierPlugin *PluginManager::createStorageChangeNotifier(const QString &aStorageName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iStorageChangeNotifierMaps.contains(aStorageName)) {
         qCCritical(lcButeoCore) << "Library for the storage change notifier" << aStorageName << "does not exist" ;
@@ -154,7 +154,7 @@ StorageChangeNotifierPlugin *PluginManager::createStorageChangeNotifier(const QS
 
 void PluginManager::destroyStorageChangeNotifier(StorageChangeNotifierPlugin *aPlugin)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aPlugin == 0)
         return;
@@ -171,7 +171,7 @@ void PluginManager::destroyStorageChangeNotifier(StorageChangeNotifierPlugin *aP
 
 StoragePlugin *PluginManager::createStorage(const QString &aPluginName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iStorageMaps.contains(aPluginName)) {
         qCCritical(lcButeoCore) << "Library for the storage" << aPluginName << "does not exist" ;
@@ -203,7 +203,7 @@ StoragePlugin *PluginManager::createStorage(const QString &aPluginName)
 
 void PluginManager::destroyStorage(StoragePlugin *aPlugin)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aPlugin == 0)
         return;
@@ -222,7 +222,7 @@ ClientPlugin *PluginManager::createClient(const QString &aPluginName,
                                           const SyncProfile &aProfile,
                                           PluginCbInterface *aCbInterface)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iClientMaps.contains(aPluginName) &&
             !iOopClientMaps.contains(aPluginName)) {
@@ -272,7 +272,7 @@ ClientPlugin *PluginManager::createClient(const QString &aPluginName,
 
 void PluginManager::destroyClient(ClientPlugin *aPlugin)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aPlugin == 0)
         return;
@@ -301,7 +301,7 @@ ServerPlugin *PluginManager::createServer(const QString &aPluginName,
                                           const Profile &aProfile,
                                           PluginCbInterface *aCbInterface)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iServerMaps.contains(aPluginName) &&
             !iOoPServerMaps.contains(aPluginName)) {
@@ -354,7 +354,7 @@ ServerPlugin *PluginManager::createServer(const QString &aPluginName,
 
 void PluginManager::destroyServer(ServerPlugin *aPlugin)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aPlugin == 0)
         return;
@@ -382,7 +382,7 @@ void PluginManager::destroyServer(ServerPlugin *aPlugin)
 void PluginManager::loadPluginMaps(const QString &pluginDirPath, const QString &aFilter,
                                    QMap<QString, QString> &aTargetMap)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDir pluginDirectory(pluginDirPath);
 
@@ -411,7 +411,7 @@ QProcess *PluginManager::startOOPPlugin(const QString &aPluginName,
                                         const QString &aProfileName,
                                         const QString &aPluginFilePath)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     static const QString exePath = "/usr/libexec/buteo-oopp-runner";
 
@@ -485,7 +485,7 @@ QProcess *PluginManager::startOOPPlugin(const QString &aPluginName,
 
 void PluginManager::stopOOPPlugin(const QString &aPath)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QProcess *process = nullptr;
 
@@ -512,7 +512,7 @@ void PluginManager::stopOOPPlugin(const QString &aPath)
 
 void PluginManager::onProcessFinished(int exitCode, QProcess::ExitStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QProcess *process = (QProcess *)sender();
     qCDebug(lcButeoCore) << "Process " << process->program() << " finished with exit code" << exitCode ;

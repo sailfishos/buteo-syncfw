@@ -10,12 +10,12 @@ SyncOnChange::SyncOnChange() :
     iStorageChangeNotifier(new StorageChangeNotifier()),
     iSOCScheduler(0)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 SyncOnChange::~SyncOnChange()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QStringList storages;
 
     disable();
@@ -33,7 +33,7 @@ bool SyncOnChange::enable(const QHash<QString, QList<SyncProfile *> > &aSOCStora
                           PluginManager *aPluginManager,
                           QStringList &aFailedStorages)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool enabled = false;
     QStringList storages;
 
@@ -55,7 +55,7 @@ bool SyncOnChange::enable(const QHash<QString, QList<SyncProfile *> > &aSOCStora
 
 void SyncOnChange::enable()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (iStorageChangeNotifier) {
         QStringList aFailedStorages;
         bool enabled = iStorageChangeNotifier->startListen(aFailedStorages);
@@ -70,19 +70,19 @@ void SyncOnChange::enable()
 
 void SyncOnChange::disable()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iStorageChangeNotifier->stopListen();
 }
 
 void SyncOnChange::disableNext()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iStorageChangeNotifier->stopListen(true);
 }
 
 void SyncOnChange::cleanup(const QString &aStorageName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QList<SyncProfile *> profilesList;
 
     if (iSOCStorageMap.contains(aStorageName)) {
@@ -97,7 +97,7 @@ void SyncOnChange::cleanup(const QString &aStorageName)
 
 QStringList SyncOnChange::getSOCStorageNames()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QStringList storages;
 
     for (QHash<QString, QList<SyncProfile *> >::const_iterator storageNameItr = iSOCStorageMap.constBegin();
@@ -109,7 +109,7 @@ QStringList SyncOnChange::getSOCStorageNames()
 
 void SyncOnChange::sync(QString aStorageName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QList<SyncProfile *> profilesList;
 
     if (iSOCStorageMap.contains(aStorageName)) {
@@ -123,7 +123,7 @@ void SyncOnChange::sync(QString aStorageName)
 
 void SyncOnChange::addProfile(const QString &aStorageName, SyncProfile *aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool found = false;
     QList<SyncProfile *> profilesList = iSOCStorageMap.value(aStorageName);
     for (QList<SyncProfile *>::iterator profileItr = profilesList.begin();

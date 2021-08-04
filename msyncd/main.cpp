@@ -32,7 +32,6 @@
 #include <pwd.h>
 #include <unistd.h>
 
-#include "LogMacros.h"
 #include "Logger.h"
 #include "synchronizer.h"
 #include "SyncSigHandler.h"
@@ -50,11 +49,6 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     // http://bugreports.qt.nokia.com/browse/QTBUG-11413
     QDBusConnection::sessionBus();
     QDBusConnection::systemBus();
-
-    // Initialize the logger
-    Buteo::Logger::instance();
-
-    qCDebug(lcButeoMsyncd) << "Starting Log At :"  << QDateTime::currentDateTime() ;
 
     Buteo::Synchronizer *synchronizer = new Buteo::Synchronizer(&app);
     if (synchronizer == 0) {
@@ -113,10 +107,6 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     delete sigHandler;
     sigHandler = 0;
-
-    qCDebug(lcButeoMsyncd) << "Stopping logger";
-
-    Buteo::Logger::deleteInstance();
 
     qDebug() << "Exiting program";
 

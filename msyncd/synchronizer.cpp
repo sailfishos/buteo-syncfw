@@ -86,7 +86,7 @@ Synchronizer::Synchronizer(QCoreApplication *aApplication)
         iBatteryInfo(new BatteryInfo)
 {
     iSettings = g_settings_new_with_path("com.meego.msyncd", "/com/meego/msyncd/");
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     this->setParent(aApplication);
 
     iProfileChangeTriggerTimer.setSingleShot(true);
@@ -96,7 +96,7 @@ Synchronizer::Synchronizer(QCoreApplication *aApplication)
 
 Synchronizer::~Synchronizer()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete iSyncUIInterface;
     iSyncUIInterface = nullptr;
     g_object_unref(iSettings);
@@ -105,7 +105,7 @@ Synchronizer::~Synchronizer()
 
 bool Synchronizer::initialize()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Starting msyncd";
 
@@ -203,7 +203,7 @@ bool Synchronizer::initialize()
 
 void Synchronizer::enableSOCSlot(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
     if (profile && profile->isSOCProfile()) {
         if (iSOCEnabled) {
@@ -231,7 +231,7 @@ void Synchronizer::enableSOCSlot(const QString &aProfileName)
 
 void Synchronizer::close()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Stopping msyncd";
 
@@ -273,7 +273,7 @@ void Synchronizer::close()
 
 bool Synchronizer::startSync(QString aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Manually triggered sync.
     return startSync(aProfileName, false);
@@ -281,7 +281,7 @@ bool Synchronizer::startSync(QString aProfileName)
 
 bool Synchronizer::startScheduledSync(QString aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
 
@@ -370,7 +370,7 @@ QString Synchronizer::createSyncProfileForAccount(uint aAccountId)
 
 bool Synchronizer::startSync(const QString &aProfileName, bool aScheduled)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool success = false;
 
@@ -484,7 +484,7 @@ bool Synchronizer::startSync(const QString &aProfileName, bool aScheduled)
 
 bool Synchronizer::startSyncNow(SyncSession *aSession)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!aSession || isBackupRestoreInProgress()) {
         qCWarning(lcButeoMsyncd) << "Session is null || backup in progress";
@@ -582,7 +582,7 @@ bool Synchronizer::startSyncNow(SyncSession *aSession)
 void Synchronizer::onSessionFinished(const QString &aProfileName,
                                      Sync::SyncStatus aStatus, const QString &aMessage, SyncResults::MinorCode aErrorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Session finished:" << aProfileName << ", status:" << aStatus;
 
@@ -678,14 +678,14 @@ void Synchronizer::onSessionFinished(const QString &aProfileName,
 
 void Synchronizer::onSyncProgressDetail(const QString &aProfileName, int aProgressDetail)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "aProfileName" << aProfileName;
     emit syncStatus(aProfileName, Sync::SYNC_PROGRESS, "Sync Progress", aProgressDetail);
 }
 
 bool Synchronizer::startNextSync()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iSyncQueue.isEmpty() || isBackupRestoreInProgress()) {
         return false;
@@ -743,7 +743,7 @@ bool Synchronizer::startNextSync()
 
 void Synchronizer::cleanupSession(SyncSession *aSession, Sync::SyncStatus aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aSession != 0) {
         QString profileName = aSession->profileName();
@@ -772,7 +772,7 @@ void Synchronizer::cleanupSession(SyncSession *aSession, Sync::SyncStatus aStatu
 
 void Synchronizer::abortSync(QString aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Abort sync requested for profile: " << aProfileName;
     if (iActiveSessions.contains(aProfileName)) {
@@ -793,7 +793,7 @@ void Synchronizer::abortSync(QString aProfileName)
 
 bool Synchronizer::cleanupProfile(const QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     // We assume this call is made on a Sync Profile
     SyncProfile *profile = iProfileManager.syncProfile (aProfileId);
     bool status = false;
@@ -863,7 +863,7 @@ bool Synchronizer::clientProfileActive(const QString &clientProfileName)
 
 bool Synchronizer::removeProfile(QString aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = true;
 
     // Check if a sync session is ongoing for this profile.
@@ -881,7 +881,7 @@ bool Synchronizer::removeProfile(QString aProfileId)
 
 bool Synchronizer::updateProfile(QString aProfileAsXml)
 {
-    FUNCTION_CALL_TRACE
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     QString address;
 
@@ -931,14 +931,14 @@ bool Synchronizer::updateProfile(QString aProfileAsXml)
 
 bool Synchronizer::requestStorages(QStringList aStorageNames)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iStorageBooker.reserveStorages(aStorageNames, "");
 }
 
 void Synchronizer::releaseStorages(QStringList aStorageNames)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iStorageBooker.releaseStorages(aStorageNames);
     emit storageReleased();
@@ -946,14 +946,14 @@ void Synchronizer::releaseStorages(QStringList aStorageNames)
 
 QStringList Synchronizer::runningSyncs()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iActiveSessions.keys();
 }
 
 void Synchronizer::onStorageReleased()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Storage released";
     while (startNextSync()) {
@@ -965,7 +965,7 @@ void Synchronizer::onTransferProgress(const QString &aProfileName,
                                       Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                                       const QString &aMimeType, int aCommittedItems)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Sync session progress";
     qCDebug(lcButeoMsyncd) << "Profile:" << aProfileName;
@@ -980,7 +980,7 @@ void Synchronizer::onTransferProgress(const QString &aProfileName,
 void Synchronizer::onStorageAccquired(const QString &aProfileName,
                                       const QString &aMimeType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Mime type:" << aMimeType;
     qCDebug(lcButeoMsyncd) << "Profile:" << aProfileName;
     if (!aProfileName.isEmpty() && !aMimeType.isEmpty()) {
@@ -1012,7 +1012,7 @@ void Synchronizer::onStorageAccquired(const QString &aProfileName,
 bool Synchronizer::requestStorage(const QString &aStorageName,
                                   const SyncPluginBase *aCaller)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iStorageBooker.reserveStorage(aStorageName,
                                          aCaller->getProfileName());
@@ -1021,7 +1021,7 @@ bool Synchronizer::requestStorage(const QString &aStorageName,
 void Synchronizer::releaseStorage(const QString &aStorageName,
                                   const SyncPluginBase */*aCaller*/)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iStorageBooker.releaseStorage(aStorageName);
     emit storageReleased();
@@ -1029,7 +1029,7 @@ void Synchronizer::releaseStorage(const QString &aStorageName,
 
 StoragePlugin *Synchronizer::createStorage(const QString &aPluginName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     StoragePlugin *plugin = nullptr;
     if (!aPluginName.isEmpty()) {
@@ -1041,7 +1041,7 @@ StoragePlugin *Synchronizer::createStorage(const QString &aPluginName)
 
 void Synchronizer::initializeScheduler()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (!iSyncScheduler) {
         iSyncScheduler = new SyncScheduler(this);
         connect(iSyncScheduler, SIGNAL(syncNow(QString)),
@@ -1065,14 +1065,14 @@ void Synchronizer::initializeScheduler()
 
 void Synchronizer::destroyStorage(StoragePlugin *aStorage)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iPluginManager.destroyStorage(aStorage);
 }
 
 bool Synchronizer::isConnectivityAvailable(Sync::ConnectivityType aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iTransportTracker != 0) {
         return iTransportTracker->isConnectivityAvailable(aType);
@@ -1083,7 +1083,7 @@ bool Synchronizer::isConnectivityAvailable(Sync::ConnectivityType aType)
 
 void Synchronizer::startServers(bool resume)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Starting/Resuming server plug-ins";
 
@@ -1114,7 +1114,7 @@ void Synchronizer::startServers(bool resume)
 
 void Synchronizer::stopServers(bool suspend)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Stopping/Suspending all server plug-ins";
 
@@ -1137,7 +1137,7 @@ void Synchronizer::stopServers(bool suspend)
 
 void Synchronizer::startServer(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Starting server plug-in:" << aProfileName;
 
@@ -1193,7 +1193,7 @@ void Synchronizer::startServer(const QString &aProfileName)
 
 void Synchronizer::stopServer(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "Stopping server:" << aProfileName;
 
@@ -1222,7 +1222,7 @@ void Synchronizer::stopServer(const QString &aProfileName)
 
 void Synchronizer::onServerDone()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     ServerPluginRunner *pluginRunner =
         qobject_cast<ServerPluginRunner *>(QObject::sender());
@@ -1253,7 +1253,7 @@ bool syncProfilePointerLessThan(SyncProfile *&aLhs, SyncProfile *&aRhs)
 
 void Synchronizer::onNewSession(const QString &aDestination)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoMsyncd) << "New session from" << aDestination;
     bool createNewProfile = false;
@@ -1433,7 +1433,7 @@ void Synchronizer::profileChangeTriggerTimeout()
 
 void Synchronizer::reschedule(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iSyncScheduler == 0)
         return;
@@ -1456,7 +1456,7 @@ void Synchronizer::reschedule(const QString &aProfileName)
 
 void Synchronizer::slotSyncStatus(QString aProfileName, int aStatus, QString aMessage, int aMoreDetails)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
     if (profile) {
         QString accountId = profile->key(KEY_ACCOUNT_ID);
@@ -1493,7 +1493,7 @@ void Synchronizer::slotSyncStatus(QString aProfileName, int aStatus, QString aMe
 
 void Synchronizer::removeScheduledSync(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iSyncScheduler == 0)
         return;
@@ -1514,7 +1514,7 @@ void Synchronizer::removeScheduledSync(const QString &aProfileName)
 
 bool Synchronizer::isBackupRestoreInProgress()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool retVal = getBackUpRestoreState();
 
@@ -1604,7 +1604,7 @@ bool Synchronizer::getBackUpRestoreState()
 
 void Synchronizer::start(unsigned int aAccountId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Start sync requested for account" << aAccountId;
     QList<SyncProfile *> profileList = iAccounts->getProfilesByAccountId(aAccountId);
     foreach (SyncProfile *profile, profileList) {
@@ -1615,7 +1615,7 @@ void Synchronizer::start(unsigned int aAccountId)
 
 void Synchronizer::stop(unsigned int aAccountId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Stop sync requested for account" << aAccountId;
     QList<SyncProfile *> profileList = iAccounts->getProfilesByAccountId(aAccountId);
     foreach (SyncProfile *profile, profileList) {
@@ -1627,7 +1627,7 @@ void Synchronizer::stop(unsigned int aAccountId)
 int Synchronizer::status(unsigned int aAccountId, int &aFailedReason, qlonglong &aPrevSyncTime,
                          qlonglong &aNextSyncTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     int status = 1; // Initialize to Done
     QDateTime prevSyncTime; // Initialize to invalid
     QDateTime nextSyncTime;
@@ -1676,7 +1676,7 @@ int Synchronizer::status(unsigned int aAccountId, int &aFailedReason, qlonglong 
 
 QList<unsigned int> Synchronizer::syncingAccounts()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QList<unsigned int> syncingAccountsList;
     // Check active sessions
     QList<SyncSession *> activeSessions = iActiveSessions.values();
@@ -1705,7 +1705,7 @@ QList<unsigned int> Synchronizer::syncingAccounts()
 
 QString Synchronizer::getLastSyncResult(const QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QString lastSyncResult;
 
     if (!aProfileId.isEmpty()) {
@@ -1729,7 +1729,7 @@ QString Synchronizer::getLastSyncResult(const QString &aProfileId)
 
 QStringList Synchronizer::allVisibleSyncProfiles()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QStringList profilesAsXml;
 
     QList<Buteo::SyncProfile *> profiles = iProfileManager.allVisibleSyncProfiles();
@@ -1750,7 +1750,7 @@ QStringList Synchronizer::allVisibleSyncProfiles()
 
 QString Synchronizer::syncProfile(const QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QString profileAsXml;
 
     if (!aProfileId.isEmpty()) {
@@ -1770,7 +1770,7 @@ QString Synchronizer::syncProfile(const QString &aProfileId)
 
 QStringList Synchronizer::syncProfilesByKey(const QString &aKey, const QString &aValue)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "syncProfile key : " << aKey << "Value :" << aValue;
     QStringList profilesAsXml;
 
@@ -1799,14 +1799,14 @@ QStringList Synchronizer::syncProfilesByKey(const QString &aKey, const QString &
 
 QStringList Synchronizer::syncProfilesByType(const QString &aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Profile Type : " << aType;
     return iProfileManager.profileNames(aType);
 }
 
 void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionType type)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Network state changed: OnLine:" << aState << " connection type:" <<  type;
 
     if (aState) {
@@ -1841,7 +1841,7 @@ void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionTy
 
 Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Profile *profile = 0;
     QList<SyncProfile *> profiles;
     if ("USB" == aAddress) {
@@ -1861,7 +1861,7 @@ Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
 
 QString Synchronizer::getValue(const QString &aAddress, const QString &aKey)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QString value;
     if (Buteo::KEY_UUID == aKey) {
         iUUID = QUuid::createUuid().toString();

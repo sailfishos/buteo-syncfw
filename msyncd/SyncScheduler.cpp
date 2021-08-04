@@ -38,7 +38,7 @@ using namespace Buteo;
 SyncScheduler::SyncScheduler(QObject *aParent)
     :   QObject(aParent)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #ifdef USE_KEEPALIVE
     iBackgroundActivity = new BackgroundSync(this);
@@ -64,7 +64,7 @@ SyncScheduler::SyncScheduler(QObject *aParent)
 
 SyncScheduler::~SyncScheduler()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #ifdef USE_KEEPALIVE
     iBackgroundActivity->removeAll();
@@ -77,7 +77,7 @@ SyncScheduler::~SyncScheduler()
 
 void SyncScheduler::addProfileForSyncRetry(const SyncProfile *aProfile, QDateTime aNextSyncTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfile && aProfile->isEnabled()) {
 #ifdef USE_KEEPALIVE
@@ -97,7 +97,7 @@ void SyncScheduler::addProfileForSyncRetry(const SyncProfile *aProfile, QDateTim
 
 bool SyncScheduler::addProfile(const SyncProfile *aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!aProfile)
         return false;
@@ -137,7 +137,7 @@ bool SyncScheduler::addProfile(const SyncProfile *aProfile)
 
 void SyncScheduler::removeProfile(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 #ifdef USE_KEEPALIVE
     if (iBackgroundActivity->remove(aProfileName)) {
         qCDebug(lcButeoMsyncd) << "Scheduled sync removed: profile =" << aProfileName;
@@ -154,7 +154,7 @@ void SyncScheduler::removeProfile(const QString &aProfileName)
 
 void SyncScheduler::doIPHeartbeatActions(QString aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iActiveBackgroundSyncProfiles.insert(aProfileName);
     emit syncNow(aProfileName);
 }
@@ -184,7 +184,7 @@ void SyncScheduler::syncStatusChanged(const QString &aProfileName, int aStatus,
 #ifdef USE_KEEPALIVE
 void SyncScheduler::rescheduleBackgroundActivity(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
     if (profile) {
@@ -201,7 +201,7 @@ void SyncScheduler::rescheduleBackgroundActivity(const QString &aProfileName)
 
 int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSyncTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     int alarmEventID = -1;
 
@@ -269,7 +269,7 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
 #ifndef USE_KEEPALIVE
 void SyncScheduler::doAlarmActions(int aAlarmEventID)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString syncProfileName
         = iSyncScheduleProfiles.key(aAlarmEventID);
@@ -288,7 +288,7 @@ void SyncScheduler::doAlarmActions(int aAlarmEventID)
 
 void SyncScheduler::removeAlarmEvent(int aAlarmEventID)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool err = iAlarmInventory->removeAlarm(aAlarmEventID);
 
@@ -301,7 +301,7 @@ void SyncScheduler::removeAlarmEvent(int aAlarmEventID)
 
 void SyncScheduler::removeAllAlarms()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iAlarmInventory->removeAllAlarms();
 }

@@ -284,7 +284,7 @@ bool SyncSchedule::inExternalSyncRushPeriod(const QDateTime &aDateTime) const
 
 QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDateTime nextSync;
     QDateTime scheduleConfiguredTime = d_ptr->iScheduleConfiguredTime;

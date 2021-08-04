@@ -41,7 +41,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
     iInternet(0),
     iSystemBus(QDBusConnection::systemBus())
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iTransportStates[Sync::CONNECTIVITY_USB] = false;
     iTransportStates[Sync::CONNECTIVITY_BT] = false;
@@ -115,12 +115,12 @@ TransportTracker::TransportTracker(QObject *aParent) :
 
 TransportTracker::~TransportTracker()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 bool TransportTracker::isConnectivityAvailable(Sync::ConnectivityType aType) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -129,7 +129,7 @@ bool TransportTracker::isConnectivityAvailable(Sync::ConnectivityType aType) con
 
 void TransportTracker::onUsbStateChanged(bool aConnected)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoCore) << "USB state changed:" << aConnected;
     updateState(Sync::CONNECTIVITY_USB, aConnected);
@@ -138,7 +138,7 @@ void TransportTracker::onUsbStateChanged(bool aConnected)
 #ifdef HAVE_BLUEZ_5
 void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, QStringList invalidated)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Q_UNUSED(invalidated);
 
@@ -155,7 +155,7 @@ void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, 
 
 void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const InterfacesMap interfaces)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     for (InterfacesMap::const_iterator i = interfaces.cbegin(); i != interfaces.cend(); ++i) {
         if (i.key() == BT::BLUEZ_ADAPTER_INTERFACE) {
@@ -192,7 +192,7 @@ void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const In
 
 void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const QStringList interfaces)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     for (QStringList::const_iterator i = interfaces.cbegin(); i != interfaces.cend(); ++i) {
         if (*i == BT::BLUEZ_ADAPTER_INTERFACE) {
@@ -223,7 +223,7 @@ void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const 
 
 void TransportTracker::onInternetStateChanged(bool aConnected, Sync::InternetConnectionType aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoCore) << "Internet state changed:" << aConnected;
     updateState(Sync::CONNECTIVITY_INTERNET, aConnected);
@@ -232,7 +232,7 @@ void TransportTracker::onInternetStateChanged(bool aConnected, Sync::InternetCon
 
 void TransportTracker::updateState(Sync::ConnectivityType aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
 
     bool oldState = false;
@@ -251,7 +251,7 @@ void TransportTracker::updateState(Sync::ConnectivityType aType, bool aState)
 #ifdef HAVE_BLUEZ_5
 bool TransportTracker::btConnectivityStatus()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusInterface  manager(BT::BLUEZ_DEST,
             QString("/"),

@@ -285,15 +285,24 @@ is the main API available in this library
 - A dbus library interface for client apps, like GUIs
 
 \subsection logging Using Logging API
-The logging API has four main calls
--# FUNCTION_CALL_TRACE can be used to trace the entry and exit of functions
--# LOG_DEBUG(msg) - outputs a debug level message
--# LOG_WARNING(msg) - outputs a warning level message
--# LOG_CRITICAL(msg) - outputs a critical level message
--# LOG_FATAL(msg) - outputs a fatal level message and aborts the process
+The library uses the following Qt logging categories:
 
-Logging can be enabled by using "DEFINES += BUTEO_ENABLE_DEBUG" in the .pro file. 
-By default logging is disabled
+- buteo.core (for the library)
+- buteo.msyncd (for the msyncd process)
+- buteo.plugin (for the plugin runner)
+- buteo.trace (for function tracing)
+
+By default, logging is disabled. Logging can be enabled as per Qt logging features.
+For example, to enable msyncd logging, run it with the buteo.msyncd logging enabled:
+
+    QT_LOGGING_RULES="buteo.plugin.msyncd.debug=true" /usr/bin/msyncd
+
+To enable debugging for all categories under buteo.plugin.*:
+
+    QT_LOGGING_RULES="buteo.plugin.*.debug=true" /usr/bin/msyncd
+
+In addition, LogMacros.h has a FUNCTION_CALL_TRACE macro that can be used to trace
+the entry and exit of functions.
 
 \subsection profile-api Profile Management API
 Profile management API can be used to manage the profile information. For example,
@@ -320,9 +329,9 @@ SyncProfile *sp = pm.syncProfile(profileName);
 if (sp) {
     sp->setSyncDirection(SyncProfile::SYNC_DIRECTION_FROM_REMOTE);
     if (pm.updateProfile(sp).isEmpty()) {
-        LOG_DEBUG("Update failed for profile " << profileName);
+        qDebug() << "Update failed for profile " << profileName;
     } else
-        LOG_DEBUG("Profile successfully updated");
+        qDebug() << "Profile successfully updated";
 }
 ...
 ...

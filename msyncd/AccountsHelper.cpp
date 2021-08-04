@@ -59,7 +59,7 @@ AccountsHelper::~AccountsHelper()
 
 void AccountsHelper::createProfileForAccount(Accounts::AccountId id)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Accounts::Account *newAccount = iAccountManager->account(id);
 
     if (0 != newAccount) {
@@ -93,7 +93,7 @@ void AccountsHelper::createProfileForAccount(Accounts::AccountId id)
 
 void AccountsHelper::slotAccountRemoved(Accounts::AccountId id)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     // Delete the profile(s) with account ID
     QList<SyncProfile *> syncProfiles = getProfilesByAccountId(id);
     foreach (SyncProfile *profile, syncProfiles) {
@@ -173,7 +173,7 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
 
 void AccountsHelper::setSyncSchedule(SyncProfile *syncProfile, Accounts::AccountId id, bool aCreateNew)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Q_UNUSED (aCreateNew);
     Accounts::Account *account = iAccountManager->account(id);
     if (0 != account) {
@@ -231,7 +231,7 @@ void AccountsHelper::setSyncSchedule(SyncProfile *syncProfile, Accounts::Account
 
 QList<SyncProfile *> AccountsHelper::getProfilesByAccountId(Accounts::AccountId id)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QList<ProfileManager::SearchCriteria> filters;
     ProfileManager::SearchCriteria filter;
     filter.iType = ProfileManager::SearchCriteria::EQUAL;
@@ -246,7 +246,7 @@ bool AccountsHelper::addProfileForAccount(Accounts::Account *account,
                                           bool serviceEnabled,
                                           const QString &label)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     SyncProfile *serviceProfile = iProfileManager.syncProfile(serviceName);
     if (!serviceProfile || (false == serviceProfile->boolKey(KEY_USE_ACCOUNTS, false))) {
@@ -293,7 +293,7 @@ bool AccountsHelper::addProfileForAccount(Accounts::Account *account,
 
 void AccountsHelper::registerAccountListeners()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     // Populate all enabled accounts list (so that we can listen to changes)
     QList<Accounts::AccountId> accountIds = iAccountManager->accountList();
     foreach (Accounts::AccountId id, accountIds) {
@@ -303,7 +303,7 @@ void AccountsHelper::registerAccountListeners()
 
 void AccountsHelper::slotSchedulerSettingsChanged(const char *aKey)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Key Changed" << QString(aKey);
     Accounts::Watch *watch = qobject_cast<Accounts::Watch *>(this->sender());
     if (watch && iAcctWatchMap.contains(watch)) {
@@ -322,7 +322,7 @@ void AccountsHelper::slotSchedulerSettingsChanged(const char *aKey)
 
 void AccountsHelper::registerAccountListener(Accounts::AccountId id)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Accounts::Account *account = iAccountManager->account(id);
     if (iAccountList.contains(account)) {

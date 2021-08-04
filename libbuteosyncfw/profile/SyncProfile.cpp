@@ -486,12 +486,7 @@ SyncProfile::DestinationType SyncProfile::destinationType() const
 {
     DestinationType type = DESTINATION_TYPE_UNDEFINED;
     QString typeStr;
-
-    //const Profile *service = serviceProfile();
-    //if (service)
-    //{
     typeStr = this->key(KEY_DESTINATION_TYPE);
-    //}
 
     if (typeStr == VALUE_ONLINE) {
         type = DESTINATION_TYPE_ONLINE;
@@ -530,15 +525,11 @@ SyncProfile::SyncDirection SyncProfile::syncDirection() const
 bool SyncProfile::isSOCProfile() const
 {
     bool aSOCProfile = false;
-    //const Profile *service = serviceProfile();
-    //if (service)
-    //{
     QString enabled = this->key(KEY_SOC);
     enabled = enabled.trimmed();
     if ("true" == enabled) {
         aSOCProfile = true;
     }
-    //}
     return aSOCProfile;
 }
 
@@ -546,9 +537,6 @@ quint32 SyncProfile::syncOnChangeAfter() const
 {
     quint32 syncOnChangeAfterTime = DEFAULT_SOC_AFTER_TIME;
 
-    //const Profile *service = serviceProfile();
-    //if (service)
-    //{
     QString time = this->key(KEY_SOC_AFTER);
     if (!time.isEmpty()) {
         bool ok = false;
@@ -557,7 +545,6 @@ quint32 SyncProfile::syncOnChangeAfter() const
             syncOnChangeAfterTime = DEFAULT_SOC_AFTER_TIME;
         }
     }
-    //}
     qCDebug(lcButeoCore) << "Sync on change after time from profile :" << syncOnChangeAfterTime;
     return syncOnChangeAfterTime;
 }

@@ -30,17 +30,17 @@ using namespace Buteo;
 
 DeletedItemsIdStorage::DeletedItemsIdStorage()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 DeletedItemsIdStorage::~DeletedItemsIdStorage()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 bool DeletedItemsIdStorage::init(const QString &aDbFile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     static unsigned connectionNumber = 0;
     const QString connectionName = "deleteditems";
@@ -67,7 +67,7 @@ bool DeletedItemsIdStorage::init(const QString &aDbFile)
 
 bool DeletedItemsIdStorage::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iDb.isOpen()) {
         iDb.close();
@@ -80,7 +80,7 @@ bool DeletedItemsIdStorage::uninit()
 
 bool DeletedItemsIdStorage::getSnapshot(QList<QString> &aItems, QList<QDateTime> &aCreationTimes) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("SELECT * FROM snapshot");
     QSqlQuery query(iDb);
@@ -104,7 +104,7 @@ bool DeletedItemsIdStorage::getSnapshot(QList<QString> &aItems, QList<QDateTime>
 bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
                                         const QList<QDateTime> &aCreationTimes)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Clear existing snapshot
     const QString deleteQueryString("DELETE FROM snapshot");
@@ -158,7 +158,7 @@ bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
 void DeletedItemsIdStorage::addDeletedItem(const QString &aItem, const QDateTime &aCreationTime,
                                            const QDateTime &aDeleteTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("INSERT INTO deleteditems VALUES(:itemid, :creationtime, :deletetime)");
 
@@ -181,7 +181,7 @@ void DeletedItemsIdStorage::addDeletedItem(const QString &aItem, const QDateTime
 void DeletedItemsIdStorage::addDeletedItems(const QList<QString> &aItems, const QList<QDateTime> &aCreationTimes,
                                             const QList<QDateTime> &aDeleteTimes)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("INSERT INTO deleteditems VALUES(:itemid, :creationtime, :deletetime)");
 
@@ -224,7 +224,7 @@ void DeletedItemsIdStorage::addDeletedItems(const QList<QString> &aItems, const 
 
 bool DeletedItemsIdStorage::getDeletedItems(QList<QString> &aItems, const QDateTime &aTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("SELECT itemid FROM deleteditems WHERE creationtime < :creationtime AND deletetime > :deletetime");
     qCDebug(lcButeoCore) << queryString;
@@ -250,7 +250,7 @@ bool DeletedItemsIdStorage::getDeletedItems(QList<QString> &aItems, const QDateT
 
 bool DeletedItemsIdStorage::ensureItemSnapshotExists()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("CREATE TABLE IF NOT EXISTS snapshot(itemid varchar(512) primary key, creationtime timestamp)");
     QSqlQuery query(iDb);
@@ -267,7 +267,7 @@ bool DeletedItemsIdStorage::ensureItemSnapshotExists()
 
 bool DeletedItemsIdStorage::ensureDeletedItemsExists()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("CREATE TABLE IF NOT EXISTS deleteditems(itemid varchar(512) primary key, creationtime timestamp, deletetime timestamp)");
     QSqlQuery query(iDb);

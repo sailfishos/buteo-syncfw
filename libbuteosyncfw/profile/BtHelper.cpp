@@ -36,7 +36,7 @@ BtHelper::BtHelper(const QString &deviceAddress,
         QObject* parent) : QObject(parent),
         m_SystemBus(QDBusConnection::systemBus())
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #ifdef HAVE_BLUEZ_5
     qDBusRegisterMetaType <InterfacesMap> ();
@@ -81,12 +81,12 @@ BtHelper::BtHelper(const QString &deviceAddress,
 
 BtHelper::~BtHelper()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 QVariantMap BtHelper::getDeviceProperties()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #ifdef HAVE_BLUEZ_5
     if (m_devicePath.isEmpty())

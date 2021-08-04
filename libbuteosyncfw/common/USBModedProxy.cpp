@@ -49,7 +49,7 @@ USBModedProxy::USBModedProxy(QObject *parent)
                              parent),
       m_isConnected(false)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     initUsbModeTracking();
 }
 
@@ -85,7 +85,7 @@ void USBModedProxy::handleUsbModeReply(QDBusPendingCallWatcher *call)
 
 void USBModedProxy::slotModeChanged(const QString &mode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool isConnected = (mode == MTP_MODE_NAME || mode == SYNC_MODE_NAME);
 
@@ -97,6 +97,6 @@ void USBModedProxy::slotModeChanged(const QString &mode)
 
 bool USBModedProxy::isUSBConnected()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return m_isConnected;
 }

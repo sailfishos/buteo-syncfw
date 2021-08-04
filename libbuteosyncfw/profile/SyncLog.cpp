@@ -165,7 +165,7 @@ QDomElement SyncLog::toXml(QDomDocument &aDoc) const
 
 const SyncResults *SyncLog::lastResults() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (d_ptr->iResults.isEmpty()) {
         return 0;
     } else {
@@ -185,7 +185,7 @@ const SyncResults *SyncLog::lastSuccessfulResults() const
 
 void SyncLog::addResults(const SyncResults &aResults)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     // To prevent the log growing too much, the maximum number of entries in
     //the log is defined
     const int MAXLOGENTRIES = 5;

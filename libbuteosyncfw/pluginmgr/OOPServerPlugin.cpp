@@ -32,7 +32,7 @@ OOPServerPlugin::OOPServerPlugin(const QString &aPluginName,
                                  QProcess &aProcess)
     : ServerPlugin(aPluginName, aProfile, aCbInterface), iDone(false)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
@@ -80,14 +80,14 @@ OOPServerPlugin::OOPServerPlugin(const QString &aPluginName,
 
 OOPServerPlugin::~OOPServerPlugin()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete iOopPluginIface;
     iOopPluginIface = 0;
 }
 
 bool OOPServerPlugin::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->init();
     reply.waitForFinished();
@@ -101,7 +101,7 @@ bool OOPServerPlugin::init()
 
 bool OOPServerPlugin::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->uninit();
     reply.waitForFinished();
@@ -115,7 +115,7 @@ bool OOPServerPlugin::uninit()
 
 bool OOPServerPlugin::startListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->startListen();
     reply.waitForFinished();
@@ -129,7 +129,7 @@ bool OOPServerPlugin::startListen()
 
 void OOPServerPlugin::stopListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->stopListen();
     reply.waitForFinished();
@@ -139,7 +139,7 @@ void OOPServerPlugin::stopListen()
 
 void OOPServerPlugin::suspend()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->suspend();
     reply.waitForFinished();
@@ -149,7 +149,7 @@ void OOPServerPlugin::suspend()
 
 void OOPServerPlugin::resume()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->resume();
     reply.waitForFinished();
@@ -159,7 +159,7 @@ void OOPServerPlugin::resume()
 
 bool OOPServerPlugin::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->cleanUp();
     reply.waitForFinished();
@@ -173,7 +173,7 @@ bool OOPServerPlugin::cleanUp()
 
 void OOPServerPlugin::connectivityStateChanged(Sync::ConnectivityType aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<void> reply = iOopPluginIface->connectivityStateChanged(aType, aState);
     reply.waitForFinished();

@@ -32,14 +32,12 @@ using namespace Buteo;
 
 void SyncSigHandlerTest :: init()
 {
-    FUNCTION_CALL_TRACE;
     // initiate sighandler
     iSigHandler = new SyncSigHandler();
 }
 
 void SyncSigHandlerTest :: cleanup()
 {
-    FUNCTION_CALL_TRACE;
     delete iSigHandler ;
     iSigHandler = nullptr;
 }
@@ -47,9 +45,8 @@ void SyncSigHandlerTest :: cleanup()
 
 void SyncSigHandlerTest :: testSigTerm()
 {
-    FUNCTION_CALL_TRACE;
     //kill("TERM", 'pidof msyncd');
-    LOG_DEBUG("Check there should not be any core dump in /home/user/Mydocs/core-dumps");
+    qDebug() << "Check there should not be any core dump in /home/user/Mydocs/core-dumps";
 }
 
 QTEST_MAIN(Buteo::SyncSigHandlerTest)

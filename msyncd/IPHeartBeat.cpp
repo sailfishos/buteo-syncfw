@@ -29,19 +29,19 @@ using namespace Buteo;
 IPHeartBeat::IPHeartBeat(QObject *aParent)
     :  QObject(aParent)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 IPHeartBeat::~IPHeartBeat()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     removeAllWaits();
 }
 
 void IPHeartBeat::removeAllWaits()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QStringList profNames;
 
@@ -58,7 +58,7 @@ void IPHeartBeat::removeAllWaits()
 
 void IPHeartBeat::removeWait(const QString &aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iBeatsWaiting.contains(aProfName) == false)
         return;
@@ -75,7 +75,7 @@ void IPHeartBeat::removeWait(const QString &aProfName)
 
 bool IPHeartBeat::getProfNameFromFd(int aSockFd, QString &aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool ret = false;
 
@@ -96,7 +96,7 @@ bool IPHeartBeat::getProfNameFromFd(int aSockFd, QString &aProfName)
 
 bool IPHeartBeat::setHeartBeat(const QString &aProfName, ushort aMinWaitTime, ushort aMaxWaitTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if ((aMinWaitTime > aMaxWaitTime) || aProfName.isEmpty())
         return false;
@@ -143,7 +143,7 @@ bool IPHeartBeat::setHeartBeat(const QString &aProfName, ushort aMinWaitTime, us
 
 void IPHeartBeat::internalBeatTriggered(int aSockFd)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString profName;
 

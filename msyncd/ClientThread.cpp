@@ -34,12 +34,12 @@ ClientThread::ClientThread()
       iSession(nullptr),
       iRunning(false)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 ClientThread::~ClientThread()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (iSession) {
         iIdentity->destroySession(iSession);
     }
@@ -48,7 +48,7 @@ ClientThread::~ClientThread()
 
 QString ClientThread::getProfileName() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString profileName;
     if (iClientPlugin != 0) {
@@ -60,14 +60,14 @@ QString ClientThread::getProfileName() const
 
 ClientPlugin *ClientThread::getPlugin() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iClientPlugin;
 }
 
 bool ClientThread::startThread(ClientPlugin *aClientPlugin)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aClientPlugin == 0)
         return false;
@@ -112,13 +112,13 @@ bool ClientThread::startThread(ClientPlugin *aClientPlugin)
 
 void ClientThread::stopThread()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     exit();
 }
 
 void ClientThread::run()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iClientPlugin->init()) {
         qCWarning(lcButeoMsyncd) << "Could not initialize client plugin:" << iClientPlugin->getPluginName();
@@ -150,14 +150,14 @@ void ClientThread::run()
 
 SyncResults ClientThread::getSyncResults()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iSyncResults;
 }
 
 void ClientThread::identities(const QList<SignOn::IdentityInfo> &identityList)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     for (int i = 0; i < identityList.size(); ++i) {
         const SignOn::IdentityInfo &info = identityList.at(i);
@@ -181,7 +181,7 @@ void ClientThread::identities(const QList<SignOn::IdentityInfo> &identityList)
 
 void ClientThread::identityResponse(const SignOn::SessionData &sessionData)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // temporarily set real username/password, then invoke client
     SyncProfile &profile = iClientPlugin->profile();
@@ -196,7 +196,7 @@ void ClientThread::identityResponse(const SignOn::SessionData &sessionData)
 
 void ClientThread::identityError(SignOn::Error err)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit initError(getProfileName(), err.message(), SyncResults::AUTHENTICATION_FAILURE);
 }

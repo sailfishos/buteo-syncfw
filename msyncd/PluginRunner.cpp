@@ -36,7 +36,7 @@ PluginRunner::PluginRunner(PluginType aPluginType, const QString &aPluginName,
         iType(aPluginType),
         iPluginName(aPluginName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // register various metatypes used in DBus arguments
     qRegisterMetaType<SyncResults::MinorCode>("SyncResults::MinorCode");
@@ -50,14 +50,14 @@ PluginRunner::PluginRunner(PluginType aPluginType, const QString &aPluginName,
 
 PluginRunner::PluginType PluginRunner::pluginType() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iType;
 }
 
 QString PluginRunner::pluginName() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iPluginName;
 }

@@ -180,7 +180,7 @@ SyncResults::MajorCode SyncResults::majorCode() const
 
 void SyncResults::setMajorCode(SyncResults::MajorCode aMajorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     d_ptr->iMajorCode = aMajorCode;
 }
 
@@ -191,7 +191,7 @@ SyncResults::MinorCode SyncResults::minorCode() const
 
 void SyncResults::setMinorCode(SyncResults::MinorCode aMinorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     d_ptr->iMinorCode = aMinorCode;
 }
 

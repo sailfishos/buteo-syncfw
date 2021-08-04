@@ -99,7 +99,7 @@ SyncPluginBase *PluginServiceObj::initializePlugin()
 
 bool PluginServiceObj::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iPlugin = initializePlugin();
     if (!iPlugin) {
@@ -130,7 +130,7 @@ bool PluginServiceObj::init()
 
 bool PluginServiceObj::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::uninit(): called on uninitialized plugin" ;
@@ -149,7 +149,7 @@ bool PluginServiceObj::uninit()
 
 void PluginServiceObj::abortSync(uchar aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::abortSync(): called on uninitialized plugin" ;
@@ -160,7 +160,7 @@ void PluginServiceObj::abortSync(uchar aStatus)
 
 bool PluginServiceObj::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         initializePlugin();
@@ -175,7 +175,7 @@ bool PluginServiceObj::cleanUp()
 
 void PluginServiceObj::connectivityStateChanged(int aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::connectivityStateChanged(): called on uninitialized plugin" ;
@@ -186,7 +186,7 @@ void PluginServiceObj::connectivityStateChanged(int aType, bool aState)
 
 QString PluginServiceObj::getSyncResults()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::getSyncResults(): called on uninitialized plugin" ;
@@ -197,7 +197,7 @@ QString PluginServiceObj::getSyncResults()
 
 bool PluginServiceObj::startSync()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::startSync(): called on uninitialized plugin" ;
@@ -214,7 +214,7 @@ bool PluginServiceObj::startSync()
 
 void PluginServiceObj::resume()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::resume(): called on uninitialized plugin" ;
@@ -230,7 +230,7 @@ void PluginServiceObj::resume()
 
 bool PluginServiceObj::startListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::startListen(): called on uninitialized plugin" ;
@@ -247,7 +247,7 @@ bool PluginServiceObj::startListen()
 
 void PluginServiceObj::stopListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::stopListen(): called on uninitialized plugin" ;
@@ -263,7 +263,7 @@ void PluginServiceObj::stopListen()
 
 void PluginServiceObj::suspend()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         qCWarning(lcButeoPlugin) << "PluginServiceObj::suspend(): called on uninitialized plugin" ;

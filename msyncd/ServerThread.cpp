@@ -33,17 +33,17 @@ ServerThread::ServerThread()
     :  iServerPlugin(0),
        iRunning(false)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 ServerThread::~ServerThread()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 QString ServerThread::getProfileName() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString profileName;
     if (iServerPlugin != 0) {
@@ -55,7 +55,7 @@ QString ServerThread::getProfileName() const
 
 ServerPlugin *ServerThread::getPlugin() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iServerPlugin;
 }
@@ -63,7 +63,7 @@ ServerPlugin *ServerThread::getPlugin() const
 
 bool ServerThread::startThread(ServerPlugin *aServerPlugin)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aServerPlugin == 0)
         return false;
@@ -89,13 +89,13 @@ bool ServerThread::startThread(ServerPlugin *aServerPlugin)
 
 void ServerThread::stopThread()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     exit();
 }
 
 void ServerThread::run()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iServerPlugin == 0) {
         qCCritical(lcButeoMsyncd) << "Server plug-in is NULL";

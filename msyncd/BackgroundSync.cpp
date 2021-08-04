@@ -32,19 +32,19 @@ const int MAX_FREQUENCY = 1440;
 BackgroundSync::BackgroundSync(QObject *aParent)
     :  QObject(aParent)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 BackgroundSync::~BackgroundSync()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     removeAll();
 }
 
 void BackgroundSync::removeAll()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QStringList profNames;
 
@@ -63,7 +63,7 @@ void BackgroundSync::removeAll()
 
 bool BackgroundSync::remove(const QString &aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     removeSwitch(aProfName);
 
@@ -81,7 +81,7 @@ bool BackgroundSync::remove(const QString &aProfName)
 
 bool BackgroundSync::set(const QString &aProfName, int seconds)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfName.isEmpty())
         return false;
@@ -133,7 +133,7 @@ bool BackgroundSync::set(const QString &aProfName, int seconds)
 
 void BackgroundSync::onBackgroundSyncStarted()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     BackgroundActivity *tempAct = static_cast<BackgroundActivity *>(sender());
 
@@ -150,14 +150,14 @@ void BackgroundSync::onBackgroundSyncStarted()
 
 void BackgroundSync::onBackgroundSyncCompleted(QString aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "BackgroundSync completed, removing activity, profile name = " << aProfName;
     remove(aProfName);
 }
 
 QString BackgroundSync::getProfNameFromId(const QString activityId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMapIterator<QString, BActivityStruct> iter(iScheduledSyncs);
 
@@ -208,7 +208,7 @@ BackgroundActivity::Frequency BackgroundSync::frequencyFromSeconds(int seconds)
 
 void BackgroundSync::removeAllSwitches()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QStringList profNames;
     QMapIterator<QString, BActivitySwitchStruct> iter(iScheduledSwitch);
@@ -224,7 +224,7 @@ void BackgroundSync::removeAllSwitches()
 
 bool BackgroundSync::removeSwitch(const QString &aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iScheduledSwitch.contains(aProfName) == false)
         return false;
@@ -240,7 +240,7 @@ bool BackgroundSync::removeSwitch(const QString &aProfName)
 
 bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitchTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfName.isEmpty())
         return false;
@@ -276,7 +276,7 @@ bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitc
 
 void BackgroundSync::onBackgroundSwitchStarted()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     BackgroundActivity *tempAct = static_cast<BackgroundActivity *>(sender());
 
@@ -293,7 +293,7 @@ void BackgroundSync::onBackgroundSwitchStarted()
 
 QString BackgroundSync::getProfNameFromSwitchId(const QString activityId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMapIterator<QString, BActivitySwitchStruct> iter(iScheduledSwitch);
 

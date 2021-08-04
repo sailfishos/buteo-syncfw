@@ -72,7 +72,7 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
     m_isOnline(false), m_errorEmitted(false),
     m_sessionTimer(0), m_connectionType(Sync::INTERNET_CONNECTION_UNKNOWN)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     m_networkConfigManager = new QNetworkConfigurationManager();
 
     // check for network status and configuration change (switch wifi, ethernet, mobile) a
@@ -117,7 +117,7 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
 
 NetworkManager::~NetworkManager()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete m_networkSession;
     m_networkSession = 0;
     delete m_networkConfigManager;
@@ -126,7 +126,7 @@ NetworkManager::~NetworkManager()
 
 bool NetworkManager::isOnline()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return m_isOnline;
 }
 
@@ -137,7 +137,7 @@ Sync::InternetConnectionType NetworkManager::connectionType() const
 
 void NetworkManager::connectSession(bool connectInBackground /* = false*/)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (m_isSessionActive) {
         qCDebug(lcButeoCore) << "Network session already active, ignoring connect call";
         m_refCount++;
@@ -183,7 +183,7 @@ void NetworkManager::slotConfigurationChanged()
 
 void NetworkManager::idleRefresh()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QList<QNetworkConfiguration> activeConfigs = m_networkConfigManager->allConfigurations(QNetworkConfiguration::Active);
     QNetworkConfiguration::BearerType connectionType = QNetworkConfiguration::BearerUnknown;
     QString bearerTypeName;
@@ -217,7 +217,7 @@ void NetworkManager::idleRefresh()
 
 void NetworkManager::disconnectSession()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (m_refCount > 0) {
         m_refCount--;
     }
@@ -233,7 +233,7 @@ void NetworkManager::disconnectSession()
 
 void NetworkManager::slotSessionState(QNetworkSession::State status)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     switch (status) {
     case QNetworkSession::Invalid:
         qCWarning(lcButeoCore) << "QNetworkSession::Invalid";
@@ -279,7 +279,7 @@ void NetworkManager::slotSessionState(QNetworkSession::State status)
 
 void NetworkManager::slotSessionError(QNetworkSession::SessionError error)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Emit network errors only once per request
     if (m_errorEmitted) {

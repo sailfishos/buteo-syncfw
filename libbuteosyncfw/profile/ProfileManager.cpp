@@ -181,7 +181,6 @@ SyncLog *ProfileManagerPrivate::loadLog(const QString &aProfileName)
 bool ProfileManagerPrivate::matchProfile(const Profile &aProfile,
                                          const ProfileManager::SearchCriteria &aCriteria)
 {
-    //FUNCTION_CALL_TRACE;
     bool matched = false;
 
     const Profile *testProfile = &aProfile;
@@ -298,12 +297,12 @@ ProfileManager::ProfileManager(const QString &aPrimaryPath,
     : d_ptr(new ProfileManagerPrivate(aPrimaryPath.isEmpty() ? DEFAULT_PRIMARY_PROFILE_PATH : aPrimaryPath,
                                       aSecondaryPath.isEmpty() ? DEFAULT_SECONDARY_PROFILE_PATH : aSecondaryPath))
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 ProfileManager::~ProfileManager()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete d_ptr;
     d_ptr = 0;
 }
@@ -316,7 +315,7 @@ Profile *ProfileManager::profile(const QString &aName, const QString &aType)
 
 SyncProfile *ProfileManager::syncProfile(const QString &aName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Profile *p = profile(aName, Profile::TYPE_SYNC);
     SyncProfile *syncProfile = 0;
@@ -381,7 +380,7 @@ QStringList ProfileManager::profileNames(const QString &aType)
 
 QList<SyncProfile *> ProfileManager::allSyncProfiles()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SyncProfile *> profiles;
 
@@ -398,7 +397,7 @@ QList<SyncProfile *> ProfileManager::allSyncProfiles()
 
 QList<SyncProfile *> ProfileManager::allVisibleSyncProfiles()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SyncProfile *> profiles = allSyncProfiles();
     QList<SyncProfile *> visibleProfiles;
@@ -418,7 +417,7 @@ QList<SyncProfile *> ProfileManager::getSyncProfilesByData(
     const QString &aSubProfileType,
     const QString &aKey, const QString &aValue)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SyncProfile *> allProfiles = allSyncProfiles();
     QList<SyncProfile *> matchingProfiles;
@@ -469,7 +468,7 @@ QList<SyncProfile *> ProfileManager::getSyncProfilesByData(
 QList<SyncProfile *> ProfileManager::getSyncProfilesByData(
     const QList<SearchCriteria> &aCriteria)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SyncProfile *> allProfiles = allSyncProfiles();
     QList<SyncProfile *> matchingProfiles;
@@ -500,7 +499,7 @@ QList<SyncProfile *> ProfileManager::getSyncProfilesByData(
 QList<SyncProfile *> ProfileManager::getSOCProfilesForStorage(
     const QString &aStorageName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SearchCriteria> criteriaList;
 
@@ -553,7 +552,7 @@ QList<SyncProfile *> ProfileManager::getSOCProfilesForStorage(
 QList<SyncProfile *> ProfileManager::getSyncProfilesByStorage(
     const QString &aStorageName, bool aStorageMustBeEnabled)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SearchCriteria> criteriaList;
 
@@ -606,7 +605,7 @@ QList<SyncProfile *> ProfileManager::getSyncProfilesByStorage(
 
 bool ProfileManagerPrivate::save(const Profile &aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDomDocument doc = constructProfileDocument(aProfile);
     if (doc.isNull()) {
@@ -643,7 +642,7 @@ bool ProfileManagerPrivate::save(const Profile &aProfile)
 
 Profile *ProfileManager::profileFromXml(const QString &aProfileAsXml)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Profile *profile = nullptr;
     if (!aProfileAsXml.isEmpty()) {
@@ -661,7 +660,7 @@ Profile *ProfileManager::profileFromXml(const QString &aProfileAsXml)
 
 QString ProfileManager::updateProfile(const Profile &aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Don't save invalid profiles.
     if (aProfile.name().isEmpty() || aProfile.type().isEmpty()) {
@@ -694,7 +693,7 @@ QString ProfileManager::updateProfile(const Profile &aProfile)
 
 SyncProfile *ProfileManager::createTempSyncProfile (const QString &destAddress, bool &saveNewProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoCore) << "createTempSyncProfile(" << destAddress << ")";
 
     if (destAddress.contains("USB")) { //USB - PCSUite no requirement to save profile
@@ -740,7 +739,7 @@ void ProfileManager::enableStorages(Profile &aProfile,
                                     QMap<QString, bool> &aStorageMap,
                                     bool *aModified)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMapIterator<QString, bool> i(aStorageMap);
     qCInfo(lcButeoCore) << "ProfileManager::enableStorages";
@@ -765,7 +764,7 @@ void ProfileManager::setStoragesVisible(Profile &aProfile,
                                         QMap<QString, bool> &aStorageMap,
                                         bool *aModified)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMapIterator<QString, bool> i(aStorageMap);
     qCInfo(lcButeoCore) << "ProfileManager::enableStorages";
@@ -790,7 +789,7 @@ void ProfileManager::setStoragesVisible(Profile &aProfile,
 
 bool ProfileManager::removeProfile(const QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool success = false;
 
@@ -808,7 +807,7 @@ bool ProfileManager::removeProfile(const QString &aProfileId)
 
 bool ProfileManagerPrivate::remove(const QString &aName, const QString &aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool success = false;
     QString filePath = iPrimaryPath + QDir::separator() + aType + QDir::separator() + aName + FORMAT_EXT;
@@ -878,7 +877,7 @@ void ProfileManager::expand(Profile &aProfile)
 
 bool ProfileManager::saveLog(const SyncLog &aLog)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDir dir;
     QString fullPath = d_ptr->iPrimaryPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
@@ -917,7 +916,7 @@ bool ProfileManager::saveLog(const SyncLog &aLog)
 
 void ProfileManager::saveRemoteTargetId(Profile &aProfile, const QString &aTargetId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     qCDebug(lcButeoCore) << "saveRemoteTargetId :" << aTargetId;
     aProfile.setKey (KEY_REMOTE_ID, aTargetId);
@@ -928,7 +927,7 @@ void ProfileManager::saveRemoteTargetId(Profile &aProfile, const QString &aTarge
 
 bool ProfileManager::rename(const QString &aName, const QString &aNewName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool ret = false;
     // Rename the sync profile
@@ -959,7 +958,7 @@ bool ProfileManager::saveSyncResults(QString aProfileName,
                                      const SyncResults &aResults)
 {
 
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool success = false;
 
     SyncProfile *profile = syncProfile(aProfileName);
@@ -981,7 +980,7 @@ bool ProfileManager::saveSyncResults(QString aProfileName,
 
 bool ProfileManager::setSyncSchedule(QString aProfileId, QString aScheduleAsXml)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     SyncProfile *profile = syncProfile(aProfileId);
     if (profile) {
@@ -1003,8 +1002,6 @@ bool ProfileManager::setSyncSchedule(QString aProfileId, QString aScheduleAsXml)
 
 bool ProfileManagerPrivate::parseFile(const QString &aPath, QDomDocument &aDoc)
 {
-    //FUNCTION_CALL_TRACE;
-
     bool parsingOk = false;
 
     if (QFile::exists(aPath)) {
@@ -1031,8 +1028,6 @@ bool ProfileManagerPrivate::parseFile(const QString &aPath, QDomDocument &aDoc)
 
 QDomDocument ProfileManagerPrivate::constructProfileDocument(const Profile &aProfile)
 {
-    //FUNCTION_CALL_TRACE;
-
     QDomDocument doc;
     QDomElement root = aProfile.toXml(doc);
 
@@ -1053,7 +1048,7 @@ QDomDocument ProfileManagerPrivate::constructProfileDocument(const Profile &aPro
 bool ProfileManagerPrivate::writeProfileFile(const QString &aProfilePath,
                                              const QDomDocument &aDoc)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     qCWarning(lcButeoCore) << "writeProfileFile() called, forcing disk write:" << aProfilePath;
 
     QFile file(aProfilePath);
@@ -1075,8 +1070,6 @@ bool ProfileManagerPrivate::writeProfileFile(const QString &aProfilePath,
 void ProfileManagerPrivate::restoreBackupIfFound(const QString &aProfilePath,
                                                  const QString &aBackupPath)
 {
-    //FUNCTION_CALL_TRACE;
-
     if (QFile::exists(aBackupPath)) {
         qCWarning(lcButeoCore) << "Profile backup file found. The actual profile may be corrupted.";
 
@@ -1096,7 +1089,7 @@ void ProfileManagerPrivate::restoreBackupIfFound(const QString &aProfilePath,
 bool ProfileManagerPrivate::createBackup(const QString &aProfilePath,
                                          const QString &aBackupPath)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return QFile::copy(aProfilePath, aBackupPath);
 }
 
@@ -1126,7 +1119,7 @@ bool ProfileManagerPrivate::profileExists(const QString &aProfileId, const QStri
 
 void ProfileManager::addRetriesInfo(const SyncProfile *profile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (profile) {
         if (profile->hasRetries() && !iSyncRetriesInfo.contains(profile->name())) {
             qCDebug(lcButeoCore) << "syncretries : retries info present for profile" << profile->name();
@@ -1137,7 +1130,7 @@ void ProfileManager::addRetriesInfo(const SyncProfile *profile)
 
 QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QDateTime nextRetryInterval;
     if (aProfile &&
             iSyncRetriesInfo.contains(aProfile->name()) &&
@@ -1152,7 +1145,7 @@ QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
 
 void ProfileManager::retriesDone(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (iSyncRetriesInfo.contains(aProfileName)) {
         iSyncRetriesInfo.remove(aProfileName);
         qCDebug(lcButeoCore) << "syncretries : retry success for" << aProfileName;
