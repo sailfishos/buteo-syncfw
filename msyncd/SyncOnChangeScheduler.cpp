@@ -35,9 +35,9 @@ bool SyncOnChangeScheduler::addProfile(const SyncProfile *aProfile)
         SOCtimer->fire();
         scheduled = true;
         iSOCTimers.insert(aProfile->name(), SOCtimer);
-        LOG_DEBUG("Sync on change scheduled for profile" << aProfile->name());
+        qCDebug(lcButeoMsyncd) << "Sync on change scheduled for profile" << aProfile->name();
     } else if (aProfile) {
-        LOG_DEBUG("Sync on change already scheduled for profile" << aProfile->name());
+        qCDebug(lcButeoMsyncd) << "Sync on change already scheduled for profile" << aProfile->name();
     }
     return scheduled;
 }
@@ -57,7 +57,7 @@ void SyncOnChangeScheduler::sync(const SyncProfile *aProfile)
     iSOCTimers.remove(aProfile->name());
     SyncOnChangeTimer *SOCtimer = qobject_cast<SyncOnChangeTimer *>(sender());
     if (SOCtimer) {
-        LOG_DEBUG("Sync on change for profile" << aProfile->name());
+        qCDebug(lcButeoMsyncd) << "Sync on change for profile" << aProfile->name();
         delete SOCtimer;
         emit syncNow(aProfile->name());
     }

@@ -69,13 +69,13 @@ bool ServerPluginRunner::init()
         return true;
 
     if (iPluginMgr == 0 || iPluginCbIf == 0 || iProfile == 0) {
-        LOG_WARNING("Invalid members, failed to initialize");
+        qCWarning(lcButeoMsyncd) << "Invalid members, failed to initialize";
         return false;
     }
 
     iPlugin = iPluginMgr->createServer(iPluginName, *iProfile, iPluginCbIf);
     if (iPlugin == 0) {
-        LOG_WARNING("Failed to create server plug-in:" << iPluginName);
+        qCWarning(lcButeoMsyncd) << "Failed to create server plug-in:" << iPluginName;
         return false;
     }
 
@@ -123,7 +123,7 @@ bool ServerPluginRunner::start()
     bool rv = false;
     if (iInitialized && iThread != 0) {
         rv = iThread->startThread(iPlugin);
-        LOG_DEBUG("ServerPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv);
+        qCDebug(lcButeoMsyncd) << "ServerPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv;
     }
 
     return rv;

@@ -60,7 +60,7 @@ ServerActivator::ServerActivator(ProfileManager &aProfileManager,
             delete serverProfile;
             serverProfile = 0;
         } else {
-            LOG_WARNING("Failed to load server profile:" << serverProfileName);
+            qCWarning(lcButeoMsyncd) << "Failed to load server profile:" << serverProfileName;
         }
     }
 
@@ -98,7 +98,7 @@ int ServerActivator::addRef(const QString &aServerName, bool emitSignal /*= true
             emit serverEnabled(aServerName);
         }
     } else {
-        LOG_WARNING("Unknown server:" << aServerName);
+        qCWarning(lcButeoMsyncd) << "Unknown server:" << aServerName;
     }
 
     return refCount;
@@ -119,7 +119,7 @@ int ServerActivator::removeRef(const QString &aServerName, bool emitSignal /*= t
         }
         refCount = data.iRefCount;
     } else {
-        LOG_WARNING("Unknown server:" << aServerName);
+        qCWarning(lcButeoMsyncd) << "Unknown server:" << aServerName;
     }
 
     return refCount;

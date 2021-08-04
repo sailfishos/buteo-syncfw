@@ -56,7 +56,7 @@ SyncScheduler::SyncScheduler(QObject *aParent)
     connect(iAlarmInventory, SIGNAL(triggerAlarm(int)),
             this, SLOT(doAlarmActions(int)));
     if (!iAlarmInventory->init()) {
-        LOG_WARNING("AlarmInventory Init Failed");
+        qCWarning(lcButeoMsyncd) << "AlarmInventory Init Failed";
     }
 
 #endif
@@ -89,7 +89,7 @@ void SyncScheduler::addProfileForSyncRetry(const SyncProfile *aProfile, QDateTim
         int alarmId = setNextAlarm(aProfile, aNextSyncTime);
         if (alarmId > 0) {
             iSyncScheduleProfiles.insert(aProfile->name(), alarmId);
-            LOG_DEBUG("syncretries : retry scheduled for profile" << aProfile->name());
+            qCDebug(lcButeoMsyncd) << "syncretries : retry scheduled for profile" << aProfile->name();
         }
 #endif
     }
@@ -126,8 +126,8 @@ bool SyncScheduler::addProfile(const SyncProfile *aProfile)
         if (alarmId > 0) {
             iSyncScheduleProfiles.insert(aProfile->name(), alarmId);
             profileAdded = true;
-            LOG_DEBUG("Sync scheduled: profile =" << aProfile->name() <<
-                      "time =" << aProfile->nextSyncTime());
+            qCDebug(lcButeoMsyncd) << "Sync scheduled: profile =" << aProfile->name() <<
+                      "time =" << aProfile->nextSyncTime();
         }
     }
 
@@ -140,14 +140,14 @@ void SyncScheduler::removeProfile(const QString &aProfileName)
     FUNCTION_CALL_TRACE;
 #ifdef USE_KEEPALIVE
     if (iBackgroundActivity->remove(aProfileName)) {
-        LOG_DEBUG("Scheduled sync removed: profile =" << aProfileName);
+        qCDebug(lcButeoMsyncd) << "Scheduled sync removed: profile =" << aProfileName;
     }
 #else
     if (iSyncScheduleProfiles.contains(aProfileName)) {
         int alarmEventID = iSyncScheduleProfiles.value(aProfileName);
         removeAlarmEvent(alarmEventID);
         iSyncScheduleProfiles.remove(aProfileName);
-        LOG_DEBUG("Scheduled sync removed: profile =" << aProfileName);
+        qCDebug(lcButeoMsyncd) << "Scheduled sync removed: profile =" << aProfileName;
     }
 #endif
 }
@@ -165,8 +165,8 @@ void SyncScheduler::syncStatusChanged(const QString &aProfileName, int aStatus,
     if (iActiveBackgroundSyncProfiles.contains(aProfileName) && aStatus >= Sync::SYNC_ERROR) {
         // the background sync cycle is finished.
         // tell the scheduler that it can stop preventing device suspend.
-        LOG_DEBUG("Background sync" << aProfileName << "finished with status:" << aStatus <<
-                  "and extra:" << aMessage << "," << aMoreDetails);
+        qCDebug(lcButeoMsyncd) << "Background sync" << aProfileName << "finished with status:" << aStatus <<
+                  "and extra:" << aMessage << "," << aMoreDetails;
         iActiveBackgroundSyncProfiles.remove(aProfileName);
 #ifdef USE_KEEPALIVE
         iBackgroundActivity->onBackgroundSyncCompleted(aProfileName);
@@ -194,7 +194,7 @@ void SyncScheduler::rescheduleBackgroundActivity(const QString &aProfileName)
         setNextAlarm(profile);
         delete profile;
     } else {
-        LOG_WARNING("Invalid profile, can't reschedule switch timer for " << aProfileName);
+        qCWarning(lcButeoMsyncd) << "Invalid profile, can't reschedule switch timer for " << aProfileName;
     }
 }
 #endif
@@ -230,8 +230,8 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
                 iBackgroundActivity->setSwitch(aProfile->name(), nextSyncSwitch);
             } else {
                 iBackgroundActivity->removeSwitch(aProfile->name());
-                LOG_DEBUG("Removing switch timer for"
-                          << aProfile->name() << " invalid switch timer");
+                qCDebug(lcButeoMsyncd) << "Removing switch timer for"
+                          << aProfile->name() << " invalid switch timer";
             }
         } else {
             iBackgroundActivity->removeSwitch(aProfile->name());
@@ -240,8 +240,8 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
         iAlarmInventory->addAlarm(nextSyncTime);
 #endif
         if (alarmEventID == 0) {
-            LOG_WARNING("Failed to add alarm for scheduled sync of profile"
-                        << aProfile->name());
+            qCWarning(lcButeoMsyncd) << "Failed to add alarm for scheduled sync of profile"
+                        << aProfile->name();
         }
     } else {
 #ifdef USE_KEEPALIVE
@@ -259,8 +259,8 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
             iBackgroundActivity->removeSwitch(aProfile->name());
         }
 #endif
-        LOG_WARNING("Next sync time is not valid, sync not scheduled for profile"
-                    << aProfile->name());
+        qCWarning(lcButeoMsyncd) << "Next sync time is not valid, sync not scheduled for profile"
+                    << aProfile->name();
     }
 
     return alarmEventID;
@@ -293,9 +293,9 @@ void SyncScheduler::removeAlarmEvent(int aAlarmEventID)
     bool err = iAlarmInventory->removeAlarm(aAlarmEventID);
 
     if (err < false) {
-        LOG_WARNING("No alarm found for ID " << aAlarmEventID);
+        qCWarning(lcButeoMsyncd) << "No alarm found for ID " << aAlarmEventID;
     } else {
-        LOG_DEBUG("Removed alarm, ID =" << aAlarmEventID);
+        qCDebug(lcButeoMsyncd) << "Removed alarm, ID =" << aAlarmEventID;
     }
 }
 

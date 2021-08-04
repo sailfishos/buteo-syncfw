@@ -174,7 +174,7 @@ void SyncSession::abort(Sync::SyncStatus aStatus)
     FUNCTION_CALL_TRACE;
 
     if (!iStarted) {
-        LOG_DEBUG("Client plugin runner not started, ignore abort");
+        qCDebug(lcButeoMsyncd) << "Client plugin runner not started, ignore abort";
         updateResults(SyncResults(QDateTime::currentDateTime(),
                                   SyncResults::SYNC_RESULT_FAILED,
                                   Buteo::SyncResults::ABORTED));
@@ -218,7 +218,7 @@ void SyncSession::stop()
     FUNCTION_CALL_TRACE;
 
     if (!iStarted) {
-        LOG_DEBUG("Plugin runner not yet started, ignoring stop.");
+        qCDebug(lcButeoMsyncd) << "Plugin runner not yet started, ignoring stop.";
     } else if (iPluginRunner != 0) {
         iPluginRunner->stop();
     }
@@ -356,7 +356,7 @@ void SyncSession::onDone()
     }
 
     if (!iFinished) {
-        LOG_WARNING("Plug-in terminated unexpectedly:" << pluginName);
+        qCWarning(lcButeoMsyncd) << "Plug-in terminated unexpectedly:" << pluginName;
         emit finished(profileName(), Sync::SYNC_ERROR, iMessage, SyncResults::NO_ERROR);
     }
 }
@@ -364,7 +364,7 @@ void SyncSession::onDone()
 void SyncSession::onDestroyed(QObject *aPluginRunner)
 {
     if (iPluginRunner == aPluginRunner) {
-        LOG_WARNING("Plug-in runner destroyed before sync session");
+        qCWarning(lcButeoMsyncd) << "Plug-in runner destroyed before sync session";
         iPluginRunner = 0;
     }
 }
@@ -426,13 +426,13 @@ void SyncSession::onNetworkSessionOpened()
     }
 
     if (false == tryStart()) {
-        LOG_WARNING("attempt to start sync session due to network session opened failed!");
+        qCWarning(lcButeoMsyncd) << "attempt to start sync session due to network session opened failed!";
         updateResults(SyncResults(QDateTime::currentDateTime(),
                                   SyncResults::SYNC_RESULT_FAILED,
                                   Buteo::SyncResults::INTERNAL_ERROR));
         emit finished(profileName(), Sync::SYNC_ERROR, QString(), SyncResults::INTERNAL_ERROR);
     } else {
-        LOG_DEBUG("attempt to start sync session due to network session opened succeeded.");
+        qCDebug(lcButeoMsyncd) << "attempt to start sync session due to network session opened succeeded.";
     }
 }
 

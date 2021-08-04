@@ -54,11 +54,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     // Initialize the logger
     Buteo::Logger::instance();
 
-    LOG_DEBUG("Starting Log At :"  << QDateTime::currentDateTime()  );
+    qCDebug(lcButeoMsyncd) << "Starting Log At :"  << QDateTime::currentDateTime() ;
 
     Buteo::Synchronizer *synchronizer = new Buteo::Synchronizer(&app);
     if (synchronizer == 0) {
-        LOG_FATAL("Failed to create synchronizer");
+        qCCritical(lcButeoMsyncd) << "Failed to create synchronizer";
     }
 
     if (!synchronizer->initialize()) {
@@ -103,9 +103,9 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     // This class provide hanlding unix  signal.
     SyncSigHandler *sigHandler = new SyncSigHandler();
 
-    LOG_DEBUG("Entering event loop");
+    qCDebug(lcButeoMsyncd) << "Entering event loop";
     int returnValue = app.exec();
-    LOG_DEBUG("Exiting event loop");
+    qCDebug(lcButeoMsyncd) << "Exiting event loop";
 
     synchronizer->close();
     delete synchronizer;
@@ -114,7 +114,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     delete sigHandler;
     sigHandler = 0;
 
-    LOG_DEBUG("Stopping logger");
+    qCDebug(lcButeoMsyncd) << "Stopping logger";
 
     Buteo::Logger::deleteInstance();
 

@@ -87,7 +87,7 @@ void StorageChangeNotifier::storageChanged()
     FUNCTION_CALL_TRACE;
     StorageChangeNotifierPlugin *plugin = qobject_cast<StorageChangeNotifierPlugin *>(sender());
     if (plugin) {
-        LOG_DEBUG("Change in storage" << plugin->name());
+        qCDebug(lcButeoMsyncd) << "Change in storage" << plugin->name();
         plugin->changesReceived();
         emit storageChange(plugin->name());
     }

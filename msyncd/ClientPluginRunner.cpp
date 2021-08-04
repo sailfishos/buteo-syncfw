@@ -67,13 +67,13 @@ bool ClientPluginRunner::init()
         return true;
 
     if (iPluginMgr == 0 || iPluginCbIf == 0 || iProfile == 0) {
-        LOG_WARNING("Invalid members, failed to initialize");
+        qCWarning(lcButeoMsyncd) << "Invalid members, failed to initialize";
         return false;
     }
 
     iPlugin = iPluginMgr->createClient(iPluginName, *iProfile, iPluginCbIf);
     if (iPlugin == 0) {
-        LOG_WARNING("Failed to create client plug-in:" << iPluginName);
+        qCWarning(lcButeoMsyncd) << "Failed to create client plug-in:" << iPluginName;
         return false;
     }
 
@@ -119,7 +119,7 @@ bool ClientPluginRunner::start()
         // Set a timer after which the sync session should stop
         QTimer::singleShot(MAX_PLUGIN_SYNC_TIME, this, SLOT(pluginTimeout()));
         rv = iThread->startThread(iPlugin);
-        LOG_DEBUG("ClientPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv);
+        qCDebug(lcButeoMsyncd) << "ClientPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv;
     }
 
     return rv;

@@ -46,11 +46,11 @@ SyncSigHandler::SyncSigHandler(QObject *aParent, const char */*aName*/)
 
     //Adding socketpair to monitor those fd's.
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, iSigHupFd)) {
-        LOG_CRITICAL("Couldn't create HUP socketpair");
+        qCCritical(lcButeoMsyncd) << "Couldn't create HUP socketpair";
     }
 
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, iSigTermFd)) {
-        LOG_CRITICAL("Couldn't create TERM socketpair");
+        qCCritical(lcButeoMsyncd) << "Couldn't create TERM socketpair";
     }
 
     //SocketNotifier for read those fd's.

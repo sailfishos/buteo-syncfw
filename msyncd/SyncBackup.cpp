@@ -47,9 +47,9 @@ SyncBackup::SyncBackup() :
     QDBusConnection dbus = QDBusConnection::sessionBus();
 
     if (dbus.registerObject(DBUS_BACKUP_OBJECT, this)) {
-        LOG_DEBUG("Registered sync backup to D-Bus");
+        qCDebug(lcButeoMsyncd) << "Registered sync backup to D-Bus";
     } else {
-        LOG_CRITICAL("Failed to register sync backup to D-Bus");
+        qCCritical(lcButeoMsyncd) << "Failed to register sync backup to D-Bus";
         Q_ASSERT(false);
     }
 
@@ -70,7 +70,7 @@ SyncBackup::~SyncBackup()
     iWatchService = 0;
     delete iAdaptor;
     iAdaptor = 0;
-    LOG_DEBUG("Unregistered backup from D-Bus");
+    qCDebug(lcButeoMsyncd) << "Unregistered backup from D-Bus";
 }
 
 void SyncBackup::backupServiceUnregistered(const QString  &serviceName)
@@ -108,7 +108,7 @@ void SyncBackup::sendReply (uchar aResult)
 
     // coverity[unreachable]  //Suppressing false positives with code annotations
     if (iReply) {
-        LOG_DEBUG ("Send Reply");
+        qCDebug(lcButeoMsyncd) << "Send Reply";
         QList<QVariant>  arguments;
         QVariant vt = QVariant::fromValue((uchar)aResult);
         arguments.append(vt);

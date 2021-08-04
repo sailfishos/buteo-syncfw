@@ -83,7 +83,7 @@ bool ClientThread::startThread(ClientPlugin *aClientPlugin)
 
     iClientPlugin = aClientPlugin;
     if (iClientPlugin == 0) {
-        LOG_CRITICAL("Client plugin is NULL");
+        qCCritical(lcButeoMsyncd) << "Client plugin is NULL";
         return false;
     }
 
@@ -96,7 +96,7 @@ bool ClientThread::startThread(ClientPlugin *aClientPlugin)
         // in the application thread, because this is where
         // this instance lives.
         iProvider = username.mid(prefix.size());
-        LOG_DEBUG("SSO provider::" << iProvider);
+        qCDebug(lcButeoMsyncd) << "SSO provider::" << iProvider;
         iService = new SignOn::AuthService(this);
         connect(iService, SIGNAL(identities(const QList<SignOn::IdentityInfo> &)),
                 this, SLOT(identities(const QList<SignOn::IdentityInfo> &)));
@@ -121,13 +121,13 @@ void ClientThread::run()
     FUNCTION_CALL_TRACE;
 
     if (!iClientPlugin->init()) {
-        LOG_WARNING( "Could not initialize client plugin:" << iClientPlugin->getPluginName() );
+        qCWarning(lcButeoMsyncd) << "Could not initialize client plugin:" << iClientPlugin->getPluginName();
         emit initError(getProfileName(), "", SyncResults::PLUGIN_ERROR);
         return;
     }
 
     if (!iClientPlugin->startSync()) {
-        LOG_WARNING( "Could not start client plugin:" << iClientPlugin->getPluginName() );
+        qCWarning(lcButeoMsyncd) << "Could not start client plugin:" << iClientPlugin->getPluginName();
         emit initError(getProfileName(), "", SyncResults::PLUGIN_ERROR);
         return;
     }
@@ -161,7 +161,7 @@ void ClientThread::identities(const QList<SignOn::IdentityInfo> &identityList)
 
     for (int i = 0; i < identityList.size(); ++i) {
         const SignOn::IdentityInfo &info = identityList.at(i);
-        LOG_DEBUG("Signon identity::" << info.caption());
+        qCDebug(lcButeoMsyncd) << "Signon identity::" << info.caption();
         if (info.caption() == iProvider) {
             iIdentity = SignOn::Identity::existingIdentity(info.id(), this);
             // Setup an authentication session using the "password" method
@@ -185,7 +185,7 @@ void ClientThread::identityResponse(const SignOn::SessionData &sessionData)
 
     // temporarily set real username/password, then invoke client
     SyncProfile &profile = iClientPlugin->profile();
-    LOG_DEBUG("Username::" << sessionData.UserName());
+    qCDebug(lcButeoMsyncd) << "Username::" << sessionData.UserName();
     profile.setKey("Username", sessionData.UserName());
     profile.setKey("Password", sessionData.Secret());
 

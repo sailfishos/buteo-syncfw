@@ -101,24 +101,24 @@ bool IPHeartBeat::setHeartBeat(const QString &aProfName, ushort aMinWaitTime, us
     if ((aMinWaitTime > aMaxWaitTime) || aProfName.isEmpty())
         return false;
 
-    LOG_DEBUG("setHeartBeat(), profile name = " << aProfName);
+    qCDebug(lcButeoMsyncd) << "setHeartBeat(), profile name = " << aProfName;
 
     if (iBeatsWaiting.contains(aProfName) == true) {
-        LOG_DEBUG("Profile already in waiting... No new beat");
+        qCDebug(lcButeoMsyncd) << "Profile already in waiting... No new beat";
         return true; //returing 'true' - no immediate sync request to be sent.
     }
 
     iphb_t iphbHandle = iphb_open(nullptr);
 
     if (iphbHandle == 0) {
-        LOG_DEBUG("iphb_open() failed.... No IP heartbeat available");
+        qCDebug(lcButeoMsyncd) << "iphb_open() failed.... No IP heartbeat available";
         return false;
     }
 
     int sockfd = iphb_get_fd(iphbHandle);
 
     if (sockfd < 0) {
-        LOG_DEBUG("iphb_get_fd() failed.... No IP heartbeat");
+        qCDebug(lcButeoMsyncd) << "iphb_get_fd() failed.... No IP heartbeat";
         iphb_close(iphbHandle);
         return false;
     }
@@ -129,14 +129,14 @@ bool IPHeartBeat::setHeartBeat(const QString &aProfName, ushort aMinWaitTime, us
     newBeat.sockNotifier = new QSocketNotifier(sockfd, QSocketNotifier::Read, 0);
 
     if (iphb_wait(iphbHandle, aMinWaitTime, aMaxWaitTime, 0) == -1) {
-        LOG_DEBUG("iphb_wait() failed .... No IP heartbeat");
+        qCDebug(lcButeoMsyncd) << "iphb_wait() failed .... No IP heartbeat";
         removeWait(aProfName);
         return false;
     }
 
     connect(newBeat.sockNotifier, SIGNAL(activated(int)), this, SLOT(internalBeatTriggered(int)));
 
-    LOG_DEBUG("IP Heartbeat set for profile");
+    qCDebug(lcButeoMsyncd) << "IP Heartbeat set for profile";
 
     return true;
 }
@@ -149,7 +149,7 @@ void IPHeartBeat::internalBeatTriggered(int aSockFd)
 
     if (getProfNameFromFd(aSockFd, profName) == true) {
         removeWait(profName);
-        LOG_DEBUG("Emitting IP  Heartbeat, profile name = " << profName);
+        qCDebug(lcButeoMsyncd) << "Emitting IP  Heartbeat, profile name = " << profName;
         emit onHeartBeat(profName);
     }
 }
