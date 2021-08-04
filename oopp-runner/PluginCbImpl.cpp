@@ -57,11 +57,11 @@ bool PluginCbImpl::requestStorage(const QString &aStorageName,
         QDBusReply<bool> gotStorages = imsyncIface->requestStorages(storages);
 
         if (!gotStorages.isValid())
-            LOG_WARNING("Request for storage " << aStorageName << " failed");
+            qCWarning(lcButeoPlugin) << "Request for storage " << aStorageName << " failed";
         else
             requestResult = gotStorages.value();
     } else {
-        LOG_WARNING("msyncd dbus interface is NULL");
+        qCWarning(lcButeoPlugin) << "msyncd dbus interface is NULL";
     }
 
     return requestResult;
@@ -77,7 +77,7 @@ void PluginCbImpl::releaseStorage(const QString &aStorageName,
         storages << aStorageName;
         imsyncIface->releaseStorages(storages);
     } else {
-        LOG_WARNING("msyncd dbus interface is NULL");
+        qCWarning(lcButeoPlugin) << "msyncd dbus interface is NULL";
     }
 }
 

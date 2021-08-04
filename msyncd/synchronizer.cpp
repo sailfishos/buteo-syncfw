@@ -305,16 +305,16 @@ bool Synchronizer::startScheduledSync(QString aProfileName)
                                                   Buteo::SyncResults::ABORTED);
             }
         } else {
-            LOG_DEBUG("Scheduled sync of" << aProfileName << "accepted with current connection type" <<
-                      iNetworkManager->connectionType());
+            qCDebug(lcButeoMsyncd) << "Scheduled sync of" << aProfileName << "accepted with current connection type" <<
+                      iNetworkManager->connectionType();
             startSync(aProfileName, true);
         }
     } else {
         qCInfo(lcButeoMsyncd) << "Wait for internet connection:" << aProfileName;
         if (iNetworkManager->isOnline()) {
             // see acceptScheduledSync() for the determination of whether the connection type is allowed for sync operations.
-            LOG_INFO("Connection" << iNetworkManager->connectionType() <<
-                     "is of disallowed type. The sync will be postponed until an allowed connection is available.");
+            qCInfo(lcButeoMsyncd) << "Connection" << iNetworkManager->connectionType() <<
+                     "is of disallowed type. The sync will be postponed until an allowed connection is available.";
         } else {
             qCInfo(lcButeoMsyncd) << "Device offline. Wait for internet connection.";
         }
@@ -1284,9 +1284,9 @@ void Synchronizer::onNewSession(const QString &aDestination)
             qSort(syncProfiles.begin(), syncProfiles.end(), syncProfilePointerLessThan);
 
             profile = syncProfiles.first();
-            LOG_DEBUG( "Found" << syncProfiles.count() << "sync profiles with a "
+            qCDebug(lcButeoMsyncd) << "Found" << syncProfiles.count() << "sync profiles with a "
                        "matching destination address. Selecting" <<
-                       profile->name());
+                       profile->name();
             syncProfiles.removeFirst();
             qDeleteAll(syncProfiles);
         }
