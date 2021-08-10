@@ -40,10 +40,10 @@ void SyncScheduleTest::testConstruction()
     SyncSchedule s;
     QCOMPARE(s.interval(), (unsigned)0);
     QCOMPARE(s.time().isNull(), true);
-    QCOMPARE(s.days().isEmpty(), true);
+    QCOMPARE(s.days(), SyncSchedule::NoDays);
     QCOMPARE(s.rushEnabled(), false);
     QCOMPARE(s.rushInterval(), (unsigned)0);
-    QCOMPARE(s.rushDays().isEmpty(), true);
+    QCOMPARE(s.rushDays(), SyncSchedule::NoDays);
 
     // Create from XML.
     QDomDocument doc;
@@ -51,26 +51,26 @@ void SyncScheduleTest::testConstruction()
     SyncSchedule s2(doc.documentElement());
     QCOMPARE(s2.interval(), (unsigned)30);
     QVERIFY(s2.time() == QTime(12, 34, 56, 0));
-    DaySet days = s2.days();
-    QCOMPARE(days.contains(Qt::Monday), true);
-    QCOMPARE(days.contains(Qt::Tuesday), true);
-    QCOMPARE(days.contains(Qt::Wednesday), true);
-    QCOMPARE(days.contains(Qt::Thursday), true);
-    QCOMPARE(days.contains(Qt::Friday), true);
-    QCOMPARE(days.contains(Qt::Saturday), true);
-    QCOMPARE(days.contains(Qt::Sunday), false);
+    SyncSchedule::Days days = s2.days();
+    QVERIFY(days.testFlag(SyncSchedule::Monday));
+    QVERIFY(days.testFlag(SyncSchedule::Tuesday));
+    QVERIFY(days.testFlag(SyncSchedule::Wednesday));
+    QVERIFY(days.testFlag(SyncSchedule::Thursday));
+    QVERIFY(days.testFlag(SyncSchedule::Friday));
+    QVERIFY(days.testFlag(SyncSchedule::Saturday));
+    QVERIFY(!days.testFlag(SyncSchedule::Sunday));
     QCOMPARE(s2.rushEnabled(), true);
     QCOMPARE(s2.rushInterval(), (unsigned)15);
     QVERIFY(s2.rushBegin() == QTime(8, 0, 0, 0));
     QVERIFY(s2.rushEnd() == QTime(16, 0, 0, 0));
-    DaySet rushDays = s2.rushDays();
-    QCOMPARE(rushDays.contains(Qt::Monday), true);
-    QCOMPARE(rushDays.contains(Qt::Tuesday), false);
-    QCOMPARE(rushDays.contains(Qt::Wednesday), false);
-    QCOMPARE(rushDays.contains(Qt::Thursday), true);
-    QCOMPARE(rushDays.contains(Qt::Friday), true);
-    QCOMPARE(rushDays.contains(Qt::Saturday), false);
-    QCOMPARE(rushDays.contains(Qt::Sunday), false);
+    SyncSchedule::Days rushDays = s2.rushDays();
+    QVERIFY(rushDays.testFlag(SyncSchedule::Monday));
+    QVERIFY(!rushDays.testFlag(SyncSchedule::Tuesday));
+    QVERIFY(!rushDays.testFlag(SyncSchedule::Wednesday));
+    QVERIFY(rushDays.testFlag(SyncSchedule::Thursday));
+    QVERIFY(rushDays.testFlag(SyncSchedule::Friday));
+    QVERIFY(!rushDays.testFlag(SyncSchedule::Saturday));
+    QVERIFY(!rushDays.testFlag(SyncSchedule::Sunday));
 
     // Copy constructor.
     SyncSchedule s3(s2);
@@ -85,9 +85,9 @@ void SyncScheduleTest::testConstruction()
 void SyncScheduleTest::testProperties()
 {
     SyncSchedule s;
-    DaySet d;
-    d.insert(Qt::Tuesday);
-    d.insert(Qt::Saturday);
+    SyncSchedule::Days d;
+    d |= SyncSchedule::Tuesday;
+    d |= SyncSchedule::Saturday;
     s.setDays(d);
     QVERIFY(s.days() == d);
     QTime t(1, 2, 3, 0);
@@ -98,7 +98,7 @@ void SyncScheduleTest::testProperties()
     QVERIFY(s.interval() == interval);
     s.setRushEnabled(true);
     QVERIFY(s.rushEnabled() == true);
-    d.insert(Qt::Wednesday);
+    d |= SyncSchedule::Wednesday;
     s.setRushDays(d);
     QVERIFY(s.rushDays() == d);
     QTime rushBegin(8, 0, 0, 0);
@@ -132,9 +132,9 @@ void SyncScheduleTest::testNextSyncTime()
     s.setTime(exact);
     QDateTime next = s.nextSyncTime(previous);
     QVERIFY(next.isNull());
-    DaySet days;
-    days.insert(Qt::Wednesday);
-    days.insert(Qt::Monday);
+    SyncSchedule::Days days;
+    days |= SyncSchedule::Wednesday;
+    days |= SyncSchedule::Monday;
     s.setDays(days);
     next = s.nextSyncTime(previous);
     QVERIFY(!next.isNull());
@@ -166,9 +166,9 @@ void SyncScheduleTest::testNextSyncTime()
     QVERIFY(next.time() == QTime(0, 0, 0, 0)); // Sync as soon as day starts.
 
     // Rush enabled, no effect.
-    DaySet rushDays;
-    rushDays.insert(Qt::Monday);
-    rushDays.insert(Qt::Friday);
+    SyncSchedule::Days rushDays;
+    rushDays |= SyncSchedule::Monday;
+    rushDays |= SyncSchedule::Friday;
     s.setRushDays(rushDays);
     s.setRushEnabled(true);
     s.setRushTime(QTime(8, 0, 0, 0), QTime(16, 0, 0, 0));
@@ -223,19 +223,19 @@ void SyncScheduleTest::testIsSyncScheduled()
     QTime exact(15, 0, 0, 0);
     s.setTime(exact);
     QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 27), QTime(15, 0, 0, 0))));
-    DaySet days;
-    days.insert(Qt::Wednesday);
-    days.insert(Qt::Monday);
+    SyncSchedule::Days days;
+    days |= SyncSchedule::Wednesday;
+    days |= SyncSchedule::Monday;
     s.setDays(days);
     // This is a Tuesday.
-    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 27), QTime(15, 0, 0, 0))));
-    // These are valid within 10 seconds margin
-    QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 0, 0, 0))));
-    QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 0, 4, 0))));
-    QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 59, 56, 0))));
+    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 27), QTime(15, 0))));
+    // These are valid within 10 minutes margin
+    QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 0))));
+    QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 4, 59))));
+    QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 55, 1))));
     // These are invalid
-    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 0, 5, 0))));
-    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 59, 55, 0))));
+    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 5))));
+    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 55))));
 
     // Simply enabled, no rush.
     s.setTime(QTime());
@@ -247,9 +247,9 @@ void SyncScheduleTest::testIsSyncScheduled()
     QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 29), QTime(21, 0, 0, 0))));
 
     // Rush enabled, in rush time.
-    DaySet rushDays;
-    rushDays.insert(Qt::Tuesday);
-    rushDays.insert(Qt::Wednesday);
+    SyncSchedule::Days rushDays;
+    rushDays |= SyncSchedule::Tuesday;
+    rushDays |= SyncSchedule::Wednesday;
     s.setRushDays(rushDays);
     s.setRushEnabled(true);
     s.setRushTime(QTime(8, 0, 0, 0), QTime(16, 0, 0, 0));
