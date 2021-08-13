@@ -213,23 +213,17 @@ void AccountsHelper::setSyncSchedule(SyncProfile *syncProfile, Accounts::Account
         syncSchedule.setRushInterval(scheduleInterval);
         LOG_DEBUG ("Sync Rush Interval :" << scheduleInterval);
 
-        int map = account->valueAsInt (Buteo::SYNC_SCHEDULE_PEAK_DAYS_KEY_INT);
-        LOG_DEBUG ("Sync Days :" << account->valueAsInt (Buteo::SYNC_SCHEDULE_PEAK_DAYS_KEY_INT));
-        Buteo::DaySet rdays;
-        Buteo::DaySet days;
-        int lastDay = Qt::Sunday;
-        while (lastDay > 0) {
-            int val = 0;
-            val |= (1 << (lastDay - 1));
-            days.insert(lastDay);
-            if ((val & map)) {
-                rdays.insert(lastDay);
-                LOG_DEBUG ("Day :" << lastDay);
-            }
-            --lastDay;
-        }
-        syncSchedule.setRushDays(rdays);
-        syncSchedule.setDays(days);
+        syncSchedule.setDays(Buteo::SyncSchedule::Days()
+                             | Buteo::SyncSchedule::Monday
+                             | Buteo::SyncSchedule::Tuesday
+                             | Buteo::SyncSchedule::Wednesday
+                             | Buteo::SyncSchedule::Thursday
+                             | Buteo::SyncSchedule::Friday
+                             | Buteo::SyncSchedule::Saturday
+                             | Buteo::SyncSchedule::Sunday);
+        syncSchedule.setRushDays(Buteo::SyncSchedule::Days(account->valueAsInt(Buteo::SYNC_SCHEDULE_PEAK_DAYS_KEY_INT)));
+        LOG_DEBUG ("Sync Days :" << syncSchedule.rushDays());
+
         account->endGroup();
         syncProfile->setSyncSchedule (syncSchedule);
     }

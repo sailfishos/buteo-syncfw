@@ -36,7 +36,7 @@ using namespace Buteo;
 static const QString DAY_SEPARATOR = ",";
 
 SyncSchedulePrivate::SyncSchedulePrivate()
-    :   iInterval(0), iEnabled(false), iRushInterval(0), iRushEnabled(false), iExternalRushEnabled(false)
+    :   iDays(SyncSchedule::NoDays), iInterval(0), iEnabled(false), iRushDays(SyncSchedule::NoDays), iRushInterval(0), iRushEnabled(false), iExternalRushEnabled(false)
 {
 }
 
@@ -166,12 +166,12 @@ QString SyncSchedule::toString() const
     return doc.toString(PROFILE_INDENT);
 }
 
-DaySet SyncSchedule::days() const
+SyncSchedule::Days SyncSchedule::days() const
 {
     return d_ptr->iDays;
 }
 
-void SyncSchedule::setDays(const DaySet &aDays)
+void SyncSchedule::setDays(SyncSchedule::Days aDays)
 {
     d_ptr->iDays = aDays;
 }
@@ -236,12 +236,12 @@ void SyncSchedule::setSyncExternallyDuringRush(bool aEnabled)
     d_ptr->iExternalRushEnabled = aEnabled;
 }
 
-DaySet SyncSchedule::rushDays() const
+SyncSchedule::Days SyncSchedule::rushDays() const
 {
     return d_ptr->iRushDays;
 }
 
-void SyncSchedule::setRushDays(const DaySet &aDays)
+void SyncSchedule::setRushDays(SyncSchedule::Days aDays)
 {
     d_ptr->iRushDays = aDays;
 }
@@ -293,7 +293,7 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
     LOG_DEBUG("aPrevSync" << aPrevSync.toString() << "Last Configured Time " << scheduleConfiguredTime.toString()
               << "CurrentDateTime" << now);
 
-    if (d_ptr->iTime.isValid() && !d_ptr->iDays.isEmpty()) {
+    if (d_ptr->iTime.isValid() && d_ptr->iDays != SyncSchedule::NoDays) {
         // The sync time is defined explicitly (for ex. every Mon, Wed, at
         // 5:30PM). So choose the next applicable day from now.
         LOG_DEBUG("Explicit sync time defined.");
@@ -479,7 +479,7 @@ QDateTime SyncSchedule::nextRushSwitchTime(const QDateTime &aFromTime) const
             return QDateTime(aFromTime.date(), d_ptr->iRushEnd);
         } else {
             // If rush day and before rush end next switch is at rush begin
-            if (d_ptr->iRushDays.contains(aFromTime.date().dayOfWeek()) && aFromTime.time() < d_ptr->iRushBegin) {
+            if (SyncSchedulePrivate::daysMatch(d_ptr->iRushDays, aFromTime.date().dayOfWeek()) && aFromTime.time() < d_ptr->iRushBegin) {
                 return QDateTime(aFromTime.date(), d_ptr->iRushBegin);
             } else {
                 // Not a rush day or the rush period has ended, attemp switch at next day rush begin,
@@ -497,11 +497,12 @@ bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDate
     LOG_DEBUG("Check if sync is scheduled against" << aActualDateTime.toString());
 
     // Simple case, aDateTime is the defined sync time.
-    if (d_ptr->iTime.isValid() && !d_ptr->iDays.isEmpty()) {
+    if (d_ptr->iTime.isValid() && d_ptr->iDays != SyncSchedule::NoDays) {
         /* Todo: this is to simple implementation for the case where
            sync time is close to midnight and the day has changed
            already when fired. */
-        if (!d_ptr->iDays.contains(aActualDateTime.date().dayOfWeek())) {
+        if (!SyncSchedulePrivate::daysMatch(d_ptr->iDays,
+                                            aActualDateTime.date().dayOfWeek())) {
             return false;
         }
 
@@ -558,45 +559,79 @@ bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDate
     return reference.secsTo(aActualDateTime) > (interval * 60);
 }
 
-DaySet SyncSchedulePrivate::parseDays(const QString &aDays) const
+SyncSchedule::Days SyncSchedulePrivate::parseDays(const QString &aDays) const
 {
-    DaySet daySet;
+    SyncSchedule::Days days = 0;
+    const SyncSchedule::Day fromStrDays[] =
+        {SyncSchedule::Monday, SyncSchedule::Tuesday,
+         SyncSchedule::Wednesday, SyncSchedule::Thursday,
+         SyncSchedule::Friday, SyncSchedule::Saturday,
+         SyncSchedule::Sunday};
     if (!aDays.isNull()) {
         QStringList dayList = aDays.split(DAY_SEPARATOR,
                                           QString::SkipEmptyParts);
         foreach (QString dayStr, dayList) {
             bool ok;
             int dayNum = dayStr.toInt(&ok);
-            if (ok) {
-                daySet.insert(dayNum);
+            if (ok && dayNum > 0 && dayNum <= 7) {
+                days |= fromStrDays[dayNum - 1];
             }
         }
     }
 
-    return daySet;
+    return days;
 }
 
-QString SyncSchedulePrivate::createDays(const DaySet &aDays) const
+QString SyncSchedulePrivate::createDays(SyncSchedule::Days aDays) const
 {
     QStringList dayList;
 
-    foreach (int dayNum, aDays) {
-        dayList.append(QString::number(dayNum));
+    if (aDays & SyncSchedule::Monday) {
+        dayList.append(QString::fromLatin1("1"));
+    }
+    if (aDays & SyncSchedule::Tuesday) {
+        dayList.append(QString::fromLatin1("2"));
+    }
+    if (aDays & SyncSchedule::Wednesday) {
+        dayList.append(QString::fromLatin1("3"));
+    }
+    if (aDays & SyncSchedule::Thursday) {
+        dayList.append(QString::fromLatin1("4"));
+    }
+    if (aDays & SyncSchedule::Friday) {
+        dayList.append(QString::fromLatin1("5"));
+    }
+    if (aDays & SyncSchedule::Saturday) {
+        dayList.append(QString::fromLatin1("6"));
+    }
+    if (aDays & SyncSchedule::Sunday) {
+        dayList.append(QString::fromLatin1("7"));
     }
 
     return dayList.join(DAY_SEPARATOR);
 }
 
-bool SyncSchedulePrivate::adjustDate(QDateTime &aTime, const DaySet &aDays) const
+bool SyncSchedulePrivate::daysMatch(SyncSchedule::Days aDays, int aDay)
 {
-    if (aDays.isEmpty()) {
+    const SyncSchedule::Day fromQtDays[] =
+        {SyncSchedule::Monday, SyncSchedule::Tuesday,
+         SyncSchedule::Wednesday, SyncSchedule::Thursday,
+         SyncSchedule::Friday, SyncSchedule::Saturday,
+         SyncSchedule::Sunday};
+
+    return aDay >= Qt::Monday && aDay <= Qt::Sunday && (aDays & fromQtDays[aDay - 1]);
+}
+
+bool SyncSchedulePrivate::adjustDate(QDateTime &aTime, SyncSchedule::Days aDays) const
+{
+    if (aDays == SyncSchedule::NoDays) {
         aTime = QDateTime();
         return false;
     }
 
     bool newValidDay = false;
     int startDay = aTime.date().dayOfWeek();
-    while (!aDays.contains(aTime.date().dayOfWeek())) {
+    while (!daysMatch(aDays, aTime.date().dayOfWeek())) {
         newValidDay = true;
         aTime = aTime.addDays(1);
         // Safety check, avoid infinite loop if date set contains
@@ -614,7 +649,7 @@ bool SyncSchedulePrivate::adjustDate(QDateTime &aTime, const DaySet &aDays) cons
 
 bool SyncSchedulePrivate::isRush(const QDateTime &aTime) const
 {
-    return (iRushDays.contains(aTime.date().dayOfWeek()) &&
+    return (daysMatch(iRushDays, aTime.date().dayOfWeek()) &&
             aTime.time() >= iRushBegin && aTime.time() < iRushEnd);
 }
 

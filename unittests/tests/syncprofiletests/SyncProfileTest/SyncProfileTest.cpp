@@ -191,10 +191,14 @@ void SyncProfileTest::testNextSyncTime()
     SyncSchedule s;
     const unsigned INTERVAL = 15;
     s.setInterval(INTERVAL);
-    DaySet days;
-    days << Qt::Monday << Qt::Tuesday << Qt::Wednesday << Qt::Thursday <<
-         Qt::Friday << Qt::Saturday << Qt::Sunday;
-    s.setDays(days);
+    s.setDays(Buteo::SyncSchedule::Days()
+              | Buteo::SyncSchedule::Monday
+              | Buteo::SyncSchedule::Tuesday
+              | Buteo::SyncSchedule::Wednesday
+              | Buteo::SyncSchedule::Thursday
+              | Buteo::SyncSchedule::Friday
+              | Buteo::SyncSchedule::Saturday
+              | Buteo::SyncSchedule::Sunday);
     s.setScheduleEnabled(true);
     p.setSyncSchedule(s);
     QDateTime nextSync = p.nextSyncTime(p.lastSyncTime());

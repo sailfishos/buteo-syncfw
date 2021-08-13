@@ -26,7 +26,7 @@
 #define SYNCSCHEDULE_H
 
 #include <QTime>
-#include <QSet>
+#include <QFlags>
 
 class QDomDocument;
 class QDomElement;
@@ -35,8 +35,6 @@ namespace Buteo {
 
 class SyncSchedulePrivate;
 class SyncScheduleTest;
-
-typedef QSet<int> DaySet;
 
 const QString SYNC_SCHEDULE_ENABLED_KEY_BOOL("scheduler/schedule_enabled");
 const QString SYNC_SCHEDULE_PEAK_ENABLED_KEY_BOOL("scheduler/schedule_peak_enabled");
@@ -53,6 +51,18 @@ const QString SYNC_SCHEDULE_OFFPEAK_SCHEDULE_KEY_INT ("scheduler/schedule_off_pe
 class SyncSchedule
 {
 public:
+    enum Day {
+        NoDays    = 0x00,
+        Monday    = 0x01,
+        Tuesday   = 0x02,
+        Wednesday = 0x04,
+        Thursday  = 0x08,
+        Friday    = 0x10,
+        Saturday  = 0x20,
+        Sunday    = 0x40
+    };
+    Q_DECLARE_FLAGS(Days, Day)
+
     /*! \brief Constructs an empty schedule.
      *
      */
@@ -101,17 +111,16 @@ public:
 
     /*! \brief Gets the enabled week days of the sync schedule.
      *
-     * The returned set contains the numbers of enabled week days.
-     * Day numbers are defined in Qt::DayOfWeek.
-     * \return Set of week day numbers.
+     * Enabled week days are provided as a bitwise OR of SyncSchedule::Day.
+     * \return Set of week days.
      */
-    DaySet days() const;
+    Days days() const;
 
     /*! \brief Sets the enabled week days.
      *
      * \param aDays Set of enabled week days.
      */
-    void setDays(const DaySet &aDays);
+    void setDays(Days aDays);
 
     /*! \brief Gets the exact time set in sync schedule.
      *
@@ -196,13 +205,13 @@ public:
      *
      * \return Set of days enabled for rush hours.
      */
-    DaySet rushDays() const;
+    Days rushDays() const;
 
     /*! \brief Sets days enabled for rush hours.
      *
      * \param aDays Enabled days for rush hours.
      */
-    void setRushDays(const DaySet &aDays);
+    void setRushDays(Days aDays);
 
     /*! \brief Gets begin time of rush hours.
      *
