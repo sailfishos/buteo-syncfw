@@ -57,6 +57,10 @@ private:
     QLoggingCategory m_category;
 };
 
+bool isLoggingEnabled(const QLoggingCategory &loggingCategory);
+
+void configureLegacyLogging();
+
 }
 
 Q_DECLARE_LOGGING_CATEGORY(lcButeoCore)

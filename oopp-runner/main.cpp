@@ -24,7 +24,7 @@
 #include <QRegExp>
 #include "PluginServiceObj.h"
 #include "ButeoPluginIfaceAdaptor.h"
-#include "LogMacros.h"
+#include "Logger.h"
 
 #define DBUS_SERVICE_NAME_PREFIX "com.buteo.msyncd.plugin."
 #define DBUS_SERVICE_OBJ_PATH "/"
@@ -32,6 +32,7 @@
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    Buteo::configureLegacyLogging();
 
     // We obtain the plugin name and the profile name from cmdline
     // One way to pass the arguments is via cmdline, the other way is

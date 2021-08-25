@@ -93,6 +93,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
         QFile::setPermissions(msyncCacheSyncDir, permissions);
     }
 
+    Buteo::configureLegacyLogging();
+
     //Note:- Since we can't call Qt functions from Unix signal handlers.
     // This class provide hanlding unix  signal.
     SyncSigHandler *sigHandler = new SyncSigHandler();

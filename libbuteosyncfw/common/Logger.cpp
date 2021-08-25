@@ -28,6 +28,8 @@
 
 using namespace Buteo;
 
+static bool forceDisableTraceLogging = false;
+
 LogTimer::LogTimer(const QString &categoryName, const QString &func)
     : m_categoryName(categoryName.toUtf8())
     , m_func(func)
@@ -40,6 +42,30 @@ LogTimer::LogTimer(const QString &categoryName, const QString &func)
 LogTimer::~LogTimer()
 {
     qCDebug(m_category) << m_func << ":Exit, execution time:" << m_timer.elapsed() << "ms";
+}
+
+bool Buteo::isLoggingEnabled(const QLoggingCategory &loggingCategory)
+{
+    return loggingCategory.isDebugEnabled() && !forceDisableTraceLogging;
+}
+
+void Buteo::configureLegacyLogging()
+{
+    bool hasLegacyLoggingLevel = false;
+    const int legacyLoggingLevel = QString(qgetenv("MSYNCD_LOGGING_LEVEL")).toInt(&hasLegacyLoggingLevel);
+    if (hasLegacyLoggingLevel) {
+        if (legacyLoggingLevel >= 8) {
+            // LOG_TRACE: enable all logging, including trace debugs
+            QLoggingCategory::setFilterRules(QStringLiteral("buteo.*=true"));
+        } else if (legacyLoggingLevel == 7) {
+            // LOG_DEBUG: enable all logging except for trace debugs.
+            QLoggingCategory::setFilterRules(QStringLiteral("buteo.*=true"));
+            forceDisableTraceLogging = true;
+        } else if (legacyLoggingLevel == 6) {
+            // LOG_INFO, LOG_PROTOCOL: enable logging for non-debug levels
+            QLoggingCategory::setFilterRules(QStringLiteral("buteo.*.info=true"));
+        }
+    }
 }
 
 Q_LOGGING_CATEGORY(lcButeoCore, "buteo.core", QtWarningMsg)

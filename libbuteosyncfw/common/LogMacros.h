@@ -33,7 +33,7 @@
  */
 #define FUNCTION_CALL_TRACE(loggingCategory) \
     QScopedPointer<Buteo::LogTimer> timerDebugVariable( \
-            loggingCategory().isDebugEnabled() \
+            Buteo::isLoggingEnabled(loggingCategory()) \
             ? new Buteo::LogTimer(QString::fromUtf8(loggingCategory().categoryName()), QString(Q_FUNC_INFO)) \
             : nullptr)
 
