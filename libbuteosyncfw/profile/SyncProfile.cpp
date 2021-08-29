@@ -237,7 +237,7 @@ QDateTime SyncProfile::lastSyncTime() const
         lastSync = d_ptr->iLog->lastResults()->syncTime();
     }
 
-    LOG_DEBUG("lastSync:" << lastSync);
+    qCDebug(lcButeoCore) << "lastSync:" << lastSync;
     return lastSync;
 }
 
@@ -486,12 +486,7 @@ SyncProfile::DestinationType SyncProfile::destinationType() const
 {
     DestinationType type = DESTINATION_TYPE_UNDEFINED;
     QString typeStr;
-
-    //const Profile *service = serviceProfile();
-    //if (service)
-    //{
     typeStr = this->key(KEY_DESTINATION_TYPE);
-    //}
 
     if (typeStr == VALUE_ONLINE) {
         type = DESTINATION_TYPE_ONLINE;
@@ -530,15 +525,11 @@ SyncProfile::SyncDirection SyncProfile::syncDirection() const
 bool SyncProfile::isSOCProfile() const
 {
     bool aSOCProfile = false;
-    //const Profile *service = serviceProfile();
-    //if (service)
-    //{
     QString enabled = this->key(KEY_SOC);
     enabled = enabled.trimmed();
     if ("true" == enabled) {
         aSOCProfile = true;
     }
-    //}
     return aSOCProfile;
 }
 
@@ -546,9 +537,6 @@ quint32 SyncProfile::syncOnChangeAfter() const
 {
     quint32 syncOnChangeAfterTime = DEFAULT_SOC_AFTER_TIME;
 
-    //const Profile *service = serviceProfile();
-    //if (service)
-    //{
     QString time = this->key(KEY_SOC_AFTER);
     if (!time.isEmpty()) {
         bool ok = false;
@@ -557,8 +545,7 @@ quint32 SyncProfile::syncOnChangeAfter() const
             syncOnChangeAfterTime = DEFAULT_SOC_AFTER_TIME;
         }
     }
-    //}
-    LOG_DEBUG("Sync on change after time from profile :" << syncOnChangeAfterTime);
+    qCDebug(lcButeoCore) << "Sync on change after time from profile :" << syncOnChangeAfterTime;
     return syncOnChangeAfterTime;
 }
 
@@ -589,8 +576,8 @@ void SyncProfile::setSyncDirection(SyncDirection aDirection)
     if (client) {
         client->setKey(KEY_SYNC_DIRECTION, dirStr);
     } else {
-        LOG_WARNING("Profile" << name() << "has no client profile");
-        LOG_WARNING("Failed to set sync direction");
+        qCWarning(lcButeoCore) << "Profile" << name() << "has no client profile";
+        qCWarning(lcButeoCore) << "Failed to set sync direction";
     }
 }
 
@@ -638,8 +625,8 @@ void SyncProfile::setConflictResolutionPolicy(ConflictResolutionPolicy aPolicy)
     if (client) {
         client->setKey(KEY_CONFLICT_RESOLUTION_POLICY, policyStr);
     } else {
-        LOG_WARNING("Profile" << name() << "has no client profile");
-        LOG_WARNING("Failed to set conflict resolution policy");
+        qCWarning(lcButeoCore) << "Profile" << name() << "has no client profile";
+        qCWarning(lcButeoCore) << "Failed to set conflict resolution policy";
     }
 }
 

@@ -37,7 +37,7 @@ int SyncSigHandler::iSigTermFd[2];
 SyncSigHandler::SyncSigHandler(QObject *aParent, const char */*aName*/)
     : QObject(aParent)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     //Adding signal hanlder for unix Signals
     signal(SIGTERM, termSignalHandler);
@@ -46,11 +46,11 @@ SyncSigHandler::SyncSigHandler(QObject *aParent, const char */*aName*/)
 
     //Adding socketpair to monitor those fd's.
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, iSigHupFd)) {
-        LOG_CRITICAL("Couldn't create HUP socketpair");
+        qCCritical(lcButeoMsyncd) << "Couldn't create HUP socketpair";
     }
 
     if (::socketpair(AF_UNIX, SOCK_STREAM, 0, iSigTermFd)) {
-        LOG_CRITICAL("Couldn't create TERM socketpair");
+        qCCritical(lcButeoMsyncd) << "Couldn't create TERM socketpair";
     }
 
     //SocketNotifier for read those fd's.
@@ -63,7 +63,7 @@ SyncSigHandler::SyncSigHandler(QObject *aParent, const char */*aName*/)
 
 SyncSigHandler::~SyncSigHandler()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete iSigHup;
     iSigHup = 0;
     delete iSigTerm;
@@ -86,7 +86,7 @@ void SyncSigHandler::hupSignalHandler(int /*signal*/)
 //Qt Slot will eventually get called corresponding to Unix signal.
 void SyncSigHandler::handleSigTerm()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iSigTerm->setEnabled(false);
     char tmp;
     ::read(iSigTermFd[1], &tmp, sizeof(tmp));
@@ -97,5 +97,5 @@ void SyncSigHandler::handleSigTerm()
 
 void SyncSigHandler::handleSigHup()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }

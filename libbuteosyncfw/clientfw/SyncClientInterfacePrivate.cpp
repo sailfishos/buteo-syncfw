@@ -39,7 +39,7 @@ static const QString SYNC_DBUS_SERVICE = "com.meego.msyncd";
 SyncClientInterfacePrivate::SyncClientInterfacePrivate(SyncClientInterface *aParent) :
     iParent(aParent)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iSyncDaemon = new SyncDaemonProxy(SYNC_DBUS_SERVICE, SYNC_DBUS_OBJECT,
                                       QDBusConnection::sessionBus(), this);
 
@@ -79,14 +79,14 @@ SyncClientInterfacePrivate::SyncClientInterfacePrivate(SyncClientInterface *aPar
 
 SyncClientInterfacePrivate::~SyncClientInterfacePrivate()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete iSyncDaemon;
     iSyncDaemon = nullptr;
 }
 
 bool SyncClientInterfacePrivate::startSync(const QString &aProfileId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool syncStatus = false;
 
     if (iSyncDaemon && !aProfileId.isEmpty()) {
@@ -98,7 +98,7 @@ bool SyncClientInterfacePrivate::startSync(const QString &aProfileId) const
 
 void SyncClientInterfacePrivate::abortSync(const QString &aProfileId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     if (iSyncDaemon && !aProfileId.isEmpty()) {
         iSyncDaemon->abortSync(aProfileId);
     }
@@ -106,7 +106,7 @@ void SyncClientInterfacePrivate::abortSync(const QString &aProfileId) const
 
 QStringList SyncClientInterfacePrivate::getRunningSyncList()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QStringList runningSyncList;
     if (iSyncDaemon) {
         runningSyncList = iSyncDaemon->runningSyncs();
@@ -116,7 +116,7 @@ QStringList SyncClientInterfacePrivate::getRunningSyncList()
 
 bool SyncClientInterfacePrivate::removeProfile(QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     if (iSyncDaemon) {
         status = iSyncDaemon->removeProfile(aProfileId);
@@ -126,7 +126,7 @@ bool SyncClientInterfacePrivate::removeProfile(QString &aProfileId)
 
 bool SyncClientInterfacePrivate::updateProfile(Buteo::SyncProfile &aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     if (iSyncDaemon) {
         QString profileAsXmlString = aProfile.toString();
@@ -138,27 +138,27 @@ bool SyncClientInterfacePrivate::updateProfile(Buteo::SyncProfile &aProfile)
 void SyncClientInterfacePrivate::slotProfileChanged(QString aProfileId, int aChangeType,
                                                     QString aProfileAsXml)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     emit profileChanged(aProfileId, aChangeType, aProfileAsXml);
 }
 
 void SyncClientInterfacePrivate::resultsAvailable(QString aProfileId,
                                                   QString aLastResultsAsXml)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QDomDocument doc;
     if (doc.setContent(aLastResultsAsXml, true)) {
         Buteo::SyncResults results(doc.documentElement());
         emit resultsAvailable(aProfileId, results);
     } else {
-        LOG_DEBUG("Invalid Profile Xml Received from msyncd");
+        qCDebug(lcButeoCore) << "Invalid Profile Xml Received from msyncd";
     }
 }
 
 bool SyncClientInterfacePrivate::setSyncSchedule(QString &aProfileId,
                                                  SyncSchedule &aSchedule)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     if (iSyncDaemon) {
         QString scheduleAsXmlString = aSchedule.toString();
@@ -173,7 +173,7 @@ bool SyncClientInterfacePrivate::setSyncSchedule(QString &aProfileId,
 bool SyncClientInterfacePrivate::saveSyncResults(const QString &aProfileId,
                                                  const Buteo::SyncResults &aSyncResults)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     if (iSyncDaemon) {
         QString resultsAsXmlString = aSyncResults.toString();
@@ -186,7 +186,7 @@ bool SyncClientInterfacePrivate::saveSyncResults(const QString &aProfileId,
 
 bool  SyncClientInterfacePrivate::getBackUpRestoreState()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
     if (iSyncDaemon) {
         status = iSyncDaemon->getBackUpRestoreState();
@@ -201,7 +201,7 @@ bool SyncClientInterfacePrivate::isValid()
 
 Buteo::SyncResults SyncClientInterfacePrivate::getLastSyncResult(const QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iSyncDaemon) {
         QString resultASXmlString = iSyncDaemon->getLastSyncResult(aProfileId);
@@ -211,7 +211,7 @@ Buteo::SyncResults SyncClientInterfacePrivate::getLastSyncResult(const QString &
             Buteo::SyncResults result(doc.documentElement());
             return result;
         } else {
-            LOG_CRITICAL("Invalid Profile Xml Received from msyncd");
+            qCCritical(lcButeoCore) << "Invalid Profile Xml Received from msyncd";
         }
     }
     return SyncResults(QDateTime(),
@@ -220,7 +220,7 @@ Buteo::SyncResults SyncClientInterfacePrivate::getLastSyncResult(const QString &
 
 QList<QString /*profilesAsXml*/> SyncClientInterfacePrivate::allVisibleSyncProfiles()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QList <QString> profilesAsXml;
     if (iSyncDaemon) {
         QStringList profilesList = iSyncDaemon->allVisibleSyncProfiles();
@@ -230,27 +230,27 @@ QList<QString /*profilesAsXml*/> SyncClientInterfacePrivate::allVisibleSyncProfi
             }
         }
     }
-    LOG_DEBUG("allVisibleSyncProfiles " << profilesAsXml);
+    qCDebug(lcButeoCore) << "allVisibleSyncProfiles " << profilesAsXml;
     return profilesAsXml;
 }
 
 
 QString SyncClientInterfacePrivate::syncProfile(const QString &aProfileId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QString profileAsXml;
 
     if (iSyncDaemon) {
         profileAsXml = iSyncDaemon->syncProfile(aProfileId);
     }
 
-    LOG_DEBUG("syncProfile " << profileAsXml);
+    qCDebug(lcButeoCore) << "syncProfile " << profileAsXml;
     return profileAsXml;
 }
 
 QStringList SyncClientInterfacePrivate::syncProfilesByKey(const QString &aKey, const QString &aValue)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QStringList profileAsXml;
 
     if (iSyncDaemon) {
@@ -262,7 +262,7 @@ QStringList SyncClientInterfacePrivate::syncProfilesByKey(const QString &aKey, c
 
 QStringList SyncClientInterfacePrivate::syncProfilesByType(const QString &aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QStringList profileIds;
 
     if (iSyncDaemon) {

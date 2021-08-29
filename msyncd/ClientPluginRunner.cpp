@@ -40,12 +40,12 @@ ClientPluginRunner::ClientPluginRunner(const QString &aPluginName,
         iPlugin(0),
         iThread(0)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 ClientPluginRunner::~ClientPluginRunner()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     stop();
     disconnect();
@@ -61,19 +61,19 @@ ClientPluginRunner::~ClientPluginRunner()
 
 bool ClientPluginRunner::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iInitialized)
         return true;
 
     if (iPluginMgr == 0 || iPluginCbIf == 0 || iProfile == 0) {
-        LOG_WARNING("Invalid members, failed to initialize");
+        qCWarning(lcButeoMsyncd) << "Invalid members, failed to initialize";
         return false;
     }
 
     iPlugin = iPluginMgr->createClient(iPluginName, *iProfile, iPluginCbIf);
     if (iPlugin == 0) {
-        LOG_WARNING("Failed to create client plug-in:" << iPluginName);
+        qCWarning(lcButeoMsyncd) << "Failed to create client plug-in:" << iPluginName;
         return false;
     }
 
@@ -112,14 +112,14 @@ bool ClientPluginRunner::init()
 
 bool ClientPluginRunner::start()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool rv = false;
     if (iInitialized && iThread != 0) {
         // Set a timer after which the sync session should stop
         QTimer::singleShot(MAX_PLUGIN_SYNC_TIME, this, SLOT(pluginTimeout()));
         rv = iThread->startThread(iPlugin);
-        LOG_DEBUG("ClientPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv);
+        qCDebug(lcButeoMsyncd) << "ClientPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv;
     }
 
     return rv;
@@ -127,7 +127,7 @@ bool ClientPluginRunner::start()
 
 void ClientPluginRunner::stop()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iThread != 0) {
         iThread->stopThread();
@@ -137,7 +137,7 @@ void ClientPluginRunner::stop()
 
 void ClientPluginRunner::abort(Sync::SyncStatus aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPlugin != 0) {
         iPlugin->abortSync(aStatus);
@@ -146,14 +146,14 @@ void ClientPluginRunner::abort(Sync::SyncStatus aStatus)
 
 SyncPluginBase *ClientPluginRunner::plugin()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iPlugin;
 }
 
 SyncResults ClientPluginRunner::syncResults()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPlugin != 0) {
         return iPlugin->getSyncResults();
@@ -164,7 +164,7 @@ SyncResults ClientPluginRunner::syncResults()
 
 bool ClientPluginRunner::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool retval = false;
     if (iPlugin != 0) {
@@ -177,7 +177,7 @@ void ClientPluginRunner::onTransferProgress(const QString &aProfileName,
                                             Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                                             const QString &aMimeType, int aCommittedItems)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit transferProgress(aProfileName, aDatabase, aType, aMimeType, aCommittedItems);
 }
@@ -185,7 +185,7 @@ void ClientPluginRunner::onTransferProgress(const QString &aProfileName,
 void ClientPluginRunner::onError(const QString &aProfileName,
                                  const QString &aMessage, SyncResults::MinorCode aErrorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit error(aProfileName, aMessage, aErrorCode);
     stop();
@@ -194,7 +194,7 @@ void ClientPluginRunner::onError(const QString &aProfileName,
 void ClientPluginRunner::onSuccess(const QString &aProfileName,
                                    const QString &aMessage)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit success(aProfileName, aMessage);
     stop();
@@ -203,14 +203,14 @@ void ClientPluginRunner::onSuccess(const QString &aProfileName,
 
 void ClientPluginRunner::onStorageAccquired(const QString &aMimeType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit storageAccquired(aMimeType);
 }
 
 void ClientPluginRunner::onSyncProgressDetail(const QString &aProfileName, int aProgressDetail)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit syncProgressDetail(aProfileName, aProgressDetail);
 }
@@ -218,14 +218,14 @@ void ClientPluginRunner::onSyncProgressDetail(const QString &aProfileName, int a
 
 void ClientPluginRunner::onThreadExit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit done();
 }
 
 void ClientPluginRunner::pluginTimeout()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit error(iProfile->name(), "Plugin timeout occured", SyncResults::PLUGIN_TIMEOUT);
     stop();

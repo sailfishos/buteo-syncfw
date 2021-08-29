@@ -24,7 +24,7 @@
 #include <QRegExp>
 #include "PluginServiceObj.h"
 #include "ButeoPluginIfaceAdaptor.h"
-#include "LogMacros.h"
+#include "Logger.h"
 
 #define DBUS_SERVICE_NAME_PREFIX "com.buteo.msyncd.plugin."
 #define DBUS_SERVICE_OBJ_PATH "/"
@@ -32,6 +32,7 @@
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    Buteo::configureLegacyLogging();
 
     // We obtain the plugin name and the profile name from cmdline
     // One way to pass the arguments is via cmdline, the other way is
@@ -40,7 +41,7 @@ int main(int argc, char **argv)
     QStringList args = app.arguments();
 
     if (args.length() < 4) {
-        LOG_FATAL("Plugin name, profile name and plugin path not obtained from cmdline" );
+        qCCritical(lcButeoPlugin) << "Plugin name, profile name and plugin path not obtained from cmdline" ;
     }
 
     const QString pluginName = args.value(1);
@@ -64,26 +65,26 @@ int main(int argc, char **argv)
                           .arg(profileName);
 
     int retn;
-    LOG_DEBUG("attempting to register dbus service:" << servicePath );
+    qCDebug(lcButeoPlugin) << "attempting to register dbus service:" << servicePath ;
     QDBusConnection connection = QDBusConnection::sessionBus();
     if (connection.registerObject(DBUS_SERVICE_OBJ_PATH, serviceObj)) {
         if (connection.registerService(servicePath)) {
-            LOG_DEBUG("Plugin " << pluginName << " with profile "
+            qCDebug(lcButeoPlugin) << "Plugin " << pluginName << " with profile "
                       << profileName << " registered at dbus "
                       << DBUS_SERVICE_NAME_PREFIX + profileName
-                      << " and path " << DBUS_SERVICE_OBJ_PATH);
+                      << " and path " << DBUS_SERVICE_OBJ_PATH;
             // TODO: Should any unix signals be handled?
             retn = app.exec();
             connection.unregisterService(servicePath);
         } else {
-            LOG_WARNING("Unable to register dbus service"
-                        << servicePath << ", terminating.");
+            qCWarning(lcButeoPlugin) << "Unable to register dbus service"
+                        << servicePath << ", terminating.";
             retn = -1;
         }
         connection.unregisterObject(DBUS_SERVICE_OBJ_PATH);
     } else {
-        LOG_WARNING("Unable to register dbus object" << DBUS_SERVICE_OBJ_PATH << "for service"
-                    << servicePath << ", terminating.");
+        qCWarning(lcButeoPlugin) << "Unable to register dbus object" << DBUS_SERVICE_OBJ_PATH << "for service"
+                    << servicePath << ", terminating.";
         retn = -2;
     }
 

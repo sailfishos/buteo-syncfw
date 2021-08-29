@@ -8,12 +8,12 @@ using namespace Buteo;
 
 SyncOnChangeScheduler::SyncOnChangeScheduler()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 SyncOnChangeScheduler::~SyncOnChangeScheduler()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     foreach (QObject *o, iSOCTimers.values()) {
         delete o;
     }
@@ -23,7 +23,7 @@ SyncOnChangeScheduler::~SyncOnChangeScheduler()
 
 bool SyncOnChangeScheduler::addProfile(const SyncProfile *aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool scheduled = false;
     if (aProfile && !iSOCProfileNames.contains(aProfile->name())) {
         qint32 time = aProfile->syncOnChangeAfter();
@@ -35,16 +35,16 @@ bool SyncOnChangeScheduler::addProfile(const SyncProfile *aProfile)
         SOCtimer->fire();
         scheduled = true;
         iSOCTimers.insert(aProfile->name(), SOCtimer);
-        LOG_DEBUG("Sync on change scheduled for profile" << aProfile->name());
+        qCDebug(lcButeoMsyncd) << "Sync on change scheduled for profile" << aProfile->name();
     } else if (aProfile) {
-        LOG_DEBUG("Sync on change already scheduled for profile" << aProfile->name());
+        qCDebug(lcButeoMsyncd) << "Sync on change already scheduled for profile" << aProfile->name();
     }
     return scheduled;
 }
 
 void SyncOnChangeScheduler::removeProfile(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iSOCProfileNames.removeAll(aProfileName);
     // cancel timer
     delete iSOCTimers.take(aProfileName);
@@ -52,12 +52,12 @@ void SyncOnChangeScheduler::removeProfile(const QString &aProfileName)
 
 void SyncOnChangeScheduler::sync(const SyncProfile *aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iSOCProfileNames.removeAll(aProfile->name());
     iSOCTimers.remove(aProfile->name());
     SyncOnChangeTimer *SOCtimer = qobject_cast<SyncOnChangeTimer *>(sender());
     if (SOCtimer) {
-        LOG_DEBUG("Sync on change for profile" << aProfile->name());
+        qCDebug(lcButeoMsyncd) << "Sync on change for profile" << aProfile->name();
         delete SOCtimer;
         emit syncNow(aProfile->name());
     }
@@ -66,22 +66,22 @@ void SyncOnChangeScheduler::sync(const SyncProfile *aProfile)
 SyncOnChangeTimer::SyncOnChangeTimer(const SyncProfile *profile, const quint32 &aTimeout) :
     iSyncProfile(profile), iTimeout(aTimeout)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 SyncOnChangeTimer::~SyncOnChangeTimer()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 void SyncOnChangeTimer::fire()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     QTimer::singleShot(iTimeout * 1000, this, SLOT(onTimeout()));
 }
 
 void SyncOnChangeTimer::onTimeout()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     emit timeout(iSyncProfile);
 }

@@ -29,18 +29,18 @@ using namespace Buteo;
 StorageBooker::StorageBooker()
     :   iMutex(QMutex::Recursive)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 StorageBooker::~StorageBooker()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 bool StorageBooker::reserveStorage(const QString &aStorageName,
                                    const QString &aClientId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -70,7 +70,7 @@ bool StorageBooker::reserveStorage(const QString &aStorageName,
 bool StorageBooker::reserveStorages(const QStringList &aStorageNames,
                                     const QString &aClientId)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -89,7 +89,7 @@ bool StorageBooker::reserveStorages(const QStringList &aStorageNames,
 
 unsigned StorageBooker::releaseStorage(const QString &aStorageName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -112,7 +112,7 @@ unsigned StorageBooker::releaseStorage(const QString &aStorageName)
 
 void StorageBooker::releaseStorages(const QStringList &aStorageNames)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -124,7 +124,7 @@ void StorageBooker::releaseStorages(const QStringList &aStorageNames)
 bool StorageBooker::isStorageAvailable(const QString &aStorageName,
                                        const QString &aClientId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -137,7 +137,7 @@ bool StorageBooker::isStorageAvailable(const QString &aStorageName,
 bool StorageBooker::storagesAvailable(const QStringList &aStorageNames,
                                       const QString &aClientId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 

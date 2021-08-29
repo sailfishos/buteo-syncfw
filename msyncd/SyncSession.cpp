@@ -45,12 +45,12 @@ SyncSession::SyncSession(SyncProfile *aProfile, QObject *aParent)
         iStorageBooker(0),
         iNetworkManager(0)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 SyncSession::~SyncSession()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPluginRunnerOwned) {
         PluginRunner *runner = iPluginRunner;
@@ -76,7 +76,7 @@ SyncSession::~SyncSession()
 void SyncSession::setPluginRunner(PluginRunner *aPluginRunner,
                                   bool aTransferOwnership)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Delete old owned plug-in runner, if any.
     if (iPluginRunnerOwned) {
@@ -111,14 +111,14 @@ void SyncSession::setPluginRunner(PluginRunner *aPluginRunner,
 
 PluginRunner *SyncSession::pluginRunner()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iPluginRunner;
 }
 
 bool SyncSession::start()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool rv = false;
     // If this is an online session, then we need to ensure that the network
@@ -171,10 +171,10 @@ bool SyncSession::isAborted()
 
 void SyncSession::abort(Sync::SyncStatus aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iStarted) {
-        LOG_DEBUG("Client plugin runner not started, ignore abort");
+        qCDebug(lcButeoMsyncd) << "Client plugin runner not started, ignore abort";
         updateResults(SyncResults(QDateTime::currentDateTime(),
                                   SyncResults::SYNC_RESULT_FAILED,
                                   Buteo::SyncResults::ABORTED));
@@ -191,34 +191,34 @@ void SyncSession::abort(Sync::SyncStatus aStatus)
 
 QMap<QString, bool> SyncSession::getStorageMap()
 {
-    FUNCTION_CALL_TRACE
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return iStorageMap;
 }
 
 void SyncSession::setStorageMap(QMap<QString, bool> &aStorageMap)
 {
-    FUNCTION_CALL_TRACE
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iStorageMap = aStorageMap;
 }
 
 bool SyncSession::isProfileCreated()
 {
-    FUNCTION_CALL_TRACE
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return iCreateProfile;
 }
 
 void SyncSession::setProfileCreated(bool aProfileCreated)
 {
-    FUNCTION_CALL_TRACE
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iCreateProfile = aProfileCreated;
 }
 
 void SyncSession::stop()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iStarted) {
-        LOG_DEBUG("Plugin runner not yet started, ignoring stop.");
+        qCDebug(lcButeoMsyncd) << "Plugin runner not yet started, ignoring stop.";
     } else if (iPluginRunner != 0) {
         iPluginRunner->stop();
     }
@@ -226,14 +226,14 @@ void SyncSession::stop()
 
 SyncProfile *SyncSession::profile() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iProfile;
 }
 
 QString SyncSession::profileName() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString name;
     if (iProfile != 0) {
@@ -245,14 +245,14 @@ QString SyncSession::profileName() const
 
 SyncResults SyncSession::results() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iResults;
 }
 
 void SyncSession::setScheduled(bool aScheduled)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iScheduled = aScheduled;
     iResults.setScheduled(iScheduled);
@@ -260,14 +260,14 @@ void SyncSession::setScheduled(bool aScheduled)
 
 bool SyncSession::isScheduled() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iScheduled;
 }
 
 void SyncSession::onSuccess(const QString &aProfileName, const QString &aMessage)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iErrorCode = SyncResults::NO_ERROR;
 
     Q_UNUSED(aProfileName);
@@ -290,7 +290,7 @@ void SyncSession::onSuccess(const QString &aProfileName, const QString &aMessage
 void SyncSession::onError(const QString &aProfileName, const QString &aMessage,
                           SyncResults::MinorCode aErrorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Q_UNUSED(aProfileName);
 
@@ -327,27 +327,27 @@ void SyncSession::onTransferProgress(const QString &aProfileName,
                                      Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                                      const QString &aMimeType, int aCommittedItems)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit transferProgress(aProfileName, aDatabase, aType, aMimeType, aCommittedItems);
 }
 
 void SyncSession::onStorageAccquired (const QString &aMimeType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     emit storageAccquired (profileName(), aMimeType);
 }
 
 void SyncSession::onSyncProgressDetail(const QString &aProfileName, int aProgressDetail)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Q_UNUSED(aProfileName);
     emit syncProgressDetail (profileName(), aProgressDetail);
 }
 
 void SyncSession::onDone()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString pluginName;
     if (iPluginRunner != 0) {
@@ -356,7 +356,7 @@ void SyncSession::onDone()
     }
 
     if (!iFinished) {
-        LOG_WARNING("Plug-in terminated unexpectedly:" << pluginName);
+        qCWarning(lcButeoMsyncd) << "Plug-in terminated unexpectedly:" << pluginName;
         emit finished(profileName(), Sync::SYNC_ERROR, iMessage, SyncResults::NO_ERROR);
     }
 }
@@ -364,14 +364,14 @@ void SyncSession::onDone()
 void SyncSession::onDestroyed(QObject *aPluginRunner)
 {
     if (iPluginRunner == aPluginRunner) {
-        LOG_WARNING("Plug-in runner destroyed before sync session");
+        qCWarning(lcButeoMsyncd) << "Plug-in runner destroyed before sync session";
         iPluginRunner = 0;
     }
 }
 
 void SyncSession::updateResults(const SyncResults &aResults)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iResults = aResults;
     iResults.setScheduled(iScheduled);
     iResults.setTargetId(aResults.getTargetId());
@@ -379,7 +379,7 @@ void SyncSession::updateResults(const SyncResults &aResults)
 
 void SyncSession::setFailureResult(SyncResults::MajorCode aMajorCode, SyncResults::MinorCode aMinorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iResults.setMajorCode(aMajorCode);
     iResults.setMinorCode(aMinorCode);
@@ -387,7 +387,7 @@ void SyncSession::setFailureResult(SyncResults::MajorCode aMajorCode, SyncResult
 
 bool SyncSession::reserveStorages(StorageBooker *aStorageBooker)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool success = false;
     if (aStorageBooker != 0 && iProfile != 0 &&
@@ -415,7 +415,7 @@ void SyncSession::releaseStorages()
 void SyncSession::onNetworkSessionOpened()
 {
     // Start the plugin runner now
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iNetworkManager) {
         // Disconnect all slots connected to the network manager
@@ -426,19 +426,19 @@ void SyncSession::onNetworkSessionOpened()
     }
 
     if (false == tryStart()) {
-        LOG_WARNING("attempt to start sync session due to network session opened failed!");
+        qCWarning(lcButeoMsyncd) << "attempt to start sync session due to network session opened failed!";
         updateResults(SyncResults(QDateTime::currentDateTime(),
                                   SyncResults::SYNC_RESULT_FAILED,
                                   Buteo::SyncResults::INTERNAL_ERROR));
         emit finished(profileName(), Sync::SYNC_ERROR, QString(), SyncResults::INTERNAL_ERROR);
     } else {
-        LOG_DEBUG("attempt to start sync session due to network session opened succeeded.");
+        qCDebug(lcButeoMsyncd) << "attempt to start sync session due to network session opened succeeded.";
     }
 }
 
 void SyncSession::onNetworkSessionError()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iNetworkManager) {
         // Disconnect all slots connected to the network manager

@@ -32,7 +32,7 @@ OOPServerPlugin::OOPServerPlugin(const QString &aPluginName,
                                  QProcess &aProcess)
     : ServerPlugin(aPluginName, aProfile, aCbInterface), iDone(false)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
@@ -80,19 +80,19 @@ OOPServerPlugin::OOPServerPlugin(const QString &aPluginName,
 
 OOPServerPlugin::~OOPServerPlugin()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete iOopPluginIface;
     iOopPluginIface = 0;
 }
 
 bool OOPServerPlugin::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->init();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for init from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for init from plugin" ;
         return false;
     }
 
@@ -101,12 +101,12 @@ bool OOPServerPlugin::init()
 
 bool OOPServerPlugin::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->uninit();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for startSync from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for startSync from plugin" ;
         return false;
     }
 
@@ -115,12 +115,12 @@ bool OOPServerPlugin::uninit()
 
 bool OOPServerPlugin::startListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->startListen();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for startListen from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for startListen from plugin" ;
         return false;
     }
 
@@ -129,42 +129,42 @@ bool OOPServerPlugin::startListen()
 
 void OOPServerPlugin::stopListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->stopListen();
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for stopListen from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for stopListen from plugin" ;
 }
 
 void OOPServerPlugin::suspend()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->suspend();
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for suspend from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for suspend from plugin" ;
 }
 
 void OOPServerPlugin::resume()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->resume();
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for resume from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for resume from plugin" ;
 }
 
 bool OOPServerPlugin::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<bool> reply = iOopPluginIface->cleanUp();
     reply.waitForFinished();
     if (!reply.isValid()) {
-        LOG_WARNING( "Invalid reply for cleanUp from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for cleanUp from plugin" ;
         return false;
     }
 
@@ -173,12 +173,12 @@ bool OOPServerPlugin::cleanUp()
 
 void OOPServerPlugin::connectivityStateChanged(Sync::ConnectivityType aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusPendingReply<void> reply = iOopPluginIface->connectivityStateChanged(aType, aState);
     reply.waitForFinished();
     if (!reply.isValid())
-        LOG_WARNING( "Invalid reply for connectivityStateChanged from plugin" );
+        qCWarning(lcButeoCore) << "Invalid reply for connectivityStateChanged from plugin" ;
 }
 
 void OOPServerPlugin::onProcessError(QProcess::ProcessError error)

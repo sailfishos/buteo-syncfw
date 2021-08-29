@@ -39,12 +39,12 @@ ServerPluginRunner::ServerPluginRunner(const QString &aPluginName,
         iThread(0),
         iServerActivator(aServerActivator)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 ServerPluginRunner::~ServerPluginRunner()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     stop();
     disconnect();
@@ -63,19 +63,19 @@ ServerPluginRunner::~ServerPluginRunner()
 
 bool ServerPluginRunner::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iInitialized)
         return true;
 
     if (iPluginMgr == 0 || iPluginCbIf == 0 || iProfile == 0) {
-        LOG_WARNING("Invalid members, failed to initialize");
+        qCWarning(lcButeoMsyncd) << "Invalid members, failed to initialize";
         return false;
     }
 
     iPlugin = iPluginMgr->createServer(iPluginName, *iProfile, iPluginCbIf);
     if (iPlugin == 0) {
-        LOG_WARNING("Failed to create server plug-in:" << iPluginName);
+        qCWarning(lcButeoMsyncd) << "Failed to create server plug-in:" << iPluginName;
         return false;
     }
 
@@ -118,12 +118,12 @@ bool ServerPluginRunner::init()
 
 bool ServerPluginRunner::start()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool rv = false;
     if (iInitialized && iThread != 0) {
         rv = iThread->startThread(iPlugin);
-        LOG_DEBUG("ServerPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv);
+        qCDebug(lcButeoMsyncd) << "ServerPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv;
     }
 
     return rv;
@@ -131,7 +131,7 @@ bool ServerPluginRunner::start()
 
 void ServerPluginRunner::stop()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Disconnect all signals from this object to the plug-in.
     disconnect(this, 0, iPlugin, 0);
@@ -144,7 +144,7 @@ void ServerPluginRunner::stop()
 
 void ServerPluginRunner::abort(Sync::SyncStatus aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPlugin != 0) {
         iPlugin->abortSync(aStatus);
@@ -153,7 +153,7 @@ void ServerPluginRunner::abort(Sync::SyncStatus aStatus)
 
 void ServerPluginRunner::suspend()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPlugin != 0) {
         iPlugin->suspend();
@@ -162,7 +162,7 @@ void ServerPluginRunner::suspend()
 
 void ServerPluginRunner::resume()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPlugin != 0) {
         iPlugin->resume();
@@ -171,14 +171,14 @@ void ServerPluginRunner::resume()
 
 SyncPluginBase *ServerPluginRunner::plugin()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iPlugin;
 }
 
 SyncResults ServerPluginRunner::syncResults()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iPlugin != 0) {
         return iPlugin->getSyncResults();
@@ -189,7 +189,7 @@ SyncResults ServerPluginRunner::syncResults()
 
 bool ServerPluginRunner::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool retval = false ;
     if (iPlugin != 0) {
@@ -213,7 +213,7 @@ void ServerPluginRunner::onTransferProgress(const QString &aProfileName,
                                             Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                                             const QString &aMimeType, int aCommittedItems)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit transferProgress(aProfileName, aDatabase, aType, aMimeType, aCommittedItems);
 }
@@ -221,7 +221,7 @@ void ServerPluginRunner::onTransferProgress(const QString &aProfileName,
 void ServerPluginRunner::onError(const QString &aProfileName,
                                  const QString &aMessage, SyncResults::MinorCode aErrorCode)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit error(aProfileName, aMessage, aErrorCode);
 
@@ -231,7 +231,7 @@ void ServerPluginRunner::onError(const QString &aProfileName,
 void ServerPluginRunner::onSuccess(const QString &aProfileName,
                                    const QString &aMessage)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit success(aProfileName, aMessage);
 
@@ -240,21 +240,21 @@ void ServerPluginRunner::onSuccess(const QString &aProfileName,
 
 void ServerPluginRunner::onStorageAccquired(const QString &aMimeType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit storageAccquired(aMimeType);
 }
 
 void ServerPluginRunner::onThreadExit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     emit done();
 }
 
 void ServerPluginRunner::onSessionDone()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Remove reference to the server plug-in. This may result in stopping
     // the server plug-in, if it doesn't need to be active any more.

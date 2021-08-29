@@ -30,17 +30,17 @@ using namespace Buteo;
 
 DeletedItemsIdStorage::DeletedItemsIdStorage()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 DeletedItemsIdStorage::~DeletedItemsIdStorage()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 bool DeletedItemsIdStorage::init(const QString &aDbFile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     static unsigned connectionNumber = 0;
     const QString connectionName = "deleteditems";
@@ -54,7 +54,7 @@ bool DeletedItemsIdStorage::init(const QString &aDbFile)
 
 
     if (!iDb.isOpen()) {
-        LOG_CRITICAL( "Could open deleted items database file:" << aDbFile );
+        qCCritical(lcButeoCore) << "Could open deleted items database file:" << aDbFile ;
         return false;
     }
 
@@ -67,7 +67,7 @@ bool DeletedItemsIdStorage::init(const QString &aDbFile)
 
 bool DeletedItemsIdStorage::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iDb.isOpen()) {
         iDb.close();
@@ -80,14 +80,14 @@ bool DeletedItemsIdStorage::uninit()
 
 bool DeletedItemsIdStorage::getSnapshot(QList<QString> &aItems, QList<QDateTime> &aCreationTimes) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("SELECT * FROM snapshot");
     QSqlQuery query(iDb);
     query.prepare(queryString);
 
     if (!query.exec()) {
-        LOG_WARNING("Could not retrieve item snapshot: " << query.lastError() );
+        qCWarning(lcButeoCore) << "Could not retrieve item snapshot: " << query.lastError() ;
         return false;
     }
 
@@ -104,7 +104,7 @@ bool DeletedItemsIdStorage::getSnapshot(QList<QString> &aItems, QList<QDateTime>
 bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
                                         const QList<QDateTime> &aCreationTimes)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Clear existing snapshot
     const QString deleteQueryString("DELETE FROM snapshot");
@@ -112,7 +112,7 @@ bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
     deleteQuery.prepare(deleteQueryString);
 
     if (!deleteQuery.exec()) {
-        LOG_WARNING("Could not clear item snapshot: " << deleteQuery.lastError() );
+        qCWarning(lcButeoCore) << "Could not clear item snapshot: " << deleteQuery.lastError() ;
         return false;
     }
 
@@ -120,7 +120,7 @@ bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
         const QString insertQueryString("INSERT INTO snapshot VALUES (:itemid, :creationtime)");
         bool supportsTransaction = iDb.transaction();
         if (!supportsTransaction) {
-            LOG_DEBUG("SQL Db doesn't support transactions");
+            qCDebug(lcButeoCore) << "SQL Db doesn't support transactions";
         }
 
         QSqlQuery insertQuery(iDb);
@@ -139,15 +139,15 @@ bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
 
         // Insert new snapshot
         if (insertQuery.execBatch()) {
-            LOG_DEBUG( itemIds.count() << "items set to snapshot" );
+            qCDebug(lcButeoCore) << itemIds.count() << "items set to snapshot" ;
         } else {
-            LOG_WARNING( "Could not set items snapshot" );
-            LOG_WARNING( "Reason:" << insertQuery.lastError() );
+            qCWarning(lcButeoCore) << "Could not set items snapshot" ;
+            qCWarning(lcButeoCore) << "Reason:" << insertQuery.lastError() ;
         }
 
         if (supportsTransaction) {
             if (!iDb.commit()) {
-                LOG_WARNING("Error while commiting : " << iDb.lastError());
+                qCWarning(lcButeoCore) << "Error while commiting : " << iDb.lastError();
             }
         }
     }
@@ -158,7 +158,7 @@ bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
 void DeletedItemsIdStorage::addDeletedItem(const QString &aItem, const QDateTime &aCreationTime,
                                            const QDateTime &aDeleteTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("INSERT INTO deleteditems VALUES(:itemid, :creationtime, :deletetime)");
 
@@ -170,10 +170,10 @@ void DeletedItemsIdStorage::addDeletedItem(const QString &aItem, const QDateTime
     query.bindValue(":deletetime", aDeleteTime.toUTC());
 
     if (query.exec()) {
-        LOG_DEBUG( "Added item" << aItem << "as deleted at time" << aDeleteTime << ", creation time:" << aCreationTime );
+        qCDebug(lcButeoCore) << "Added item" << aItem << "as deleted at time" << aDeleteTime << ", creation time:" << aCreationTime ;
     } else {
-        LOG_WARNING( "Could not add item as deleted:" << aItem );
-        LOG_WARNING( "Reason:" << query.lastError() );
+        qCWarning(lcButeoCore) << "Could not add item as deleted:" << aItem ;
+        qCWarning(lcButeoCore) << "Reason:" << query.lastError() ;
     }
 
 }
@@ -181,7 +181,7 @@ void DeletedItemsIdStorage::addDeletedItem(const QString &aItem, const QDateTime
 void DeletedItemsIdStorage::addDeletedItems(const QList<QString> &aItems, const QList<QDateTime> &aCreationTimes,
                                             const QList<QDateTime> &aDeleteTimes)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("INSERT INTO deleteditems VALUES(:itemid, :creationtime, :deletetime)");
 
@@ -189,7 +189,7 @@ void DeletedItemsIdStorage::addDeletedItems(const QList<QString> &aItems, const 
 
     bool supportsTransaction = iDb.transaction();
     if (!supportsTransaction) {
-        LOG_DEBUG("SQL Db doesn't support transactions");
+        qCDebug(lcButeoCore) << "SQL Db doesn't support transactions";
     }
 
     query.prepare(queryString);
@@ -209,25 +209,25 @@ void DeletedItemsIdStorage::addDeletedItems(const QList<QString> &aItems, const 
     query.addBindValue(deleteTimes);
 
     if (query.execBatch()) {
-        LOG_DEBUG( "Added" << items.count()  << "items as deleted" );
+        qCDebug(lcButeoCore) << "Added" << items.count()  << "items as deleted" ;
     } else {
-        LOG_WARNING( "Could not add items as deleted" );
-        LOG_WARNING( "Reason:" << query.lastError() );
+        qCWarning(lcButeoCore) << "Could not add items as deleted" ;
+        qCWarning(lcButeoCore) << "Reason:" << query.lastError() ;
     }
 
     if (supportsTransaction) {
         if (!iDb.commit()) {
-            LOG_WARNING("Error while commiting : " << iDb.lastError());
+            qCWarning(lcButeoCore) << "Error while commiting : " << iDb.lastError();
         }
     }
 }
 
 bool DeletedItemsIdStorage::getDeletedItems(QList<QString> &aItems, const QDateTime &aTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("SELECT itemid FROM deleteditems WHERE creationtime < :creationtime AND deletetime > :deletetime");
-    LOG_DEBUG(queryString);
+    qCDebug(lcButeoCore) << queryString;
     QSqlQuery query(iDb);
 
     query.prepare(queryString );
@@ -235,7 +235,7 @@ bool DeletedItemsIdStorage::getDeletedItems(QList<QString> &aItems, const QDateT
     query.bindValue(":deletetime", aTime.toUTC());
 
     if (!query.exec()) {
-        LOG_WARNING("Could not retrieve deleted items:" << query.lastError());
+        qCWarning(lcButeoCore) << "Could not retrieve deleted items:" << query.lastError();
         return false;
     }
 
@@ -243,41 +243,41 @@ bool DeletedItemsIdStorage::getDeletedItems(QList<QString> &aItems, const QDateT
         aItems.append( query.value(0).toString() );
     }
 
-    LOG_DEBUG( "Found" << aItems.count() << "deleted items" );
+    qCDebug(lcButeoCore) << "Found" << aItems.count() << "deleted items" ;
 
     return true;
 }
 
 bool DeletedItemsIdStorage::ensureItemSnapshotExists()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("CREATE TABLE IF NOT EXISTS snapshot(itemid varchar(512) primary key, creationtime timestamp)");
     QSqlQuery query(iDb);
     query.prepare(queryString);
 
     if (!query.exec()) {
-        LOG_WARNING("Query failed: " << query.lastError());
+        qCWarning(lcButeoCore) << "Query failed: " << query.lastError();
         return false;
     } else {
-        LOG_DEBUG( "Ensured database table: snapshot" );
+        qCDebug(lcButeoCore) << "Ensured database table: snapshot" ;
         return true;
     }
 }
 
 bool DeletedItemsIdStorage::ensureDeletedItemsExists()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     const QString queryString("CREATE TABLE IF NOT EXISTS deleteditems(itemid varchar(512) primary key, creationtime timestamp, deletetime timestamp)");
     QSqlQuery query(iDb);
     query.prepare(queryString);
 
     if (!query.exec()) {
-        LOG_WARNING("Query failed: " << query.lastError());
+        qCWarning(lcButeoCore) << "Query failed: " << query.lastError();
         return false;
     } else {
-        LOG_DEBUG( "Ensured database table: deleteditems" );
+        qCDebug(lcButeoCore) << "Ensured database table: deleteditems" ;
         return true;
     }
 }

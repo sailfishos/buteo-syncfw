@@ -40,16 +40,16 @@ SyncBackup::SyncBackup() :
     iWatchService(0),
     iAdaptor(0)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iAdaptor = new SyncBackupAdaptor(this);
 
     QDBusConnection dbus = QDBusConnection::sessionBus();
 
     if (dbus.registerObject(DBUS_BACKUP_OBJECT, this)) {
-        LOG_DEBUG("Registered sync backup to D-Bus");
+        qCDebug(lcButeoMsyncd) << "Registered sync backup to D-Bus";
     } else {
-        LOG_CRITICAL("Failed to register sync backup to D-Bus");
+        qCCritical(lcButeoMsyncd) << "Failed to register sync backup to D-Bus";
         Q_ASSERT(false);
     }
 
@@ -61,7 +61,7 @@ SyncBackup::SyncBackup() :
 
 SyncBackup::~SyncBackup()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iBackupRestore = false;
     //Unregister from D-Bus.
     QDBusConnection dbus = QDBusConnection::sessionBus();
@@ -70,12 +70,12 @@ SyncBackup::~SyncBackup()
     iWatchService = 0;
     delete iAdaptor;
     iAdaptor = 0;
-    LOG_DEBUG("Unregistered backup from D-Bus");
+    qCDebug(lcButeoMsyncd) << "Unregistered backup from D-Bus";
 }
 
 void SyncBackup::backupServiceUnregistered(const QString  &serviceName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Q_UNUSED (serviceName);
     if (iBackupRestore) {
         // Should not happen ; backup framework exited abruptly
@@ -86,7 +86,7 @@ void SyncBackup::backupServiceUnregistered(const QString  &serviceName)
 
 uchar SyncBackup::sendDelayReply (const QDBusMessage &message)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (SYNCFW_UNIT_TESTS_RUNTIME)
         return 0;
@@ -101,14 +101,14 @@ uchar SyncBackup::sendDelayReply (const QDBusMessage &message)
 
 void SyncBackup::sendReply (uchar aResult)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (SYNCFW_UNIT_TESTS_RUNTIME)
         return ;
 
     // coverity[unreachable]  //Suppressing false positives with code annotations
     if (iReply) {
-        LOG_DEBUG ("Send Reply");
+        qCDebug(lcButeoMsyncd) << "Send Reply";
         QList<QVariant>  arguments;
         QVariant vt = QVariant::fromValue((uchar)aResult);
         arguments.append(vt);
@@ -121,7 +121,7 @@ void SyncBackup::sendReply (uchar aResult)
 
 uchar SyncBackup::backupStarts(const QDBusMessage &message)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iBackupRestore = true;
     sendDelayReply(message);
     emit startBackup();
@@ -130,7 +130,7 @@ uchar SyncBackup::backupStarts(const QDBusMessage &message)
 
 uchar SyncBackup::backupFinished(const QDBusMessage &message)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Q_UNUSED (message);
     iBackupRestore = false;
     sendDelayReply(message);
@@ -140,7 +140,7 @@ uchar SyncBackup::backupFinished(const QDBusMessage &message)
 
 uchar SyncBackup::restoreStarts(const QDBusMessage &message)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     iBackupRestore = true;
     sendDelayReply(message);
     emit startRestore();
@@ -149,7 +149,7 @@ uchar SyncBackup::restoreStarts(const QDBusMessage &message)
 
 uchar SyncBackup::restoreFinished(const QDBusMessage &message)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     Q_UNUSED (message);
     iBackupRestore = false;
     sendDelayReply(message);
@@ -159,6 +159,6 @@ uchar SyncBackup::restoreFinished(const QDBusMessage &message)
 
 bool SyncBackup::getBackUpRestoreState()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return iBackupRestore;
 }

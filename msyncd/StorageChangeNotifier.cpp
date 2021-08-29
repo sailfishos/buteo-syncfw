@@ -10,12 +10,12 @@ using namespace Buteo;
 StorageChangeNotifier::StorageChangeNotifier() :
     iPluginManager(0)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 StorageChangeNotifier::~StorageChangeNotifier()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     StorageChangeNotifierPlugin *plugin = 0;
     for (QHash<QString, StorageChangeNotifierPlugin *>::iterator storageNameItr = iNotifierMap.begin();
             storageNameItr != iNotifierMap.end(); ++storageNameItr) {
@@ -29,7 +29,7 @@ StorageChangeNotifier::~StorageChangeNotifier()
 void StorageChangeNotifier::loadNotifiers(PluginManager *aPluginManager,
                                           const QStringList &aStorageNames)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     StorageChangeNotifierPlugin *plugin = 0;
     iPluginManager = aPluginManager;
     for (QStringList::const_iterator storageNameItr = aStorageNames.constBegin();
@@ -45,7 +45,7 @@ void StorageChangeNotifier::loadNotifiers(PluginManager *aPluginManager,
 
 bool StorageChangeNotifier::startListen(QStringList &aFailedStorages)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     bool success = true;
     StorageChangeNotifierPlugin *plugin = 0;
 
@@ -69,7 +69,7 @@ bool StorageChangeNotifier::startListen(QStringList &aFailedStorages)
 
 void StorageChangeNotifier::stopListen(bool disableAfterNextChange)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     StorageChangeNotifierPlugin *plugin = 0;
     for (QHash<QString, StorageChangeNotifierPlugin *>::iterator storageNameItr = iNotifierMap.begin();
             storageNameItr != iNotifierMap.end(); ++storageNameItr) {
@@ -84,10 +84,10 @@ void StorageChangeNotifier::stopListen(bool disableAfterNextChange)
 
 void StorageChangeNotifier::storageChanged()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     StorageChangeNotifierPlugin *plugin = qobject_cast<StorageChangeNotifierPlugin *>(sender());
     if (plugin) {
-        LOG_DEBUG("Change in storage" << plugin->name());
+        qCDebug(lcButeoMsyncd) << "Change in storage" << plugin->name();
         plugin->changesReceived();
         emit storageChange(plugin->name());
     }
@@ -95,7 +95,7 @@ void StorageChangeNotifier::storageChanged()
 
 void StorageChangeNotifier::checkForChanges()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     StorageChangeNotifierPlugin *plugin = 0;
     for (QHash<QString, StorageChangeNotifierPlugin *>::iterator storageNameItr = iNotifierMap.begin();
             storageNameItr != iNotifierMap.end(); ++storageNameItr) {

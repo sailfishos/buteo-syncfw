@@ -33,7 +33,7 @@ ServerActivator::ServerActivator(ProfileManager &aProfileManager,
         iProfileManager(aProfileManager),
         iTransportTracker(aTransportTracker)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // Get server profiles and transports used by them.
     QStringList serverProfileNames = iProfileManager.profileNames(
@@ -60,7 +60,7 @@ ServerActivator::ServerActivator(ProfileManager &aProfileManager,
             delete serverProfile;
             serverProfile = 0;
         } else {
-            LOG_WARNING("Failed to load server profile:" << serverProfileName);
+            qCWarning(lcButeoMsyncd) << "Failed to load server profile:" << serverProfileName;
         }
     }
 
@@ -84,12 +84,12 @@ ServerActivator::ServerActivator(ProfileManager &aProfileManager,
 
 ServerActivator::~ServerActivator()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 int ServerActivator::addRef(const QString &aServerName, bool emitSignal /*= true*/)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     int refCount = 0;
     if (iServers.contains(aServerName)) {
@@ -98,7 +98,7 @@ int ServerActivator::addRef(const QString &aServerName, bool emitSignal /*= true
             emit serverEnabled(aServerName);
         }
     } else {
-        LOG_WARNING("Unknown server:" << aServerName);
+        qCWarning(lcButeoMsyncd) << "Unknown server:" << aServerName;
     }
 
     return refCount;
@@ -106,7 +106,7 @@ int ServerActivator::addRef(const QString &aServerName, bool emitSignal /*= true
 
 int ServerActivator::removeRef(const QString &aServerName, bool emitSignal /*= true*/)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     int refCount = 0;
     if (iServers.contains(aServerName)) {
@@ -119,7 +119,7 @@ int ServerActivator::removeRef(const QString &aServerName, bool emitSignal /*= t
         }
         refCount = data.iRefCount;
     } else {
-        LOG_WARNING("Unknown server:" << aServerName);
+        qCWarning(lcButeoMsyncd) << "Unknown server:" << aServerName;
     }
 
     return refCount;
@@ -127,7 +127,7 @@ int ServerActivator::removeRef(const QString &aServerName, bool emitSignal /*= t
 
 QStringList ServerActivator::enabledServers() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QStringList enabledServers;
     foreach (QString serverName, iServers.keys()) {
@@ -142,7 +142,7 @@ QStringList ServerActivator::enabledServers() const
 void ServerActivator::onConnectivityStateChanged(Sync::ConnectivityType aType,
                                                  bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     foreach (QString serverName, iServers.keys()) {
         if (iServers[serverName].iTransports.contains(aType)) {
@@ -158,7 +158,7 @@ void ServerActivator::onConnectivityStateChanged(Sync::ConnectivityType aType,
 QList<Sync::ConnectivityType> ServerActivator::transportsFromProfile(
     const Profile *aProfile)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<Sync::ConnectivityType> transports;
     if (aProfile != 0) {

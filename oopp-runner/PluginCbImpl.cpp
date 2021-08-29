@@ -30,7 +30,7 @@ using namespace Buteo;
 
 PluginCbImpl::PluginCbImpl()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     imsyncIface = new SyncDaemonProxy("com.meego.msyncd",
                                       "/synchronizer",
@@ -39,7 +39,7 @@ PluginCbImpl::PluginCbImpl()
 
 PluginCbImpl::~PluginCbImpl()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     delete imsyncIface;
     imsyncIface = 0;
 }
@@ -47,7 +47,7 @@ PluginCbImpl::~PluginCbImpl()
 bool PluginCbImpl::requestStorage(const QString &aStorageName,
                                   const SyncPluginBase */*aCaller*/)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool requestResult = false;
 
@@ -57,11 +57,11 @@ bool PluginCbImpl::requestStorage(const QString &aStorageName,
         QDBusReply<bool> gotStorages = imsyncIface->requestStorages(storages);
 
         if (!gotStorages.isValid())
-            LOG_WARNING("Request for storage " << aStorageName << " failed");
+            qCWarning(lcButeoPlugin) << "Request for storage " << aStorageName << " failed";
         else
             requestResult = gotStorages.value();
     } else {
-        LOG_WARNING("msyncd dbus interface is NULL");
+        qCWarning(lcButeoPlugin) << "msyncd dbus interface is NULL";
     }
 
     return requestResult;
@@ -70,20 +70,20 @@ bool PluginCbImpl::requestStorage(const QString &aStorageName,
 void PluginCbImpl::releaseStorage(const QString &aStorageName,
                                   const SyncPluginBase */*aCaller*/)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (imsyncIface) {
         QStringList storages;
         storages << aStorageName;
         imsyncIface->releaseStorages(storages);
     } else {
-        LOG_WARNING("msyncd dbus interface is NULL");
+        qCWarning(lcButeoPlugin) << "msyncd dbus interface is NULL";
     }
 }
 
 StoragePlugin *PluginCbImpl::createStorage(const QString &aPluginName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     StoragePlugin *plugin = nullptr;
     if (!aPluginName.isEmpty()) {
@@ -95,14 +95,14 @@ StoragePlugin *PluginCbImpl::createStorage(const QString &aPluginName)
 
 void PluginCbImpl::destroyStorage(StoragePlugin *aStorage)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iPluginManager.destroyStorage(aStorage);
 }
 
 bool PluginCbImpl::isConnectivityAvailable(Sync::ConnectivityType aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iTransportTracker.isConnectivityAvailable(aType);
 }

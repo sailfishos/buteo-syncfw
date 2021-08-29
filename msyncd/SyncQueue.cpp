@@ -29,7 +29,7 @@ using namespace Buteo;
 
 void SyncQueue::enqueue(SyncSession *aSession)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iItems.enqueue(aSession);
     sort();
@@ -37,7 +37,7 @@ void SyncQueue::enqueue(SyncSession *aSession)
 
 SyncSession *SyncQueue::dequeue()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     SyncSession *p = nullptr;
 
@@ -50,7 +50,7 @@ SyncSession *SyncQueue::dequeue()
 
 SyncSession *SyncQueue::dequeue(const QString &aProfileName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     SyncSession *ret = 0;
     QQueue<SyncSession *>::iterator i;
     for (i = iItems.begin(); i != iItems.end(); ++i) {
@@ -65,7 +65,7 @@ SyncSession *SyncQueue::dequeue(const QString &aProfileName)
 
 SyncSession *SyncQueue::head()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     SyncSession *p = nullptr;
     if (!iItems.isEmpty()) {
@@ -77,21 +77,21 @@ SyncSession *SyncQueue::head()
 
 bool SyncQueue::isEmpty() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iItems.isEmpty();
 }
 
 int SyncQueue::size() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     return iItems.size();
 }
 
 bool SyncQueue::contains(const QString &aProfileName) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QQueue<SyncSession *>::const_iterator i;
     for (i = iItems.begin(); i != iItems.end(); ++i) {
@@ -126,14 +126,14 @@ bool syncSessionPointerLessThan(SyncSession *&aLhs, SyncSession *&aRhs)
 
 void SyncQueue::sort()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     // @todo: Sort queued profiles using some criteria.
 }
 
 const QList<SyncSession *> &SyncQueue::getQueuedSyncSessions() const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
     return iItems;
 }
 

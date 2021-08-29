@@ -41,7 +41,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
     iInternet(0),
     iSystemBus(QDBusConnection::systemBus())
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iTransportStates[Sync::CONNECTIVITY_USB] = false;
     iTransportStates[Sync::CONNECTIVITY_BT] = false;
@@ -51,7 +51,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
     // USB
     iUSBProxy = new USBModedProxy(this);
     if (!iUSBProxy->isValid()) {
-        LOG_CRITICAL("Failed to connect to USB moded D-Bus interface");
+        qCCritical(lcButeoCore) << "Failed to connect to USB moded D-Bus interface";
         delete iUSBProxy;
         iUSBProxy = nullptr;
     } else {
@@ -74,7 +74,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
                      BT::INTERFACESADDED,
                      this,
                      SLOT(onBtInterfacesAdded(QDBusObjectPath, InterfacesMap)))) {
-        LOG_WARNING("Failed to connect InterfacesAdded signal");
+        qCWarning(lcButeoCore) << "Failed to connect InterfacesAdded signal";
     }
 
     if (!iSystemBus.connect(BT::BLUEZ_DEST,
@@ -83,7 +83,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
                      BT::INTERFACESREMOVED,
                      this,
                      SLOT(onBtInterfacesRemoved(QDBusObjectPath, QStringList)))) {
-        LOG_WARNING("Failed to connect InterfacesRemoved signal");
+        qCWarning(lcButeoCore) << "Failed to connect InterfacesRemoved signal";
     }
 
     // get the initial state
@@ -94,12 +94,12 @@ TransportTracker::TransportTracker(QObject *aParent) :
                 BT::PROPERTIESCHANGED,
                 this,
                 SLOT(onBtStateChanged(QString, QVariantMap, QStringList)))) {
-            LOG_WARNING("Failed to connect PropertiesChanged signal");
+            qCWarning(lcButeoCore) << "Failed to connect PropertiesChanged signal";
         }
         // Set the bluetooth state to on
         iTransportStates[Sync::CONNECTIVITY_BT] = true;
     } else {
-        LOG_WARNING("The BT adapter is powered off or missing");
+        qCWarning(lcButeoCore) << "The BT adapter is powered off or missing";
     }
 #endif
 
@@ -115,12 +115,12 @@ TransportTracker::TransportTracker(QObject *aParent) :
 
 TransportTracker::~TransportTracker()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 bool TransportTracker::isConnectivityAvailable(Sync::ConnectivityType aType) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMutexLocker locker(&iMutex);
 
@@ -129,16 +129,16 @@ bool TransportTracker::isConnectivityAvailable(Sync::ConnectivityType aType) con
 
 void TransportTracker::onUsbStateChanged(bool aConnected)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    LOG_DEBUG("USB state changed:" << aConnected);
+    qCDebug(lcButeoCore) << "USB state changed:" << aConnected;
     updateState(Sync::CONNECTIVITY_USB, aConnected);
 }
 
 #ifdef HAVE_BLUEZ_5
 void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, QStringList invalidated)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Q_UNUSED(invalidated);
 
@@ -146,7 +146,7 @@ void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, 
         for (QVariantMap::iterator i = changed.begin(); i != changed.end(); ++i) {
             if (i.key() == "Powered") {
                 bool btOn = i.value().toBool();
-                LOG_INFO("BT power state " << btOn);
+                qCInfo(lcButeoCore) << "BT power state " << btOn;
                 updateState(Sync::CONNECTIVITY_BT, btOn);
             }
         }
@@ -155,7 +155,7 @@ void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, 
 
 void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const InterfacesMap interfaces)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     for (InterfacesMap::const_iterator i = interfaces.cbegin(); i != interfaces.cend(); ++i) {
         if (i.key() == BT::BLUEZ_ADAPTER_INTERFACE) {
@@ -165,7 +165,7 @@ void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const In
                 break;
 
             iDefaultBtAdapter = path.path();
-            LOG_DEBUG(BT::BLUEZ_ADAPTER_INTERFACE << "interface" << iDefaultBtAdapter);
+            qCDebug(lcButeoCore) << BT::BLUEZ_ADAPTER_INTERFACE << "interface" << iDefaultBtAdapter;
 
             QDBusInterface adapter(BT::BLUEZ_DEST,
                     iDefaultBtAdapter,
@@ -178,13 +178,13 @@ void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const In
                     BT::PROPERTIESCHANGED,
                     this,
                     SLOT(onBtStateChanged(QString, QVariantMap, QStringList)))) {
-                LOG_WARNING("Failed to connect PropertiesChanged signal");
+                qCWarning(lcButeoCore) << "Failed to connect PropertiesChanged signal";
 
             }
 
             if (adapter.isValid()) {
                 updateState(Sync::CONNECTIVITY_BT, adapter.property("Powered").toBool());
-                LOG_INFO("BT state changed" << adapter.property("Powered").toBool());
+                qCInfo(lcButeoCore) << "BT state changed" << adapter.property("Powered").toBool();
             }
         }
     }
@@ -192,7 +192,7 @@ void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const In
 
 void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const QStringList interfaces)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     for (QStringList::const_iterator i = interfaces.cbegin(); i != interfaces.cend(); ++i) {
         if (*i == BT::BLUEZ_ADAPTER_INTERFACE) {
@@ -200,7 +200,7 @@ void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const 
             if (path.path() != iDefaultBtAdapter)
                 continue;
 
-            LOG_DEBUG("DBus adapter path: " << iDefaultBtAdapter );
+            qCDebug(lcButeoCore) << "DBus adapter path: " << iDefaultBtAdapter ;
 
             if (!iSystemBus.disconnect(BT::BLUEZ_DEST,
                     iDefaultBtAdapter,
@@ -208,9 +208,9 @@ void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const 
                     BT::PROPERTIESCHANGED,
                     this,
                     SLOT(onBtStateChanged(QString,QVariantMap,QStringList)))) {
-                LOG_WARNING("Failed to disconnect PropertiesChanged signal");
+                qCWarning(lcButeoCore) << "Failed to disconnect PropertiesChanged signal";
             } else {
-                LOG_DEBUG("'org.bluez.Adapter1' interface removed from " << path.path());
+                qCDebug(lcButeoCore) << "'org.bluez.Adapter1' interface removed from " << path.path();
             }
 
             iDefaultBtAdapter = QString();
@@ -223,16 +223,16 @@ void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const 
 
 void TransportTracker::onInternetStateChanged(bool aConnected, Sync::InternetConnectionType aType)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    LOG_DEBUG("Internet state changed:" << aConnected);
+    qCDebug(lcButeoCore) << "Internet state changed:" << aConnected;
     updateState(Sync::CONNECTIVITY_INTERNET, aConnected);
     emit networkStateChanged(aConnected, aType);
 }
 
 void TransportTracker::updateState(Sync::ConnectivityType aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
 
     bool oldState = false;
@@ -251,7 +251,7 @@ void TransportTracker::updateState(Sync::ConnectivityType aType, bool aState)
 #ifdef HAVE_BLUEZ_5
 bool TransportTracker::btConnectivityStatus()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDBusInterface  manager(BT::BLUEZ_DEST,
             QString("/"),
@@ -260,7 +260,7 @@ bool TransportTracker::btConnectivityStatus()
 
     QDBusReply<ObjectsMap> reply = manager.call(BT::GETMANAGEDOBJECTS);
     if (!reply.isValid()) {
-        LOG_WARNING( "Failed to connect BT ObjectManager: " << reply.error().message() );
+        qCWarning(lcButeoCore) << "Failed to connect BT ObjectManager: " << reply.error().message() ;
         return false;
     }
 
@@ -273,7 +273,7 @@ bool TransportTracker::btConnectivityStatus()
             if (j.key() == BT::BLUEZ_ADAPTER_INTERFACE) {
                 if (iDefaultBtAdapter.isEmpty() || iDefaultBtAdapter != i.key().path()) {
                     iDefaultBtAdapter = i.key().path();
-                    LOG_DEBUG ("Using adapter path: " << iDefaultBtAdapter);
+                    qCDebug(lcButeoCore) << "Using adapter path: " << iDefaultBtAdapter;
                 }
                 QDBusInterface adapter(BT::BLUEZ_DEST,
                         iDefaultBtAdapter,

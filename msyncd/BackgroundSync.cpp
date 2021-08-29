@@ -32,19 +32,19 @@ const int MAX_FREQUENCY = 1440;
 BackgroundSync::BackgroundSync(QObject *aParent)
     :  QObject(aParent)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 }
 
 BackgroundSync::~BackgroundSync()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     removeAll();
 }
 
 void BackgroundSync::removeAll()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QStringList profNames;
 
@@ -63,7 +63,7 @@ void BackgroundSync::removeAll()
 
 bool BackgroundSync::remove(const QString &aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     removeSwitch(aProfName);
 
@@ -81,7 +81,7 @@ bool BackgroundSync::remove(const QString &aProfName)
 
 bool BackgroundSync::set(const QString &aProfName, int seconds)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfName.isEmpty())
         return false;
@@ -101,12 +101,12 @@ bool BackgroundSync::set(const QString &aProfName, int seconds)
                 newAct.frequency = frequency;
                 newAct.backgroundActivity->setWakeupFrequency(newAct.frequency);
                 newAct.backgroundActivity->wait();
-                LOG_DEBUG("BackgroundSync::set() Rescheduling for" << aProfName << "with frequency" <<
-                          (seconds / 60) << "minutes, waiting.");
+                qCDebug(lcButeoMsyncd) << "BackgroundSync::set() Rescheduling for" << aProfName << "with frequency" <<
+                          (seconds / 60) << "minutes, waiting.";
                 return true;
             } else {
                 newAct.backgroundActivity->wait();
-                LOG_DEBUG("BackgroundSync::set() Frequency unchanged for" << aProfName << ", waiting.");
+                qCDebug(lcButeoMsyncd) << "BackgroundSync::set() Frequency unchanged for" << aProfName << ", waiting.";
                 return true; //returning 'true' - no immediate sync request to be sent.
             }
         }
@@ -119,45 +119,45 @@ bool BackgroundSync::set(const QString &aProfName, int seconds)
     if (seconds / 60 >  MAX_FREQUENCY) {
         newAct.frequency = BackgroundActivity::Range; // 0
         newAct.backgroundActivity->wait(seconds);
-        LOG_DEBUG("BackgroundSync::set() profile name =" << aProfName << "without a valid frequency, waiting for" << seconds <<
-                  "seconds.");
+        qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName << "without a valid frequency, waiting for" << seconds <<
+                  "seconds.";
     } else {
         newAct.frequency = frequencyFromSeconds(seconds);
         newAct.backgroundActivity->setWakeupFrequency(newAct.frequency);
         newAct.backgroundActivity->wait();
-        LOG_DEBUG("BackgroundSync::set() profile name =" << aProfName << "with frequency " <<
-                  (seconds / 60) << "minutes, waiting.");
+        qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName << "with frequency " <<
+                  (seconds / 60) << "minutes, waiting.";
     }
     return true;
 }
 
 void BackgroundSync::onBackgroundSyncStarted()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     BackgroundActivity *tempAct = static_cast<BackgroundActivity *>(sender());
 
     QString profName = getProfNameFromId(tempAct->id());
 
     if (!profName.isEmpty()) {
-        LOG_DEBUG("BackgroundSync started, for profile = " << profName);
+        qCDebug(lcButeoMsyncd) << "BackgroundSync started, for profile = " << profName;
         emit onBackgroundSyncRunning(profName);
     } else {
-        LOG_WARNING("BackgroundSync: Error: profile for background activity not found!  Stopping background activity.");
+        qCWarning(lcButeoMsyncd) << "BackgroundSync: Error: profile for background activity not found!  Stopping background activity.";
         tempAct->stop(); // but don't delete tempAct to avoid possible crash in later profile cleanup.
     }
 }
 
 void BackgroundSync::onBackgroundSyncCompleted(QString aProfName)
 {
-    FUNCTION_CALL_TRACE;
-    LOG_DEBUG("BackgroundSync completed, removing activity, profile name = " << aProfName);
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+    qCDebug(lcButeoMsyncd) << "BackgroundSync completed, removing activity, profile name = " << aProfName;
     remove(aProfName);
 }
 
 QString BackgroundSync::getProfNameFromId(const QString activityId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMapIterator<QString, BActivityStruct> iter(iScheduledSyncs);
 
@@ -208,7 +208,7 @@ BackgroundActivity::Frequency BackgroundSync::frequencyFromSeconds(int seconds)
 
 void BackgroundSync::removeAllSwitches()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QStringList profNames;
     QMapIterator<QString, BActivitySwitchStruct> iter(iScheduledSwitch);
@@ -224,7 +224,7 @@ void BackgroundSync::removeAllSwitches()
 
 bool BackgroundSync::removeSwitch(const QString &aProfName)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (iScheduledSwitch.contains(aProfName) == false)
         return false;
@@ -240,7 +240,7 @@ bool BackgroundSync::removeSwitch(const QString &aProfName)
 
 bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitchTime)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfName.isEmpty())
         return false;
@@ -254,12 +254,12 @@ bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitc
             newSwitch.backgroundActivity->stop();
             newSwitch.nextSwitch = aSwitchTime;
             newSwitch.backgroundActivity->wait(switchSecs);
-            LOG_DEBUG("BackgroundSync::setSwitch() Rescheduling switch for" << aProfName << "at" << aSwitchTime.toString() << "(" <<
-                      switchSecs << "secs ) waiting.");
+            qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Rescheduling switch for" << aProfName << "at" << aSwitchTime.toString() << "(" <<
+                      switchSecs << "secs ) waiting.";
         } else {
             newSwitch.backgroundActivity->wait(switchSecs);
-            LOG_DEBUG("BackgroundSync::setSwitch() Profile" << aProfName << "already with the same switch timer, at" <<
-                      aSwitchTime.toString() << "(" << switchSecs << "secs ) waiting.");
+            qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Profile" << aProfName << "already with the same switch timer, at" <<
+                      aSwitchTime.toString() << "(" << switchSecs << "secs ) waiting.";
         }
     } else {
         BActivitySwitchStruct &newSwitch = iScheduledSwitch[aProfName];
@@ -268,32 +268,32 @@ bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitc
         connect(newSwitch.backgroundActivity, SIGNAL(running()), this, SLOT(onBackgroundSwitchStarted()));
         newSwitch.nextSwitch = aSwitchTime;
         newSwitch.backgroundActivity->wait(switchSecs);
-        LOG_DEBUG("BackgroundSync::setSwitch() Set switch for profile name =" << aProfName << "at" << aSwitchTime.toString() <<
-                  "(" << switchSecs << "secs ) waiting.");
+        qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Set switch for profile name =" << aProfName << "at" << aSwitchTime.toString() <<
+                  "(" << switchSecs << "secs ) waiting.";
     }
     return true;
 }
 
 void BackgroundSync::onBackgroundSwitchStarted()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     BackgroundActivity *tempAct = static_cast<BackgroundActivity *>(sender());
 
     QString profName = getProfNameFromSwitchId(tempAct->id());
 
     if (!profName.isEmpty()) {
-        LOG_DEBUG("BackgroundSync: switch timer started, for profile = " << profName);
+        qCDebug(lcButeoMsyncd) << "BackgroundSync: switch timer started, for profile = " << profName;
         emit onBackgroundSwitchRunning(profName);
     } else {
-        LOG_WARNING("BackgroundSync: Error: profile for switch timer not found!  Stopping background activity.");
+        qCWarning(lcButeoMsyncd) << "BackgroundSync: Error: profile for switch timer not found!  Stopping background activity.";
         tempAct->stop(); // but don't delete tempAct to avoid possible crash in later profile cleanup.
     }
 }
 
 QString BackgroundSync::getProfNameFromSwitchId(const QString activityId) const
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QMapIterator<QString, BActivitySwitchStruct> iter(iScheduledSwitch);
 

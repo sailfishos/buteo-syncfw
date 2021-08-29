@@ -61,7 +61,7 @@ SyncPluginBase *PluginServiceObj::initializePlugin()
 
     iSyncPluginLoader = qobject_cast<SyncPluginLoader *>(iPluginLoader->instance());
     if (!iSyncPluginLoader) {
-        LOG_WARNING("Unable to load SyncPluginLoader" << iPluginName << "from path" << iPluginFilePath)
+        qCWarning(lcButeoPlugin) << "Unable to load SyncPluginLoader" << iPluginName << "from path" << iPluginFilePath
                 << "Error:" << iPluginLoader->errorString();
         return nullptr;
     }
@@ -72,7 +72,7 @@ SyncPluginBase *PluginServiceObj::initializePlugin()
     if (pluginBaseName.endsWith(QStringLiteral("-client"))) {
         SyncProfile *syncProfile = pm.syncProfile(iProfileName);
         if (!syncProfile) {
-            LOG_WARNING("Profile " << iProfileName << " does not exist");
+            qCWarning(lcButeoPlugin) << "Profile " << iProfileName << " does not exist";
             return nullptr;
         }
 
@@ -82,7 +82,7 @@ SyncPluginBase *PluginServiceObj::initializePlugin()
     } else if (pluginBaseName.endsWith(QStringLiteral("-server"))) {
         Profile *profile = pm.profile(iProfileName, Profile::TYPE_SERVER);
         if (!profile || !profile->isValid()) {
-            LOG_WARNING("Profile " << iProfileName << " does not exist");
+            qCWarning(lcButeoPlugin) << "Profile " << iProfileName << " does not exist";
             return nullptr;
         } else {
             pm.expand(*profile);
@@ -92,18 +92,18 @@ SyncPluginBase *PluginServiceObj::initializePlugin()
         return iSyncPluginLoader->createServerPlugin(iPluginName, *profile, iPluginCb);
 
     } else {
-        LOG_WARNING("Plugin is neither -client nor -server type:" << iPluginName);
+        qCWarning(lcButeoPlugin) << "Plugin is neither -client nor -server type:" << iPluginName;
         return nullptr;
     }
 }
 
 bool PluginServiceObj::init()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     iPlugin = initializePlugin();
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::init(): unable to initialize plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::init(): unable to initialize plugin" ;
         return false;
     }
 
@@ -130,10 +130,10 @@ bool PluginServiceObj::init()
 
 bool PluginServiceObj::uninit()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::uninit(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::uninit(): called on uninitialized plugin" ;
         return true;
     }
 
@@ -149,10 +149,10 @@ bool PluginServiceObj::uninit()
 
 void PluginServiceObj::abortSync(uchar aStatus)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::abortSync(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::abortSync(): called on uninitialized plugin" ;
         return;
     }
     iPlugin->abortSync(static_cast<Sync::SyncStatus>(aStatus));
@@ -160,12 +160,12 @@ void PluginServiceObj::abortSync(uchar aStatus)
 
 bool PluginServiceObj::cleanUp()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
         initializePlugin();
         if (!iPlugin) {
-            LOG_WARNING( "PluginServiceObj::cleanUp(): unable to initialize plugin" );
+            qCWarning(lcButeoPlugin) << "PluginServiceObj::cleanUp(): unable to initialize plugin" ;
             return false;
         }
     }
@@ -175,10 +175,10 @@ bool PluginServiceObj::cleanUp()
 
 void PluginServiceObj::connectivityStateChanged(int aType, bool aState)
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::connectivityStateChanged(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::connectivityStateChanged(): called on uninitialized plugin" ;
         return;
     }
     iPlugin->connectivityStateChanged(static_cast<Sync::ConnectivityType>(aType), aState);
@@ -186,10 +186,10 @@ void PluginServiceObj::connectivityStateChanged(int aType, bool aState)
 
 QString PluginServiceObj::getSyncResults()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::getSyncResults(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::getSyncResults(): called on uninitialized plugin" ;
         return QString();
     }
     return iPlugin->getSyncResults().toString();
@@ -197,83 +197,83 @@ QString PluginServiceObj::getSyncResults()
 
 bool PluginServiceObj::startSync()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::startSync(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::startSync(): called on uninitialized plugin" ;
         return false;
     }
 
     if (ClientPlugin *clientPlugin = qobject_cast<ClientPlugin *>(iPlugin)) {
         return clientPlugin->startSync();
     } else {
-        LOG_WARNING( "PluginServiceObj::startSync(): client plugin unavailable" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::startSync(): client plugin unavailable" ;
         return false;
     }
 }
 
 void PluginServiceObj::resume()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::resume(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::resume(): called on uninitialized plugin" ;
         return;
     }
 
     if (ServerPlugin *serverPlugin = qobject_cast<ServerPlugin *>(iPlugin)) {
         serverPlugin->resume();
     } else {
-        LOG_WARNING( "PluginServiceObj::resume(): server plugin unavailable" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::resume(): server plugin unavailable" ;
     }
 }
 
 bool PluginServiceObj::startListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::startListen(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::startListen(): called on uninitialized plugin" ;
         return false;
     }
 
     if (ServerPlugin *serverPlugin = qobject_cast<ServerPlugin *>(iPlugin)) {
         return serverPlugin->startListen();
     } else {
-        LOG_WARNING( "PluginServiceObj::startListen(): server plugin unavailable" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::startListen(): server plugin unavailable" ;
         return false;
     }
 }
 
 void PluginServiceObj::stopListen()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::stopListen(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::stopListen(): called on uninitialized plugin" ;
         return;
     }
 
     if (ServerPlugin *serverPlugin = qobject_cast<ServerPlugin *>(iPlugin)) {
         serverPlugin->stopListen();
     } else {
-        LOG_WARNING( "PluginServiceObj::stopListen(): server plugin unavailable" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::stopListen(): server plugin unavailable" ;
     }
 }
 
 void PluginServiceObj::suspend()
 {
-    FUNCTION_CALL_TRACE;
+    FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        LOG_WARNING( "PluginServiceObj::suspend(): called on uninitialized plugin" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::suspend(): called on uninitialized plugin" ;
         return;
     }
 
     if (ServerPlugin *serverPlugin = qobject_cast<ServerPlugin *>(iPlugin)) {
         serverPlugin->suspend();
     } else {
-        LOG_WARNING( "PluginServiceObj::suspend(): server plugin unavailable" );
+        qCWarning(lcButeoPlugin) << "PluginServiceObj::suspend(): server plugin unavailable" ;
     }
 }
 
