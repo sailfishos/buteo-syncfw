@@ -163,7 +163,7 @@ bool PluginServiceObj::cleanUp()
     FUNCTION_CALL_TRACE;
 
     if (!iPlugin) {
-        initializePlugin();
+        iPlugin = initializePlugin();
         if (!iPlugin) {
             LOG_WARNING( "PluginServiceObj::cleanUp(): unable to initialize plugin" );
             return false;
