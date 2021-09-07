@@ -163,7 +163,7 @@ bool PluginServiceObj::cleanUp()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iPlugin) {
-        initializePlugin();
+        iPlugin = initializePlugin();
         if (!iPlugin) {
             qCWarning(lcButeoPlugin) << "PluginServiceObj::cleanUp(): unable to initialize plugin" ;
             return false;
