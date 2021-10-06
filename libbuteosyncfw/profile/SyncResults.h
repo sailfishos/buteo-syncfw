@@ -75,13 +75,11 @@ public:
      * Used to set the minor code in *.log.xml file for profile
      */
     enum MinorCode {
-
-        //NO-Error
+        // No error
         NO_ERROR = 0,
 
-        //These error codes are mapped to syncAgentConsts.h
-        // Successful 3xx
-        SYNC_FINISHED = 301,
+        // Sync completed but some unblocking issues appeared 3xx
+        ITEM_FAILURES = 301,
 
         // Client/Configuration errors 4xx
         INTERNAL_ERROR = 401,
@@ -91,15 +89,12 @@ public:
         PLUGIN_TIMEOUT,
 
         // Server/Network errors 5xx
-        SUSPENDED = 501,
-        ABORTED,
+        ABORTED = 501,
         CONNECTION_ERROR,
-        INVALID_SYNCML_MESSAGE,
         UNSUPPORTED_SYNC_TYPE,
         UNSUPPORTED_STORAGE_TYPE,
-        //Upto here
 
-        //Context Error Code
+        // Context Error Code
         LOW_BATTERY_POWER = 601,
         POWER_SAVING_MODE,
         OFFLINE_MODE,
