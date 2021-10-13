@@ -21,7 +21,7 @@ BuildRequires: pkgconfig(qt5-boostable)
 BuildRequires: pkgconfig(keepalive)
 BuildRequires: pkgconfig(gio-2.0)
 BuildRequires: pkgconfig(mce-qt5) >= 1.1.0
-BuildRequires: systemd
+BuildRequires: pkgconfig(systemd)
 Requires: mapplauncherd-qt5
 Requires: glib2
 Requires: libmce-qt5 >= 1.1.0
