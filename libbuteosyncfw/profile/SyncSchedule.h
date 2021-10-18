@@ -27,6 +27,7 @@
 
 #include <QTime>
 #include <QFlags>
+#include <QObject>
 
 class QDomDocument;
 class QDomElement;
@@ -50,6 +51,16 @@ const QString SYNC_SCHEDULE_OFFPEAK_SCHEDULE_KEY_INT ("scheduler/schedule_off_pe
  */
 class SyncSchedule
 {
+    Q_GADGET
+    Q_PROPERTY(QTime time READ time)
+    Q_PROPERTY(Days days READ days)
+    Q_PROPERTY(unsigned interval READ interval)
+    Q_PROPERTY(bool enabled READ scheduleEnabled)
+    Q_PROPERTY(QTime rushBegin READ rushBegin)
+    Q_PROPERTY(QTime rushEnd READ rushEnd)
+    Q_PROPERTY(Days rushDays READ rushDays)
+    Q_PROPERTY(unsigned rushInterval READ rushInterval)
+    Q_PROPERTY(bool rushEnabled READ rushEnabled)
 public:
     enum Day {
         NoDays    = 0x00,
@@ -62,6 +73,7 @@ public:
         Sunday    = 0x40
     };
     Q_DECLARE_FLAGS(Days, Day)
+    Q_FLAG(Days)
 
     /*! \brief Constructs an empty schedule.
      *
@@ -94,7 +106,7 @@ public:
      *
      * \param aRhs Source
      */
-    bool operator==(const SyncSchedule &aRhs);
+    bool operator==(const SyncSchedule &aRhs) const;
 
     /*! \brief Exports the sync schedule to XML.
      *
@@ -284,5 +296,7 @@ private:
 };
 
 }
+
+Q_DECLARE_METATYPE(Buteo::SyncSchedule)
 
 #endif // SYNCSCHEDULE_H

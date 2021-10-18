@@ -1,5 +1,5 @@
 Name:    buteo-syncfw-qt5
-Version: 0.10.12
+Version: 0.10.13
 Release: 1
 Summary: Synchronization backend
 URL:     https://github.com/sailfishos/buteo-syncfw/
@@ -13,6 +13,7 @@ BuildRequires: pkgconfig(Qt5Network)
 BuildRequires: pkgconfig(Qt5DBus)
 BuildRequires: pkgconfig(Qt5Sql)
 BuildRequires: pkgconfig(Qt5Test)
+BuildRequires: pkgconfig(Qt5Qml)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(accounts-qt5) >= 1.13
 BuildRequires: pkgconfig(libsignon-qt5)
@@ -91,6 +92,17 @@ Summary: Tests for %{name}
 /opt/tests/buteo-syncfw
 %{_datadir}/accounts/services/*.service
 
+%package qml-plugin
+Summary: QML plugin for %{name}
+
+%description qml-plugin
+%{summary}.
+
+%files qml-plugin
+%defattr(-,root,root,-)
+%dir %{_libdir}/qt5/qml/Buteo/Profiles
+%{_libdir}/qt5/qml/Buteo/Profiles/libbuteoprofiles.so
+%{_libdir}/qt5/qml/Buteo/Profiles/qmldir
 
 %prep
 %setup -q

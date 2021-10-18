@@ -25,6 +25,9 @@
 
 #include <QDateTime>
 #include <QList>
+#include <QSharedPointer>
+#include <QObject>
+#include <QVariantList>
 #include "TargetResults.h"
 
 class QDomDocument;
@@ -57,6 +60,14 @@ class SyncResultsPrivate;
  */
 class SyncResults
 {
+    Q_GADGET
+    Q_PROPERTY(QDateTime syncTime READ syncTime CONSTANT)
+    Q_PROPERTY(MajorCode majorCode READ majorCode CONSTANT)
+    Q_PROPERTY(MinorCode minorCode READ minorCode CONSTANT)
+    Q_PROPERTY(bool scheduled READ isScheduled CONSTANT)
+    Q_PROPERTY(QString targetId READ getTargetId CONSTANT)
+    Q_PROPERTY(QVariantList results READ variantTargetResults CONSTANT)
+
 public:
 
     /*! \brief enum value
@@ -69,6 +80,7 @@ public:
         SYNC_RESULT_FAILED,
         SYNC_RESULT_CANCELLED
     };
+    Q_ENUM(MajorCode)
 
     /*! \brief enum value
      *
@@ -101,6 +113,7 @@ public:
         BACKUP_IN_PROGRESS,
         LOW_MEMORY
     };
+    Q_ENUM(MinorCode)
 
     /*! \brief Constructs an empty sync results object.
      *
@@ -228,7 +241,9 @@ public:
 
 private:
 
-    SyncResultsPrivate *d_ptr;
+    QVariantList variantTargetResults() const;
+
+    QSharedPointer<SyncResultsPrivate> d_ptr;
 
 #ifdef SYNCFW_UNIT_TESTS
     friend class ClientThreadTest;
@@ -237,4 +252,7 @@ private:
 };
 
 }
+
+Q_DECLARE_METATYPE(Buteo::SyncResults)
+
 #endif // SYNCRESULTS_H_2

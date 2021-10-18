@@ -139,6 +139,11 @@ TargetResultsPrivate::TargetResultsPrivate(const TargetResultsPrivate &aSource)
 {
 }
 
+TargetResults::TargetResults()
+    :   d_ptr(new TargetResultsPrivate())
+{
+}
+
 TargetResults::TargetResults(const TargetResults &aSource)
     :   d_ptr(new TargetResultsPrivate(*aSource.d_ptr))
 {

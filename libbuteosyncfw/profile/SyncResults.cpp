@@ -114,15 +114,12 @@ SyncResults::SyncResults(const QDomElement &aRoot)
 
 SyncResults::~SyncResults()
 {
-    delete d_ptr;
-    d_ptr = 0;
 }
 
 SyncResults &SyncResults::operator=(const SyncResults &aRhs)
 {
     if (&aRhs != this) {
-        delete d_ptr;
-        d_ptr = new SyncResultsPrivate(*aRhs.d_ptr);
+        d_ptr = aRhs.d_ptr;
     }
 
     return *this;
@@ -161,6 +158,15 @@ QString SyncResults::toString() const
 QList<TargetResults> SyncResults::targetResults() const
 {
     return d_ptr->iTargetResults;
+}
+
+QVariantList SyncResults::variantTargetResults() const
+{
+    QVariantList out;
+    for (const TargetResults &result : d_ptr->iTargetResults) {
+        out << QVariant::fromValue(result);
+    }
+    return out;
 }
 
 void SyncResults::addTargetResults(const TargetResults &aResults)
