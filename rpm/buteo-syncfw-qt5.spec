@@ -32,6 +32,7 @@ Requires: libmce-qt5 >= 1.1.0
 
 %files
 %defattr(-,root,root,-)
+%license COPYING
 %{_libdir}/libbuteosyncfw5.so.*
 %{_libexecdir}/buteo-oopp-runner
 
