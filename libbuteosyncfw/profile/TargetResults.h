@@ -202,7 +202,7 @@ public:
      * \param aUid A UID as returned by localDetails().
      * \return A message stored in the log related to this particular item.
      */
-    QString localMessage(const QString &aUid) const;
+    Q_INVOKABLE QString localMessage(const QString &aUid) const;
 
     /*! \brief Gets the details, if any for changes done remote during a sync process.
      *
@@ -221,7 +221,7 @@ public:
      * \param aUid A UID as returned by remoteDetails().
      * \return A message stored in the log related to this particular item.
      */
-    QString remoteMessage(const QString &aUid) const;
+    Q_INVOKABLE QString remoteMessage(const QString &aUid) const;
 
 private:
 

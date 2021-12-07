@@ -1,5 +1,5 @@
 Name:    buteo-syncfw-qt5
-Version: 0.10.13
+Version: 0.10.15
 Release: 1
 Summary: Synchronization backend
 URL:     https://github.com/sailfishos/buteo-syncfw/
