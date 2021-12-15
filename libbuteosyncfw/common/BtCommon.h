@@ -28,13 +28,13 @@ namespace BT {
 
 } // namespace BT
 
+} // namespace Buteo
+
 typedef QMap<QString,QVariantMap> InterfacesMap;
 typedef QMap<QDBusObjectPath,InterfacesMap> ObjectsMap;
 
-} // namespace Buteo
-
-Q_DECLARE_METATYPE(Buteo::InterfacesMap)
-Q_DECLARE_METATYPE(Buteo::ObjectsMap)
+Q_DECLARE_METATYPE(InterfacesMap)
+Q_DECLARE_METATYPE(ObjectsMap)
 
 #endif /* HAVE_BLUEZ_5 */
 
