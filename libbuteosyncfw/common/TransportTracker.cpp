@@ -73,7 +73,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
                      BT::BLUEZ_MANAGER_INTERFACE,
                      BT::INTERFACESADDED,
                      this,
-                     SLOT(onBtInterfacesAdded(QDBusObjectPath, InterfacesMap)))) {
+                     SLOT(onBtInterfacesAdded(const QDBusObjectPath &, const InterfacesMap &)))) {
         qCWarning(lcButeoCore) << "Failed to connect InterfacesAdded signal";
     }
 
@@ -82,7 +82,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
                      BT::BLUEZ_MANAGER_INTERFACE,
                      BT::INTERFACESREMOVED,
                      this,
-                     SLOT(onBtInterfacesRemoved(QDBusObjectPath, QStringList)))) {
+                     SLOT(onBtInterfacesRemoved(const QDBusObjectPath &, const QStringList &)))) {
         qCWarning(lcButeoCore) << "Failed to connect InterfacesRemoved signal";
     }
 
@@ -93,7 +93,7 @@ TransportTracker::TransportTracker(QObject *aParent) :
                 BT::BLUEZ_PROPERTIES_INTERFACE,
                 BT::PROPERTIESCHANGED,
                 this,
-                SLOT(onBtStateChanged(QString, QVariantMap, QStringList)))) {
+                SLOT(onBtStateChanged(const QString &, const QVariantMap &, const QStringList &)))) {
             qCWarning(lcButeoCore) << "Failed to connect PropertiesChanged signal";
         }
         // Set the bluetooth state to on
@@ -136,14 +136,14 @@ void TransportTracker::onUsbStateChanged(bool aConnected)
 }
 
 #ifdef HAVE_BLUEZ_5
-void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, QStringList invalidated)
+void TransportTracker::onBtStateChanged(const QString &interface, const QVariantMap &changed, const QStringList &invalidated)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     Q_UNUSED(invalidated);
 
     if (interface == BT::BLUEZ_ADAPTER_INTERFACE) {
-        for (QVariantMap::iterator i = changed.begin(); i != changed.end(); ++i) {
+        for (QVariantMap::const_iterator i = changed.begin(); i != changed.end(); ++i) {
             if (i.key() == "Powered") {
                 bool btOn = i.value().toBool();
                 qCInfo(lcButeoCore) << "BT power state " << btOn;
@@ -153,7 +153,7 @@ void TransportTracker::onBtStateChanged(QString interface, QVariantMap changed, 
     }
 }
 
-void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const InterfacesMap interfaces)
+void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const InterfacesMap &interfaces)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
@@ -177,7 +177,7 @@ void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const In
                     BT::BLUEZ_PROPERTIES_INTERFACE,
                     BT::PROPERTIESCHANGED,
                     this,
-                    SLOT(onBtStateChanged(QString, QVariantMap, QStringList)))) {
+                    SLOT(onBtStateChanged(const QString &, const QVariantMap &, const QStringList &)))) {
                 qCWarning(lcButeoCore) << "Failed to connect PropertiesChanged signal";
 
             }
@@ -190,7 +190,7 @@ void TransportTracker::onBtInterfacesAdded(const QDBusObjectPath &path, const In
     }
 }
 
-void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const QStringList interfaces)
+void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const QStringList &interfaces)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
@@ -207,7 +207,7 @@ void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const 
                     BT::BLUEZ_PROPERTIES_INTERFACE,
                     BT::PROPERTIESCHANGED,
                     this,
-                    SLOT(onBtStateChanged(QString,QVariantMap,QStringList)))) {
+                    SLOT(onBtStateChanged(const QString &, const QVariantMap &, const QStringList &)))) {
                 qCWarning(lcButeoCore) << "Failed to disconnect PropertiesChanged signal";
             } else {
                 qCDebug(lcButeoCore) << "'org.bluez.Adapter1' interface removed from " << path.path();
