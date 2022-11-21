@@ -75,35 +75,23 @@ public:
     SyncLog *loadLog(const QString &aProfileName);
 
     bool parseFile(const QString &aPath, QDomDocument &aDoc);
-
     void restoreBackupIfFound(const QString &aProfilePath,
                               const QString &aBackupPath);
-
     QDomDocument constructProfileDocument(const Profile &aProfile);
-
     bool writeProfileFile(const QString &aProfilePath, const QDomDocument &aDoc);
-
     QString findProfileFile(const QString &aName, const QString &aType);
-
     bool createBackup(const QString &aProfilePath, const QString &aBackupPath);
-
     bool matchProfile(const Profile &aProfile,
                       const ProfileManager::SearchCriteria &aCriteria);
-
     bool matchKey(const Profile &aProfile,
                   const ProfileManager::SearchCriteria &aCriteria);
-
     bool save(const Profile &aProfile);
-
     bool remove(const QString &aName, const QString &aType);
-
     bool profileExists(const QString &aProfileId, const QString &aType);
 
-    // Primary path for profiles.
     QString iPrimaryPath;
-
-    // Secondary path for profiles.
     QString iSecondaryPath;
+    QHash<QString, QList<quint32> > iSyncRetriesInfo;
 };
 
 }
@@ -1121,9 +1109,9 @@ void ProfileManager::addRetriesInfo(const SyncProfile *profile)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     if (profile) {
-        if (profile->hasRetries() && !iSyncRetriesInfo.contains(profile->name())) {
+        if (profile->hasRetries() && !d_ptr->iSyncRetriesInfo.contains(profile->name())) {
             qCDebug(lcButeoCore) << "syncretries : retries info present for profile" << profile->name();
-            iSyncRetriesInfo[profile->name()] = profile->retryIntervals();
+            d_ptr->iSyncRetriesInfo[profile->name()] = profile->retryIntervals();
         }
     }
 }
@@ -1133,12 +1121,12 @@ QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
     FUNCTION_CALL_TRACE(lcButeoTrace);
     QDateTime nextRetryInterval;
     if (aProfile &&
-            iSyncRetriesInfo.contains(aProfile->name()) &&
-            !iSyncRetriesInfo[aProfile->name()].isEmpty()) {
-        quint32 mins = iSyncRetriesInfo[aProfile->name()].takeFirst();
+            d_ptr->iSyncRetriesInfo.contains(aProfile->name()) &&
+            !d_ptr->iSyncRetriesInfo[aProfile->name()].isEmpty()) {
+        quint32 mins = d_ptr->iSyncRetriesInfo[aProfile->name()].takeFirst();
         nextRetryInterval = QDateTime::currentDateTime().addSecs(mins * 60);
         qCDebug(lcButeoCore) << "syncretries : retry for profile" << aProfile->name() << "in" << mins << "minutes";
-        qCDebug(lcButeoCore) << "syncretries :" << iSyncRetriesInfo[aProfile->name()].count() << "attempts remain";
+        qCDebug(lcButeoCore) << "syncretries :" << d_ptr->iSyncRetriesInfo[aProfile->name()].count() << "attempts remain";
     }
     return nextRetryInterval;
 }
@@ -1146,8 +1134,8 @@ QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
 void ProfileManager::retriesDone(const QString &aProfileName)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-    if (iSyncRetriesInfo.contains(aProfileName)) {
-        iSyncRetriesInfo.remove(aProfileName);
+    if (d_ptr->iSyncRetriesInfo.contains(aProfileName)) {
+        d_ptr->iSyncRetriesInfo.remove(aProfileName);
         qCDebug(lcButeoCore) << "syncretries : retry success for" << aProfileName;
     }
 }

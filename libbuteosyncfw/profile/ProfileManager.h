@@ -52,13 +52,10 @@ public:
         enum Type {
             //! Sub-profile (and key) exists.
             EXISTS,
-
             //! Sub-profile (or key) does not exist.
             NOT_EXISTS,
-
             //! Key value is equal.
             EQUAL,
-
             //! Key value is not equal.
             NOT_EQUAL
         };
@@ -354,7 +351,6 @@ public:
 #endif
 
 signals:
-
     /*! \brief Notifies about a change in profile.
     *
     * This signal is sent when the profile data is modified or when a profile
@@ -362,17 +358,12 @@ signals:
     * \param aProfileName Name of the changed profile.
     * \param aChangeType \see ProfileManager::ProfileChangeType
     * \param aProfileAsXml Updated Profile Object is sent as xml
-    *
     */
     void signalProfileChanged(QString aProfileName, int aChangeType, QString aProfileAsXml);
 
 private:
-
     ProfileManager &operator=(const ProfileManager &aRhs);
-
     ProfileManagerPrivate *d_ptr;
-
-    QHash<QString, QList<quint32> > iSyncRetriesInfo;
 };
 
 }
