@@ -51,7 +51,6 @@ HEADERS += ServerActivator.h \
     PluginRunner.h \
     ClientPluginRunner.h \
     ServerPluginRunner.h \
-    SyncAlarmInventory.h \
     SyncSigHandler.h \
     StorageChangeNotifier.h \
     SyncOnChange.h \
@@ -72,7 +71,6 @@ SOURCES += ServerActivator.cpp \
     PluginRunner.cpp \
     ClientPluginRunner.cpp \
     ServerPluginRunner.cpp \
-    SyncAlarmInventory.cpp \
     SyncSigHandler.cpp \
     StorageChangeNotifier.cpp \
     SyncOnChange.cpp \
@@ -91,10 +89,12 @@ contains(DEFINES, USE_KEEPALIVE) {
     PKGCONFIG += libiphb
 
     HEADERS += \
-        IPHeartBeat.h
+        IPHeartBeat.h \
+        SyncAlarmInventory.h
 
     SOURCES += \
-        IPHeartBeat.cpp
+        IPHeartBeat.cpp \
+        SyncAlarmInventory.cpp
 }
 
 QMAKE_CXXFLAGS = -Wall \
