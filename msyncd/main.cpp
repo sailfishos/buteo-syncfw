@@ -26,7 +26,6 @@
 #include <QtDebug>
 #include <QDateTime>
 
-#include <dbus/dbus.h>
 #include <sys/types.h>
 #include <grp.h>
 #include <pwd.h>
@@ -39,21 +38,9 @@
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {
-    // remove this later on if not needed in harmattan,
-    // this IS needed for fremantle
-    dbus_threads_init_default(); // magical line making program not crash
-
     QCoreApplication app(argc, argv);
 
-    // The below two lines are added as a workaround for QT bug 11413
-    // http://bugreports.qt.nokia.com/browse/QTBUG-11413
-    QDBusConnection::sessionBus();
-    QDBusConnection::systemBus();
-
     Buteo::Synchronizer *synchronizer = new Buteo::Synchronizer(&app);
-    if (synchronizer == 0) {
-        qCCritical(lcButeoMsyncd) << "Failed to create synchronizer";
-    }
 
     if (!synchronizer->initialize()) {
         delete synchronizer;
@@ -95,8 +82,8 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     Buteo::configureLegacyLogging();
 
-    //Note:- Since we can't call Qt functions from Unix signal handlers.
-    // This class provide hanlding unix  signal.
+    // Note:- Since we can't call Qt functions from Unix signal handlers.
+    // This class provide handling unix signal.
     SyncSigHandler *sigHandler = new SyncSigHandler();
 
     qCDebug(lcButeoMsyncd) << "Entering event loop";
