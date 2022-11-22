@@ -33,7 +33,8 @@ using namespace Buteo;
 void ServerPluginRunnerTest::initTestCase()
 {
     iTransportTracker = new TransportTracker(this);
-    iProfileManager = new ProfileManager("profile1", "profile2");
+    iProfileManager = new ProfileManager;
+    iProfileManager->setPaths("profile1", "profile2");
     iProfile = new Profile("dummyprofile", Profile::TYPE_SERVER);
     iProfileManager->updateProfile(*iProfile);
 
@@ -54,7 +55,6 @@ void ServerPluginRunnerTest::initTestCase()
     QVERIFY(iServerPluginRunner->plugin());
     QVERIFY(iServerPluginRunner->iThread);
     QVERIFY(initResult);
-
 }
 
 void ServerPluginRunnerTest::cleanupTestCase()
@@ -89,7 +89,6 @@ void ServerPluginRunnerTest::testStartAbort()
     // test plugin pointer for nullptr
     QVERIFY(iServerPluginRunner->plugin());
     iServerPluginRunner->abort();
-
 }
 
 void ServerPluginRunnerTest::testSyncResults()
@@ -129,7 +128,6 @@ void ServerPluginRunnerTest::testSignals()
 
     iServerPluginRunner->onThreadExit();
     QCOMPARE(doneSpy.count(), 1);
-
 }
 
 

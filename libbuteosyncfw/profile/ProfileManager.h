@@ -100,15 +100,8 @@ public:
     };
 
     /*! \brief Constructor.
-     *
-     * \param aPrimaryPath Path where profiles are searched first. Save
-     *  operations will write to this location.
-     * \param aSecondaryPath Path where a profile is searched for if it is
-     *  not found from the primary path. Useful for having default read-only
-     *  profiles.
      */
-    ProfileManager(const QString &aPrimaryPath = QString(),
-                   const QString &aSecondaryPath = QString());
+    ProfileManager();
 
     /*! \brief Destructor.
      */
@@ -349,6 +342,10 @@ public:
 #ifdef SYNCFW_UNIT_TESTS
     friend class ProfileManagerTest;
 #endif
+    // for testing purposes only
+    // configPath is the root of primary profile directory, used for writing changes
+    // systemConfigPath is for read-only system profiles
+    void setPaths(const QString &configPath, const QString &systemConfigPath);
 
 signals:
     /*! \brief Notifies about a change in profile.

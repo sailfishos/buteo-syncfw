@@ -37,7 +37,8 @@ using namespace Buteo;
 void ServerActivatorTest::initTestCase()
 {
     iTransportTracker = new TransportTracker(this);
-    iProfileManager = new ProfileManager("profile1", "profile2");
+    iProfileManager = new ProfileManager;
+    iProfileManager->setPaths("profile1", "profile2");
 
     // failure in next step would result in crash upon cleanupTestCase()
     iServerActivator = 0;
@@ -124,7 +125,8 @@ void ServerActivatorTest :: testConnectivityStateChanged()
     Profile sampleServerProfile(doc.documentElement());
     sampleServerProfile.setName("sampleProfile");
     const QString PROFILE_PATH("syncprofiletests/testprofiles/user");
-    ProfileManager myProfileManager(PROFILE_PATH, PROFILE_PATH);
+    ProfileManager myProfileManager;
+    myProfileManager.setPaths(PROFILE_PATH, PROFILE_PATH);
     myProfileManager.updateProfile(sampleServerProfile);
     TransportTracker myTrasportTracker(this);
 

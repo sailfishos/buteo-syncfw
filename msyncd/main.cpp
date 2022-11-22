@@ -26,11 +26,6 @@
 #include <QtDebug>
 #include <QDateTime>
 
-#include <sys/types.h>
-#include <grp.h>
-#include <pwd.h>
-#include <unistd.h>
-
 #include "Logger.h"
 #include "synchronizer.h"
 #include "SyncSigHandler.h"
@@ -48,37 +43,11 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
         return -1;
     }
 
-    QString genericCache = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
-    QFile::Permissions permissions(QFile::ExeOwner | QFile::ExeGroup | QFile::ReadOwner | QFile::WriteOwner |
-                                   QFile::ReadGroup | QFile::WriteGroup);
-
-    // Make sure we have the .cache directory
-    QDir homeDir(genericCache);
-    if (homeDir.mkpath(genericCache)) {
-        uid_t uid = getuid();
-        struct passwd *pwd;
-        struct group *grp;
-        // assumes that correct groupname is same as username (e.g. nemo:nemo)
-        pwd = getpwuid(uid);
-        if (pwd != nullptr) {
-            grp = getgrnam(pwd->pw_name);
-            if (grp != nullptr) {
-                gid_t gid = grp->gr_gid;
-                int ret = chown(genericCache.toLatin1().data(), uid, gid);
-                Q_UNUSED(ret);
-            }
-        }
-        QFile::setPermissions(genericCache, permissions);
-    }
-
-    QString msyncCacheSyncDir = Sync::syncCacheDir() + QDir::separator() + "sync";
+    QString msyncConfigSyncDir = Sync::syncConfigDir() + QDir::separator() + "sync";
 
     // Make sure we have the msyncd/sync directory
-    QDir syncDir(msyncCacheSyncDir);
-    if (syncDir.mkpath(msyncCacheSyncDir)) {
-        QFile::setPermissions(Sync::syncCacheDir(), permissions);
-        QFile::setPermissions(msyncCacheSyncDir, permissions);
-    }
+    QDir syncDir;
+    syncDir.mkpath(msyncConfigSyncDir);
 
     Buteo::configureLegacyLogging();
 

@@ -1,11 +1,12 @@
 Name:    buteo-syncfw-qt5
-Version: 0.10.15
+Version: 0.11.0
 Release: 1
 Summary: Synchronization backend
 URL:     https://github.com/sailfishos/buteo-syncfw/
 License: LGPLv2
 Source0: %{name}-%{version}.tar.gz
 Source1: %{name}.privileges
+Source2: move-buteo-config.sh
 BuildRequires: doxygen
 BuildRequires: fdupes
 BuildRequires: pkgconfig(Qt5Core)
@@ -23,9 +24,12 @@ BuildRequires: pkgconfig(keepalive)
 BuildRequires: pkgconfig(gio-2.0)
 BuildRequires: pkgconfig(mce-qt5) >= 1.1.0
 BuildRequires: pkgconfig(systemd)
+BuildRequires: oneshot
 Requires: mapplauncherd-qt5
 Requires: glib2
 Requires: libmce-qt5 >= 1.1.0
+Requires: oneshot
+%{_oneshot_requires_post}
 
 %description
 %{summary}.
@@ -35,6 +39,7 @@ Requires: libmce-qt5 >= 1.1.0
 %license COPYING
 %{_libdir}/libbuteosyncfw5.so.*
 %{_libexecdir}/buteo-oopp-runner
+%{_oneshotdir}/move-buteo-config.sh
 
 %package devel
 Summary: Development files for %{name}
@@ -123,10 +128,13 @@ ln -s ../msyncd.service %{buildroot}%{_userunitdir}/user-session.target.wants/
 
 mkdir -p %{buildroot}%{_datadir}/mapplauncherd/privileges.d
 install -m 644 -p %{SOURCE1} %{buildroot}%{_datadir}/mapplauncherd/privileges.d/
+mkdir -p %{buildroot}%{_oneshotdir}
+install -m 755 -p %{SOURCE2} %{buildroot}%{_oneshotdir}
 mkdir -p %{buildroot}%{_libdir}/buteo-plugins-qt5/oopp
 
 %post
 /sbin/ldconfig
+%{_bindir}/add-oneshot --all-users --privileged --now move-buteo-config.sh
 if [ "$1" -ge 1 ]; then
     systemctl-user daemon-reload || true
     systemctl-user try-restart msyncd.service || true
