@@ -142,12 +142,8 @@ public:
     bool isReadOnly() const;
 
 private:
-
     ProfileField &operator=(const ProfileField &aRhs);
-
     ProfileFieldPrivate *d_ptr;
-
-
 };
 
 }

@@ -41,7 +41,6 @@ class ServerPluginRunner : public PluginRunner
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * @param aPluginName Name of the plug-in to run
@@ -88,25 +87,19 @@ public:
     void resume();
 
 private slots:
-
     // Slots for catching plug-in signals.
-
     void onNewSession(const QString &aDestination);
-
     void onTransferProgress(const QString &aProfileName,
                             Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                             const QString &aMimeType, int aCommittedItems);
-
     void onStorageAccquired(const QString &aMimeType );
     void onError(const QString &aProfileName, const QString &aMessage, SyncResults::MinorCode aErrorCode);
-
     void onSuccess(const QString &aProfileName, const QString &aMessage);
 
     // Slot for observing thread exit
     void onThreadExit();
 
 private:
-
     void onSessionDone();
 
     Profile *iProfile;

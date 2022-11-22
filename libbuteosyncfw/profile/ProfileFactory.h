@@ -62,7 +62,6 @@ public:
      * \return Created profile.
      */
     Profile *createProfile(const QDomElement &aRoot);
-
 };
 
 }

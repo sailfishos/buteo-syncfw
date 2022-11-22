@@ -112,6 +112,4 @@ Buteo::ProfilePrivate::~ProfilePrivate()
     iSubProfiles.clear();
 }
 
-
-
 #endif // PROFILE_P_H

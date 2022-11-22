@@ -49,7 +49,6 @@ class ServerActivator : public QObject
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * @param aProfileManager Profile manager for accessing server profiles
@@ -89,7 +88,6 @@ public:
     QStringList enabledServers() const;
 
 signals:
-
     /*! \brief Signal emitted when a server should be enabled
      *
      * @param aServerName Server profile name
@@ -103,7 +101,6 @@ signals:
     void serverDisabled(const QString &aServerName);
 
 public slots:
-
     /*! \brief Called when transport state changes
      *
      * @param aType Connectivity type
@@ -112,11 +109,8 @@ public slots:
     void onConnectivityStateChanged(Sync::ConnectivityType aType, bool aState);
 
 private:
-
     QList<Sync::ConnectivityType> transportsFromProfile(const Profile *aProfile);
-
     ProfileManager &iProfileManager;
-
     TransportTracker &iTransportTracker;
 
     struct ServerData {

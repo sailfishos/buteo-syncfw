@@ -52,7 +52,6 @@ class ProfilePrivate;
 class Profile
 {
 public:
-
     //! String constants for different profile type names.
     static const QString TYPE_CLIENT;
     //! Server type .
@@ -68,7 +67,6 @@ public:
      *
      */
     Profile();
-
 
     /*! \brief Constructs a Profile object with given name and type.
      *
@@ -372,9 +370,7 @@ public:
     bool isProtected() const;
 
 private:
-
     Profile &operator=(const Profile &aRhs);
-
     ProfilePrivate *d_ptr;
 
     /*! \brief Generates a profile id based on keys
@@ -388,7 +384,6 @@ private:
 #ifdef SYNCFW_UNIT_TESTS
     friend class ProfileTest;
 #endif
-
 };
 
 }

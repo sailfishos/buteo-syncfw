@@ -114,7 +114,6 @@ public:
     void addResults(const SyncResults &aResults);
 
 private:
-
     SyncLog &operator=(const SyncLog &aRhs);
 
     SyncLogPrivate *d_ptr;

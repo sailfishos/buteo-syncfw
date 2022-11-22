@@ -240,15 +240,12 @@ public:
     bool isScheduled() const;
 
 private:
-
     QVariantList variantTargetResults() const;
-
     QSharedPointer<SyncResultsPrivate> d_ptr;
 
 #ifdef SYNCFW_UNIT_TESTS
     friend class ClientThreadTest;
 #endif
-
 };
 
 }

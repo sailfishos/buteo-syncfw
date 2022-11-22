@@ -87,7 +87,6 @@ public:
     const QList<SyncSession *> &getQueuedSyncSessions() const;
 
 private:
-
     void sort();
 
     QQueue<SyncSession *> iItems;

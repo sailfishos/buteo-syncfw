@@ -59,8 +59,6 @@ public:
     */
     void sendReply (uchar aResult);
 
-signals:
-
 public slots:
     //  From backup framework ...
 

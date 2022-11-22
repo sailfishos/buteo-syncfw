@@ -78,13 +78,11 @@ public:
     void removeAllWaits();
 
 signals:
-
     /*! \brief This signal will be emitted when a heartbeat for particular profile is triggered.
      *
      * \param aProfName Name of the profile for which heart beat is triggered.
      */
     void onHeartBeat(QString aProfName);
-
 
 private slots:
 
@@ -93,7 +91,6 @@ private slots:
      * \param aSockFd Socket descriptor who got the event.
      */
     void internalBeatTriggered(int aSockFd);
-
 
 private:
 
@@ -105,16 +102,13 @@ private:
      */
     bool getProfNameFromFd(int aSockFd, QString &aProfName);
 
-
 private:
-
     ///Map of structures waiting for heart beat
     QMap<QString, BeatStruct> iBeatsWaiting;
 
 #ifdef SYNCFW_UNIT_TESTS
     friend class IPHeartBeatTest;
 #endif
-
 };
 
 }
