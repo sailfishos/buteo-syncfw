@@ -35,8 +35,6 @@ class AccountsHelperTest;
 class ProfileManager;
 class SyncProfile;
 
-const QString REMOTE_SERVICE_NAME("remote_service_name");
-
 /*! \brief Helper Class towards Accounts::Manager and various SSO related
  *  operations.
  */
