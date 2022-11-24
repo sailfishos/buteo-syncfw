@@ -49,10 +49,10 @@ void ProfileManagerTest::cleanupTestCase()
 {
 }
 
-
 void ProfileManagerTest::testGetProfile()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
 
     // Storage profiles exist.
     QStringList names = pm.profileNames(Profile::TYPE_STORAGE);
@@ -99,7 +99,8 @@ void ProfileManagerTest::testGetProfile()
 
 void ProfileManagerTest::testGetSyncProfile()
 {
-    ProfileManager pm(USERPROFILE_DIR + '/', SYSTEMPROFILE_DIR + '/');
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR + '/', SYSTEMPROFILE_DIR + '/');
 
     // Getting unknown sync profile returns 0.
     QVERIFY(pm.syncProfile("unknown") == 0);
@@ -131,7 +132,8 @@ void ProfileManagerTest::testGetSyncProfile()
 
 void ProfileManagerTest::testGetByData()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
     QList<SyncProfile *> profiles;
 
     // Get profiles with non-existent key.
@@ -212,7 +214,8 @@ void ProfileManagerTest::testGetByData()
 
 void ProfileManagerTest::testGetBySingleCriteria()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
     QList<SyncProfile *> profiles;
 
     // Get profiles with non-existent key.
@@ -422,7 +425,8 @@ void ProfileManagerTest::testGetBySingleCriteria()
 
 void ProfileManagerTest::testGetByMultipleCriteria()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
     QList<SyncProfile *> profiles;
 
     QList<ProfileManager::SearchCriteria> criteriaList;
@@ -483,7 +487,8 @@ void ProfileManagerTest::testGetByMultipleCriteria()
 
 void ProfileManagerTest::testGetByStorage()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
     QList<SyncProfile *> profiles;
 
     // Get profiles by storage.
@@ -499,7 +504,8 @@ void ProfileManagerTest::testGetByStorage()
 
 void ProfileManagerTest::testLog()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
 
     {
         QScopedPointer<SyncProfile> p(pm.syncProfile(OVI_CALENDAR));
@@ -557,7 +563,8 @@ void ProfileManagerTest::testLog()
 
 void ProfileManagerTest::testSave()
 {
-    ProfileManager pm(USERPROFILE_DIR + "/primary", USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR + "/primary", USERPROFILE_DIR);
 
     {
         QScopedPointer<SyncProfile> p(pm.syncProfile(OVI_CALENDAR));
@@ -574,7 +581,8 @@ void ProfileManagerTest::testSave()
 
         // Profile file in secondary directory is not affected.
         {
-            ProfileManager pm2(USERPROFILE_DIR, USERPROFILE_DIR);
+            ProfileManager pm2;
+            pm2.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
             QScopedPointer<SyncProfile> p2(pm2.syncProfile(OVI_CALENDAR));
             QVERIFY(p2 != 0);
             QCOMPARE(p2->isEnabled(), true);
@@ -587,7 +595,8 @@ void ProfileManagerTest::testSave()
 
 void ProfileManagerTest::testHiddenProfiles()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
 
     // Get number of visible sync profiles.
     QList<SyncProfile *> profiles = pm.allVisibleSyncProfiles();
@@ -614,7 +623,8 @@ void ProfileManagerTest::testHiddenProfiles()
 
 void ProfileManagerTest::testRemovingProfiles()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
 
     // Create a temporary profile that can be deleted.
     const QString TEMP_NAME = "TempProfile";
@@ -636,7 +646,8 @@ void ProfileManagerTest::testRemovingProfiles()
 
 void ProfileManagerTest::testOverrideKey()
 {
-    ProfileManager pm(USERPROFILE_DIR, USERPROFILE_DIR);
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR, USERPROFILE_DIR);
 
     QScopedPointer<SyncProfile> p(static_cast<SyncProfile *>(
                                       pm.profile(OVI_CALENDAR, Profile::TYPE_SYNC)));
@@ -657,7 +668,8 @@ void ProfileManagerTest::testOverrideKey()
 
 void ProfileManagerTest::testBackup()
 {
-    ProfileManager pm(USERPROFILE_DIR + '/', SYSTEMPROFILE_DIR + '/');
+    ProfileManager pm;
+    pm.setPaths(USERPROFILE_DIR + '/', SYSTEMPROFILE_DIR + '/');
 
     // Copy to backup.
     QString fileName = USERPROFILE_DIR + '/' + Profile::TYPE_SYNC +

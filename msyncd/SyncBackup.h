@@ -42,15 +42,12 @@ public:
     /*!
      * \brief Default Constructor
      */
-    SyncBackup ();
+    SyncBackup();
 
     /*!
      * \brief Destructor
      */
-    ~SyncBackup ();
-
-    //! \brief  path to the backup dbus object
-    static const char *DBUS_BACKUP_OBJECT;
+    ~SyncBackup();
 
     /*!
      * \brief Requests the current state og backup/restore operation.
@@ -61,8 +58,6 @@ public:
     * @param aResult - result
     */
     void sendReply (uchar aResult);
-
-signals:
 
 public slots:
     //  From backup framework ...
@@ -91,19 +86,13 @@ public slots:
     */
     uchar restoreFinished(const QDBusMessage &message);
 
-    /*! Called if backup service exits/aborts...
-    * @param serviceName - name of the service
-    */
-    void backupServiceUnregistered(const QString  &serviceName);
-
-private :
+private:
     bool iBackupRestore;
     QDBusMessage *iReply;
-    QDBusServiceWatcher *iWatchService;
     SyncBackupAdaptor *iAdaptor;
     // Reply to backup dbus framework that response will
     // be delayed
-    uchar sendDelayReply (const QDBusMessage &message);
+    void sendDelayReply(const QDBusMessage &message);
 
 #ifdef SYNCFW_UNIT_TESTS
     friend class SyncBackupTest;

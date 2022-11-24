@@ -43,7 +43,6 @@ void SyncBackupTest::testInitialize()
 {
     QVERIFY(iBackup->iReply == 0);
     QVERIFY(iBackup->iBackupRestore == 0);
-    QVERIFY(iBackup->iWatchService != 0);
     QVERIFY(iBackup->iAdaptor != 0);
 }
 

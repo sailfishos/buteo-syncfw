@@ -41,10 +41,10 @@ static const QString SERVICE_SYNC = "Sync";
 static const QString SERVICE_NAME = "testsync-ovi";
 
 AccountsHelperTest::AccountsHelperTest()
-    :   QObject(nullptr),
-        iManager(SERVICE_SYNC, this),
-        iProfileManager(USERPROFILE_DIR, SYSTEMPROFILE_DIR)
+    : QObject(nullptr),
+      iManager(SERVICE_SYNC, this)
 {
+    iProfileManager.setPaths(USERPROFILE_DIR, SYSTEMPROFILE_DIR);
     iAccountsHelper = new AccountsHelper(iProfileManager, 0);
 }
 

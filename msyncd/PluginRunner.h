@@ -158,7 +158,6 @@ signals:
     void connectivityStateChanged(Sync::ConnectivityType aType, bool aState);
 
 protected:
-
     //! Initialization status of the plugin
     bool iInitialized;
 
@@ -175,11 +174,9 @@ protected:
     QString iPluginName;
 
 private:
-
 #ifdef SYNCFW_UNIT_TESTS
     friend class PluginRunnerTest;
 #endif
-
 };
 
 }

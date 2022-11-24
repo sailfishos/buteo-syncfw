@@ -36,7 +36,6 @@ namespace Buteo {
 class StorageBooker
 {
 public:
-
     //! \brief Constructor
     StorageBooker();
 
@@ -107,7 +106,6 @@ public:
                            const QString &aClientId = "") const;
 
 private:
-
     struct StorageMapItem {
         QString iClientId;
         unsigned iRefCount;
@@ -119,9 +117,7 @@ private:
     };
 
     QMap<QString, StorageMapItem> iStorageMap;
-
     mutable QMutex iMutex;
-
 };
 
 }

@@ -33,7 +33,6 @@ class StorageProfilePrivate;
 class StorageProfile : public Profile
 {
 public:
-
     /*! \brief Constructs an empty StorageProfile with the given name.
      *
      * \param aName Name of the profile to create.
@@ -71,11 +70,9 @@ public:
     virtual bool isEnabled() const;
 
 private:
-
     StorageProfile &operator=(const StorageProfile &aRhs);
 
     StorageProfilePrivate *d_ptr;
-
 };
 
 }

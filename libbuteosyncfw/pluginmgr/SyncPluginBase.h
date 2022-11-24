@@ -159,7 +159,6 @@ signals:
     void syncProgressDetail(const QString &aProfileName, int aProgressDetail);
 
 public slots:
-
     /*! \brief Slot that is invoked by sync framework when changes occur in
      *         connectivity domains
      *

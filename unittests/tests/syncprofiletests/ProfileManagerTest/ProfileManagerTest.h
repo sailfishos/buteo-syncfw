@@ -33,33 +33,20 @@ class ProfileManagerTest: public QObject
 
 private slots:
     void initTestCase();
-
     void cleanupTestCase();
 
     void testGetProfile();
-
     void testGetSyncProfile();
-
     void testGetByData();
-
     void testGetBySingleCriteria();
-
     void testGetByMultipleCriteria();
-
     void testGetByStorage();
-
     void testLog();
-
     void testSave();
-
     void testHiddenProfiles();
-
     void testRemovingProfiles();
-
     void testOverrideKey();
-
     void testBackup();
-
 };
 
 }

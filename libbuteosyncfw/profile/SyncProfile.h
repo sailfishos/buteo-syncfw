@@ -391,7 +391,6 @@ public:
     CurrentSyncStatus currentSyncStatus() const;
 
 private:
-
     SyncProfile &operator=(const SyncProfile &aRhs);
 
     SyncProfilePrivate *d_ptr;

@@ -40,7 +40,6 @@ class StoragePlugin : public QObject
     Q_OBJECT
 
 public:
-
     /*! \brief Status of operation performed by storage plugin
      *
      */
@@ -230,7 +229,6 @@ public:
     virtual QList<OperationStatus> deleteItems(const QList<QString> &aItemIds) = 0;
 
 protected:
-
     //! Name of the plugin
     QString iPluginName;
 

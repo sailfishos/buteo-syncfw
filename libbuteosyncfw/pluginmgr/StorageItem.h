@@ -36,7 +36,6 @@ namespace Buteo {
 class StorageItem
 {
 public:
-
     /*! \brief Constructor
      *
      */
@@ -130,7 +129,6 @@ private:
     QString iParentId;
     QString iType;
     QString iVersion;
-
 };
 
 }

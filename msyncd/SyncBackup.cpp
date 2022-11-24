@@ -27,17 +27,14 @@
 #include "UnitTest.h"
 
 #include <QtDBus/QtDBus>
-#include <QtDBus/QDBusServiceWatcher>
 
 using namespace Buteo;
 
-const char *SyncBackup::DBUS_BACKUP_OBJECT = "/backup";
-const QString BACKUP_SERVICE_NAME = "com.nokia.backup";
+static const char *DBUS_BACKUP_OBJECT = "/backup";
 
 SyncBackup::SyncBackup() :
     iBackupRestore(false),
     iReply(0),
-    iWatchService(0),
     iAdaptor(0)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -52,11 +49,6 @@ SyncBackup::SyncBackup() :
         qCCritical(lcButeoMsyncd) << "Failed to register sync backup to D-Bus";
         Q_ASSERT(false);
     }
-
-    iWatchService = new QDBusServiceWatcher (BACKUP_SERVICE_NAME, dbus, QDBusServiceWatcher::WatchForUnregistration);
-
-    connect(iWatchService, SIGNAL(serviceUnregistered(const QString &)),
-            this, SLOT(backupServiceUnregistered(const QString &)));
 }
 
 SyncBackup::~SyncBackup()
@@ -66,40 +58,26 @@ SyncBackup::~SyncBackup()
     //Unregister from D-Bus.
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.unregisterObject(DBUS_BACKUP_OBJECT);
-    delete iWatchService;
-    iWatchService = 0;
     delete iAdaptor;
     iAdaptor = 0;
     qCDebug(lcButeoMsyncd) << "Unregistered backup from D-Bus";
 }
 
-void SyncBackup::backupServiceUnregistered(const QString  &serviceName)
-{
-    FUNCTION_CALL_TRACE(lcButeoTrace);
-    Q_UNUSED (serviceName);
-    if (iBackupRestore) {
-        // Should not happen ; backup framework exited abruptly
-        iBackupRestore = false;
-        emit restoreDone();
-    }
-}
-
-uchar SyncBackup::sendDelayReply (const QDBusMessage &message)
+void SyncBackup::sendDelayReply (const QDBusMessage &message)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (SYNCFW_UNIT_TESTS_RUNTIME)
-        return 0;
+        return;
 
     // coverity[unreachable]  //Suppressing false positives with code annotations
     message.setDelayedReply(true);
     if (!iReply)
         iReply = new QDBusMessage;
     *iReply = message.createReply();
-    return 0;
 }
 
-void SyncBackup::sendReply (uchar aResult)
+void SyncBackup::sendReply(uchar aResult)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 

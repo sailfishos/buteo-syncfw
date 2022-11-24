@@ -32,9 +32,9 @@ using namespace Buteo;
 // big help was found here
 // https://github.com/zeenix/bluetooth-demo/blob/master/blueconnect.cpp
 
-BtHelper::BtHelper(const QString &deviceAddress,
-        QObject* parent) : QObject(parent),
-        m_SystemBus(QDBusConnection::systemBus())
+BtHelper::BtHelper(const QString &deviceAddress, QObject* parent)
+    : QObject(parent),
+      m_SystemBus(QDBusConnection::systemBus())
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
@@ -76,6 +76,8 @@ BtHelper::BtHelper(const QString &deviceAddress,
             }
         }
     }
+#else
+    Q_UNUSED(deviceAddress)
 #endif
 }
 

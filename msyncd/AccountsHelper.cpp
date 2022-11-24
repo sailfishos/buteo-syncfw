@@ -29,6 +29,7 @@
 #include <QTimer>
 
 static const QString ACCOUNTS_GLOBAL_SERVICE("global");
+static const QString REMOTE_SERVICE_NAME("remote_service_name");
 
 using namespace Buteo;
 

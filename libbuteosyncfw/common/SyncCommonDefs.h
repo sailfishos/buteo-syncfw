@@ -31,7 +31,8 @@
 
 namespace Sync {
 
-const QString syncCacheDir();
+const QString syncConfigDir();
+const QString syncCacheDir(); // deprecated
 
 enum SyncStatus {
     SYNC_QUEUED = 0,

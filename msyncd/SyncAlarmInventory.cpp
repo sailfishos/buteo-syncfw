@@ -50,7 +50,7 @@ bool SyncAlarmInventory::init()
     iConnectionName = ALARM_CONNECTION_NAME + QString::number(connectionNumber++);
     iDbHandle = QSqlDatabase::addDatabase("QSQLITE", iConnectionName);
 
-    QString path(Sync::syncCacheDir());
+    QString path(Sync::syncConfigDir());
     path.append(QDir::separator()).append("alarms.db.sqlite");
     path = QDir::toNativeSeparators(path);
 

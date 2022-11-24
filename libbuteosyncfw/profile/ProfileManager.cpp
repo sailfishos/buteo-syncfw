@@ -36,9 +36,18 @@
 #include "BtHelper.h"
 
 // implement here in lack of better place. not sure should this even be included in the api
+const QString Sync::syncConfigDir()
+{
+    // This is the root for all sorts of things: data, config, logs, so using .local/share/
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/system/privileged/msyncd";
+}
+
 const QString Sync::syncCacheDir()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QDir::separator() + "msyncd";
+    // IF we need a cache dir for something, this should return such, but now just
+    // returning config as this has been used for such
+    qWarning() << "Sync::syncCacheDir() is deprecated, use Sync::syncConfigDir(). Or not even that if possible";
+    return Sync::syncConfigDir();
 }
 
 static const QString FORMAT_EXT = ".xml";
@@ -47,17 +56,15 @@ static const QString LOG_EXT = ".log";
 static const QString LOG_DIRECTORY = "logs";
 static const QString BT_PROFILE_TEMPLATE("bt_template");
 
-static const QString DEFAULT_PRIMARY_PROFILE_PATH = Sync::syncCacheDir();
+static const QString DEFAULT_PRIMARY_PROFILE_PATH = Sync::syncConfigDir();
 static const QString DEFAULT_SECONDARY_PROFILE_PATH = "/etc/buteo/profiles";
 
 namespace Buteo {
 
-// Private implementation class for ProfileManager.
 class ProfileManagerPrivate
 {
 public:
-    ProfileManagerPrivate(const QString &aPrimaryPath,
-                          const QString &aSecondaryPath);
+    ProfileManagerPrivate();
 
     /*! \brief Loads a profile from persistent storage.
      *
@@ -75,55 +82,33 @@ public:
     SyncLog *loadLog(const QString &aProfileName);
 
     bool parseFile(const QString &aPath, QDomDocument &aDoc);
-
     void restoreBackupIfFound(const QString &aProfilePath,
                               const QString &aBackupPath);
-
     QDomDocument constructProfileDocument(const Profile &aProfile);
-
     bool writeProfileFile(const QString &aProfilePath, const QDomDocument &aDoc);
-
     QString findProfileFile(const QString &aName, const QString &aType);
-
     bool createBackup(const QString &aProfilePath, const QString &aBackupPath);
-
     bool matchProfile(const Profile &aProfile,
                       const ProfileManager::SearchCriteria &aCriteria);
-
     bool matchKey(const Profile &aProfile,
                   const ProfileManager::SearchCriteria &aCriteria);
-
     bool save(const Profile &aProfile);
-
     bool remove(const QString &aName, const QString &aType);
-
     bool profileExists(const QString &aProfileId, const QString &aType);
 
-    // Primary path for profiles.
-    QString iPrimaryPath;
-
-    // Secondary path for profiles.
-    QString iSecondaryPath;
+    QString iConfigPath;
+    QString iSystemConfigPath;
+    QHash<QString, QList<quint32> > iSyncRetriesInfo;
 };
 
 }
 
 using namespace Buteo;
 
-ProfileManagerPrivate::ProfileManagerPrivate(const QString &aPrimaryPath,
-                                             const QString &aSecondaryPath)
-    : iPrimaryPath(aPrimaryPath),
-      iSecondaryPath(aSecondaryPath)
+ProfileManagerPrivate::ProfileManagerPrivate()
+    : iConfigPath(DEFAULT_PRIMARY_PROFILE_PATH),
+      iSystemConfigPath(DEFAULT_SECONDARY_PROFILE_PATH)
 {
-    if (iPrimaryPath.endsWith(QDir::separator())) {
-        iPrimaryPath.chop(1);
-    }
-    if (iSecondaryPath.endsWith(QDir::separator())) {
-        iSecondaryPath.chop(1);
-    }
-
-    qCDebug(lcButeoCore) << "Primary profile path set to" << iPrimaryPath;
-    qCDebug(lcButeoCore) << "Secondary profile path set to" << iSecondaryPath;
 }
 
 Profile *ProfileManagerPrivate::load(const QString &aName, const QString &aType)
@@ -152,7 +137,7 @@ Profile *ProfileManagerPrivate::load(const QString &aName, const QString &aType)
 
 SyncLog *ProfileManagerPrivate::loadLog(const QString &aProfileName)
 {
-    QString fileName = iPrimaryPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
+    QString fileName = iConfigPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
                        LOG_DIRECTORY + QDir::separator() + aProfileName + LOG_EXT + FORMAT_EXT;
 
     if (!QFile::exists(fileName)) {
@@ -292,10 +277,8 @@ ProfileManager::SearchCriteria::SearchCriteria(const SearchCriteria &aSource)
 {
 }
 
-ProfileManager::ProfileManager(const QString &aPrimaryPath,
-                               const QString &aSecondaryPath)
-    : d_ptr(new ProfileManagerPrivate(aPrimaryPath.isEmpty() ? DEFAULT_PRIMARY_PROFILE_PATH : aPrimaryPath,
-                                      aSecondaryPath.isEmpty() ? DEFAULT_SECONDARY_PROFILE_PATH : aSecondaryPath))
+ProfileManager::ProfileManager()
+    : d_ptr(new ProfileManagerPrivate)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }
@@ -307,9 +290,25 @@ ProfileManager::~ProfileManager()
     d_ptr = 0;
 }
 
+void ProfileManager::setPaths(const QString &configPath, const QString &systemConfigPath)
+{
+    if (!configPath.isEmpty()) {
+        d_ptr->iConfigPath = configPath;
+        if (d_ptr->iConfigPath.endsWith(QDir::separator())) {
+            d_ptr->iConfigPath.chop(1);
+        }
+    }
+
+    if (!systemConfigPath.isEmpty()) {
+        d_ptr->iSystemConfigPath = systemConfigPath;
+        if (d_ptr->iSystemConfigPath.endsWith(QDir::separator())) {
+            d_ptr->iSystemConfigPath.chop(1);
+        }
+    }
+}
+
 Profile *ProfileManager::profile(const QString &aName, const QString &aType)
 {
-
     return d_ptr->load(aName, aType);
 }
 
@@ -348,12 +347,11 @@ SyncProfile *ProfileManager::syncProfile(const QString &aName)
 
 QStringList ProfileManager::profileNames(const QString &aType)
 {
-
-    // Search for all profile files from the primary directory
+    // Search for all profile files from the config directory
     QStringList names;
     QString nameFilter = QString("*") + FORMAT_EXT;
     {
-        QDir dir(d_ptr->iPrimaryPath + QDir::separator() + aType);
+        QDir dir(d_ptr->iConfigPath + QDir::separator() + aType);
         QFileInfoList fileInfoList = dir.entryInfoList(QStringList(nameFilter),
                                                        QDir::Files | QDir::NoSymLinks);
         foreach (const QFileInfo &fileInfo, fileInfoList) {
@@ -361,9 +359,9 @@ QStringList ProfileManager::profileNames(const QString &aType)
         }
     }
 
-    // Search for all profile files from the secondary directory
+    // Search for all profile files from the system config directory
     {
-        QDir dir(d_ptr->iSecondaryPath + QDir::separator() + aType);
+        QDir dir(d_ptr->iSystemConfigPath + QDir::separator() + aType);
         QFileInfoList fileInfoList = dir.entryInfoList(QStringList(nameFilter),
                                                        QDir::Files | QDir::NoSymLinks);
         foreach (const QFileInfo &fileInfo, fileInfoList) {
@@ -615,8 +613,8 @@ bool ProfileManagerPrivate::save(const Profile &aProfile)
 
     // Create path for the new profile file.
     QDir dir;
-    dir.mkpath(iPrimaryPath + QDir::separator() + aProfile.type());
-    QString profilePath(iPrimaryPath + QDir::separator() +
+    dir.mkpath(iConfigPath + QDir::separator() + aProfile.type());
+    QString profilePath(iConfigPath + QDir::separator() +
                         aProfile.type() + QDir::separator() + aProfile.name() + FORMAT_EXT);
 
     // Create a backup of the existing profile file.
@@ -810,7 +808,7 @@ bool ProfileManagerPrivate::remove(const QString &aName, const QString &aType)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool success = false;
-    QString filePath = iPrimaryPath + QDir::separator() + aType + QDir::separator() + aName + FORMAT_EXT;
+    QString filePath = iConfigPath + QDir::separator() + aType + QDir::separator() + aName + FORMAT_EXT;
 
     // Try to load profile without expanding it. We need to check from the
     // profile data if the profile is protected before removing it.
@@ -819,7 +817,7 @@ bool ProfileManagerPrivate::remove(const QString &aName, const QString &aType)
         if (!p->isProtected()) {
             success = QFile::remove(filePath);
             if (success) {
-                QString logFilePath = iPrimaryPath + QDir::separator() + aType + QDir::separator() +
+                QString logFilePath = iConfigPath + QDir::separator() + aType + QDir::separator() +
                                       LOG_DIRECTORY + QDir::separator() + aName + LOG_EXT + FORMAT_EXT;
                 //Initial the will be no log this will fail.
                 QFile::remove(logFilePath);
@@ -830,7 +828,7 @@ bool ProfileManagerPrivate::remove(const QString &aName, const QString &aType)
         delete p;
         p = 0;
     } else {
-        qCDebug(lcButeoCore) << "Profile not found from the primary path, cannot remove:" << aName ;
+        qCDebug(lcButeoCore) << "Profile not found from the config path, cannot remove:" << aName;
     }
 
     return success;
@@ -880,7 +878,7 @@ bool ProfileManager::saveLog(const SyncLog &aLog)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDir dir;
-    QString fullPath = d_ptr->iPrimaryPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
+    QString fullPath = d_ptr->iConfigPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
                        LOG_DIRECTORY;
     dir.mkpath(fullPath);
     QFile file(fullPath + QDir::separator() + aLog.profileName() + LOG_EXT + FORMAT_EXT);
@@ -931,16 +929,16 @@ bool ProfileManager::rename(const QString &aName, const QString &aNewName)
 
     bool ret = false;
     // Rename the sync profile
-    QString source = d_ptr->iPrimaryPath + QDir::separator() +  Profile::TYPE_SYNC + QDir::separator() +
+    QString source = d_ptr->iConfigPath + QDir::separator() +  Profile::TYPE_SYNC + QDir::separator() +
                      aName + FORMAT_EXT;
-    QString destination = d_ptr->iPrimaryPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
+    QString destination = d_ptr->iConfigPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
                           aNewName + FORMAT_EXT;
     ret = QFile::rename(source, destination);
     if (true == ret) {
         // Rename the sync log
-        QString sourceLog = d_ptr->iPrimaryPath + QDir::separator() +  Profile::TYPE_SYNC + QDir::separator() +
+        QString sourceLog = d_ptr->iConfigPath + QDir::separator() +  Profile::TYPE_SYNC + QDir::separator() +
                             LOG_DIRECTORY + QDir::separator() + aName + LOG_EXT  + FORMAT_EXT;
-        QString destinationLog = d_ptr->iPrimaryPath + QDir::separator() +  Profile::TYPE_SYNC + QDir::separator() +
+        QString destinationLog = d_ptr->iConfigPath + QDir::separator() +  Profile::TYPE_SYNC + QDir::separator() +
                                  LOG_DIRECTORY + QDir::separator() + aNewName + LOG_EXT  + FORMAT_EXT;
         ret = QFile::rename(sourceLog, destinationLog);
         if (false == ret) {
@@ -1021,8 +1019,6 @@ bool ProfileManagerPrivate::parseFile(const QString &aPath, QDomDocument &aDoc)
         qCDebug(lcButeoCore) << "Profile file not found:" << aPath;
     }
 
-
-
     return parsingOk;
 }
 
@@ -1096,8 +1092,8 @@ bool ProfileManagerPrivate::createBackup(const QString &aProfilePath,
 QString ProfileManagerPrivate::findProfileFile(const QString &aName, const QString &aType)
 {
     QString fileName = aType + QDir::separator() + aName + FORMAT_EXT;
-    QString primaryPath = iPrimaryPath + QDir::separator() + fileName;
-    QString secondaryPath = iSecondaryPath + QDir::separator() + fileName;
+    QString primaryPath = iConfigPath + QDir::separator() + fileName;
+    QString secondaryPath = iSystemConfigPath + QDir::separator() + fileName;
 
     if (QFile::exists(primaryPath)) {
         return primaryPath;
@@ -1109,10 +1105,10 @@ QString ProfileManagerPrivate::findProfileFile(const QString &aName, const QStri
 }
 
 // this function checks to see if its a new profile or an
-// existing profile being modified under $Sync::syncCacheDir/profiles directory.
+// existing profile being modified under $Sync::syncConfigDir/profiles directory.
 bool ProfileManagerPrivate::profileExists(const QString &aProfileId, const QString &aType)
 {
-    QString profileFile = iPrimaryPath + QDir::separator() + aType + QDir::separator() + aProfileId + FORMAT_EXT;
+    QString profileFile = iConfigPath + QDir::separator() + aType + QDir::separator() + aProfileId + FORMAT_EXT;
     qCDebug(lcButeoCore) << "profileFile:" << profileFile;
     return QFile::exists(profileFile);
 }
@@ -1121,9 +1117,9 @@ void ProfileManager::addRetriesInfo(const SyncProfile *profile)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     if (profile) {
-        if (profile->hasRetries() && !iSyncRetriesInfo.contains(profile->name())) {
+        if (profile->hasRetries() && !d_ptr->iSyncRetriesInfo.contains(profile->name())) {
             qCDebug(lcButeoCore) << "syncretries : retries info present for profile" << profile->name();
-            iSyncRetriesInfo[profile->name()] = profile->retryIntervals();
+            d_ptr->iSyncRetriesInfo[profile->name()] = profile->retryIntervals();
         }
     }
 }
@@ -1133,12 +1129,12 @@ QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
     FUNCTION_CALL_TRACE(lcButeoTrace);
     QDateTime nextRetryInterval;
     if (aProfile &&
-            iSyncRetriesInfo.contains(aProfile->name()) &&
-            !iSyncRetriesInfo[aProfile->name()].isEmpty()) {
-        quint32 mins = iSyncRetriesInfo[aProfile->name()].takeFirst();
+            d_ptr->iSyncRetriesInfo.contains(aProfile->name()) &&
+            !d_ptr->iSyncRetriesInfo[aProfile->name()].isEmpty()) {
+        quint32 mins = d_ptr->iSyncRetriesInfo[aProfile->name()].takeFirst();
         nextRetryInterval = QDateTime::currentDateTime().addSecs(mins * 60);
         qCDebug(lcButeoCore) << "syncretries : retry for profile" << aProfile->name() << "in" << mins << "minutes";
-        qCDebug(lcButeoCore) << "syncretries :" << iSyncRetriesInfo[aProfile->name()].count() << "attempts remain";
+        qCDebug(lcButeoCore) << "syncretries :" << d_ptr->iSyncRetriesInfo[aProfile->name()].count() << "attempts remain";
     }
     return nextRetryInterval;
 }
@@ -1146,8 +1142,8 @@ QDateTime ProfileManager::getNextRetryInterval(const SyncProfile *aProfile)
 void ProfileManager::retriesDone(const QString &aProfileName)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-    if (iSyncRetriesInfo.contains(aProfileName)) {
-        iSyncRetriesInfo.remove(aProfileName);
+    if (d_ptr->iSyncRetriesInfo.contains(aProfileName)) {
+        d_ptr->iSyncRetriesInfo.remove(aProfileName);
         qCDebug(lcButeoCore) << "syncretries : retry success for" << aProfileName;
     }
 }

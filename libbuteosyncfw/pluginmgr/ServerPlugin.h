@@ -61,7 +61,6 @@ public:
     virtual bool startListen() = 0;
 
     /*! \brief Stop listening for sync requests
-     *
      */
     virtual void stopListen() = 0;
 
@@ -78,7 +77,6 @@ public:
     virtual void resume() = 0;
 
 signals:
-
     /*! \brief Signal sent when a new sync session is received by the server
      *
      * @param aDestination Sync destination address, for example BT address

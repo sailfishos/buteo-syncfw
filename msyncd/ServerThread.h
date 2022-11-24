@@ -75,7 +75,6 @@ public:
     void stopThread();
 
 signals:
-
     /*! \brief Emitted when synchronization cannot be started due to an
      *         error in plugin initialization
      *
@@ -87,7 +86,6 @@ signals:
                    SyncResults::MinorCode aErrorCode);
 
 protected:
-
     //! overriding method of QThread::run
     virtual void run();
 
