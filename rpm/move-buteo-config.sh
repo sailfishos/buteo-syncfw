@@ -1,6 +1,6 @@
 #/bin/sh
 # move the msyncs configs, logs etc from .cache to .local
-if [ ! -a $HOME/.local/share/system/privileged/msyncd/cache_dir_migrated ]; then
+if [ ! -f $HOME/.local/share/system/privileged/msyncd/cache_dir_migrated ]; then
   if [ -d $HOME/.cache/msyncd ]; then
     if [ -d $HOME/.local/share/system/privileged/msyncd/sync ]; then
       # msyncd probably restarted before this oneshot got executed. just move basic known content
