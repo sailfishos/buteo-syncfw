@@ -121,7 +121,7 @@ SyncLog::SyncLog(const QDomElement &aRoot)
     }
 
     // Sort result entries by sync time.
-    //qSort(d_ptr->iResults.begin(), d_ptr->iResults.end(), syncResultPointerLessThan);
+    //std::sort(d_ptr->iResults.begin(), d_ptr->iResults.end(), syncResultPointerLessThan);
 }
 
 SyncLog::SyncLog(const SyncLog &aSource)
@@ -198,7 +198,7 @@ void SyncLog::addResults(const SyncResults &aResults)
     d_ptr->iResults.append(new SyncResults(aResults));
 
     // Sort result entries by sync time.
-    //qSort(d_ptr->iResults.begin(), d_ptr->iResults.end(), syncResultPointerLessThan);
+    //std::sort(d_ptr->iResults.begin(), d_ptr->iResults.end(), syncResultPointerLessThan);
 
     d_ptr->updateLastSuccessfulResults(aResults);
 }
