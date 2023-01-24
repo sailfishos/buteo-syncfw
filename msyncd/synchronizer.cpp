@@ -1281,7 +1281,7 @@ void Synchronizer::onNewSession(const QString &aDestination)
             }
         } else {
             // Sort profiles to preference order. Visible and enabled are preferred.
-            qSort(syncProfiles.begin(), syncProfiles.end(), syncProfilePointerLessThan);
+            std::sort(syncProfiles.begin(), syncProfiles.end(), syncProfilePointerLessThan);
 
             profile = syncProfiles.first();
             qCDebug(lcButeoMsyncd) << "Found" << syncProfiles.count() << "sync profiles with a "
