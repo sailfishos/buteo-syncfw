@@ -20,7 +20,12 @@ INCLUDEPATH += . \
 
 
 PKGCONFIG += dbus-1 gio-2.0 libsignon-qt5 accounts-qt5
-PKGCONFIG += mce-qt5
+packagesExist(mce-qt5) {
+    PKGCONFIG += mce-qt5
+    DEFINES += HAS_MCE
+} else {
+    message("mce-qt5 not found, MCE support disabled")
+}
 LIBS += -lbuteosyncfw5
 packagesExist(qt5-boostable) {
     DEFINES += HAS_BOOSTER
