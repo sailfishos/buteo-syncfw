@@ -147,7 +147,7 @@ bool DeletedItemsIdStorage::setSnapshot(const QList<QString> &aItems,
 
         if (supportsTransaction) {
             if (!iDb.commit()) {
-                qCWarning(lcButeoCore) << "Error while commiting : " << iDb.lastError();
+                qCWarning(lcButeoCore) << "Error while committing : " << iDb.lastError();
             }
         }
     }
@@ -217,7 +217,7 @@ void DeletedItemsIdStorage::addDeletedItems(const QList<QString> &aItems, const 
 
     if (supportsTransaction) {
         if (!iDb.commit()) {
-            qCWarning(lcButeoCore) << "Error while commiting : " << iDb.lastError();
+            qCWarning(lcButeoCore) << "Error while committing : " << iDb.lastError();
         }
     }
 }
