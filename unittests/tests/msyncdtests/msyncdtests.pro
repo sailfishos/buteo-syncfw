@@ -15,7 +15,7 @@ SUBDIRS = \
         SynchronizerTest \
         TransportTrackerTest \
 
-!contains(DEFINES, USE_KEEPALIVE) {
+!contains(DEFINES, USE_KEEPALIVE):contains(DEFINES, USE_IPHB) {
 SUBDIRS += \
         IPHeartBeatTest \
         SyncSchedulerTest \

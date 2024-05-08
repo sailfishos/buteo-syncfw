@@ -23,10 +23,10 @@
 #ifndef SYNCSCHEDULER_H
 #define SYNCSCHEDULER_H
 
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
 #include "BackgroundSync.h"
 #include "ProfileManager.h"
-#else
+#elif defined(USE_IPHB)
 #include "SyncAlarmInventory.h"
 #include "IPHeartBeat.h"
 #endif
@@ -40,7 +40,7 @@
 class QDateTime;
 #ifdef USE_KEEPALIVE
 class BackgroundSync;
-#else
+#elif defined(USE_IPHB)
 class IPHeartBeat;
 #endif
 
@@ -111,7 +111,7 @@ public slots:
 
 private slots:
 
-#ifndef USE_KEEPALIVE
+#if defined(USE_IPHB)
     /**
      * \brief Performs needed actions when scheduled alarm is triggered
      *
@@ -128,7 +128,7 @@ private slots:
      */
     void doIPHeartbeatActions(QString aProfileName);
 
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
     /**
      * \brief Reschedule backgroundActivity for a profile
      *
@@ -168,7 +168,7 @@ private: // functions
      */
     void setupDBusAdaptor();
 
-#ifndef USE_KEEPALIVE
+#if defined(USE_IPHB)
     /**
      * \brief Removes an alarm from alarmd queue
      * @param aAlarmEventID ID of the alarm to be removed
@@ -184,11 +184,11 @@ private: // functions
 private: // data
 
     QSet<QString> iActiveBackgroundSyncProfiles;
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
     /// BackgroundSync management object
     BackgroundSync *iBackgroundActivity;
     ProfileManager iProfileManager;
-#else
+#elif defined(USE_IPHB)
     /// A list of sync schedule profiles
     QMap<QString, int> iSyncScheduleProfiles;
 
