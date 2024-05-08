@@ -227,6 +227,6 @@ void ClientPluginRunner::pluginTimeout()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    emit error(iProfile->name(), "Plugin timeout occured", SyncResults::PLUGIN_TIMEOUT);
+    emit error(iProfile->name(), "Plugin timeout occurred", SyncResults::PLUGIN_TIMEOUT);
     stop();
 }
