@@ -43,8 +43,10 @@
 #include "LogMacros.h"
 #include "BtHelper.h"
 
+#ifdef HAS_MCE
 #include <qmcebatterystatus.h>
 #include <qmcepowersavemode.h>
+#endif
 #include <QtDebug>
 #include <fcntl.h>
 #include <termios.h>
@@ -57,6 +59,7 @@ static const QString BT_PROPERTIES_NAME = "Name";
 
 class Buteo::BatteryInfo
 {
+#ifdef HAS_MCE
 public:
     bool isLowPower()
     {
@@ -71,6 +74,17 @@ public:
 private:
     QMcePowerSaveMode iPowerSaveMode;
     QMceBatteryStatus iBatteryStatus;
+#else
+public:
+    bool isLowPower()
+    {
+        return false;
+    }
+    bool inPowerSaveMode()
+    {
+        return false;
+    }
+#endif
 };
 
 Synchronizer::Synchronizer(QCoreApplication *aApplication)
