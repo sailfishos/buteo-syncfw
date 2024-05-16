@@ -5,6 +5,7 @@ Makefile.*
 *.so*
 *.prl
 moc_*.cpp
+*.moc
 pkgconfig/
 *.list
 *.tag

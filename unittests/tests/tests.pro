@@ -10,6 +10,7 @@ SUBDIRS = \
 testwrapper.files = runstarget.sh
 testwrapper.path = $${INSTALL_TESTDIR}
 INSTALLS += testwrapper
+
 testdefinition.files = tests.xml
 testdefinition.path = $${INSTALL_TESTDIR}
 INSTALLS += testdefinition

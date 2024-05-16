@@ -34,26 +34,12 @@ Requires: oneshot
 %description
 %{summary}.
 
-%files
-%defattr(-,root,root,-)
-%license COPYING
-%{_libdir}/libbuteosyncfw5.so.*
-%{_libexecdir}/buteo-oopp-runner
-%{_oneshotdir}/move-buteo-config.sh
-
 %package devel
 Summary: Development files for %{name}
 Requires: %{name} = %{version}-%{release}
 
 %description devel
 %{summary}.
-
-%files devel
-%defattr(-,root,root,-)
-%{_includedir}/*
-%{_libdir}/*.so
-%{_libdir}/*.prl
-%{_libdir}/pkgconfig/*.pc
 
 %package msyncd
 Summary: Buteo sync daemon
@@ -66,26 +52,11 @@ Obsoletes: buteo-syncfw-msyncd < %{version}
 %description msyncd
 %{summary}.
 
-%files msyncd
-%defattr(-,root,root,-)
-%{_userunitdir}/*.service
-%{_userunitdir}/user-session.target.wants/*.service
-%{_sysconfdir}/syncwidget
-%{_bindir}/msyncd
-%{_datadir}/mapplauncherd/privileges.d/*
-%{_datadir}/glib-2.0/schemas/*
-%dir %{_libdir}/buteo-plugins-qt5
-%dir %{_libdir}/buteo-plugins-qt5/oopp
-
 %package doc
 Summary: Documentation for %{name}
 
 %description doc
 %{summary}.
-
-%files doc
-%defattr(-,root,root,-)
-%{_docdir}/buteo-syncfw-doc
 
 %package tests
 Summary: Tests for %{name}
@@ -93,10 +64,6 @@ Summary: Tests for %{name}
 %description tests
 %{summary}.
 
-%files tests
-%defattr(-,root,root,-)
-/opt/tests/buteo-syncfw
-%{_datadir}/accounts/services/*.service
 
 %package qml-plugin
 Summary: QML plugin for %{name}
@@ -104,24 +71,18 @@ Summary: QML plugin for %{name}
 %description qml-plugin
 %{summary}.
 
-%files qml-plugin
-%defattr(-,root,root,-)
-%dir %{_libdir}/qt5/qml/Buteo/Profiles
-%{_libdir}/qt5/qml/Buteo/Profiles/libbuteoprofiles.so
-%{_libdir}/qt5/qml/Buteo/Profiles/qmldir
-
 %prep
 %setup -q
 
 
 %build
 %qmake5 -recursive "VERSION=%{version}" CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE
-make %{_smp_mflags}
+%make_build
 make doc %{_smp_mflags}
 
 
 %install
-make INSTALL_ROOT=%{buildroot} install
+%qmake5_install
 %fdupes %{buildroot}/opt/tests/buteo-syncfw/
 mkdir -p %{buildroot}%{_userunitdir}/user-session.target.wants
 ln -s ../msyncd.service %{buildroot}%{_userunitdir}/user-session.target.wants/
@@ -149,3 +110,37 @@ if [ "$1" -eq 0 ]; then
     systemctl-user stop msyncd.service || true
     systemctl-user daemon-reload || true
 fi
+
+%files
+%license COPYING
+%{_libdir}/libbuteosyncfw5.so.*
+%{_libexecdir}/buteo-oopp-runner
+%{_oneshotdir}/move-buteo-config.sh
+
+%files devel
+%{_includedir}/*
+%{_libdir}/*.so
+%{_libdir}/*.prl
+%{_libdir}/pkgconfig/*.pc
+
+%files msyncd
+%{_userunitdir}/*.service
+%{_userunitdir}/user-session.target.wants/*.service
+%{_sysconfdir}/syncwidget
+%{_bindir}/msyncd
+%{_datadir}/mapplauncherd/privileges.d/*
+%{_datadir}/glib-2.0/schemas/*
+%dir %{_libdir}/buteo-plugins-qt5
+%dir %{_libdir}/buteo-plugins-qt5/oopp
+
+%files doc
+%{_docdir}/buteo-syncfw-doc
+
+%files tests
+/opt/tests/buteo-syncfw
+%{_datadir}/accounts/services/*.service
+
+%files qml-plugin
+%dir %{_libdir}/qt5/qml/Buteo/Profiles
+%{_libdir}/qt5/qml/Buteo/Profiles/libbuteoprofiles.so
+%{_libdir}/qt5/qml/Buteo/Profiles/qmldir

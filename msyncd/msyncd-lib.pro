@@ -102,12 +102,6 @@ contains(DEFINES, USE_KEEPALIVE) {
         SyncAlarmInventory.cpp
 }
 
-QMAKE_CXXFLAGS = -Wall \
-    -g \
-    -Wno-cast-align \
-    -O2 \
-    -finline-functions
-
 # #####################################################################
 # make coverage (debug)
 # #####################################################################

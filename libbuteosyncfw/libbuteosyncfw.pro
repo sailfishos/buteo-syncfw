@@ -1,7 +1,7 @@
 TEMPLATE = lib
 TARGET = buteosyncfw5
-DEPENDPATH += . clientfw  common  pluginmgr  profile
-INCLUDEPATH += . clientfw  common  pluginmgr  profile
+DEPENDPATH += . clientfw common pluginmgr profile
+INCLUDEPATH += . clientfw common pluginmgr profile
 
 VER_MAJ = 0
 VER_MIN = 1
@@ -18,14 +18,14 @@ CONFIG += dll \
 
 DEFINES += DEFAULT_PLUGIN_PATH=\"\\\"$$[QT_INSTALL_LIBS]/buteo-plugins-qt5\\\"\"
 
-# Input
-HEADERS += common/Logger.h \
+# there might be something still here which shouldn't really be publicly offered
+PUBLIC_HEADERS += \
+           common/Logger.h \
            common/LogMacros.h \
            common/SyncCommonDefs.h \
            common/TransportTracker.h \
            common/NetworkManager.h \
            clientfw/SyncClientInterface.h \
-           clientfw/SyncClientInterfacePrivate.h \
            clientfw/SyncDaemonProxy.h \
            pluginmgr/ClientPlugin.h \
            pluginmgr/DeletedItemsIdStorage.h \
@@ -41,7 +41,6 @@ HEADERS += common/Logger.h \
            pluginmgr/SyncPluginLoader.h \
            profile/BtHelper.h \
            profile/Profile.h \
-           profile/Profile_p.h \
            profile/ProfileEngineDefs.h \
            profile/ProfileFactory.h \
            profile/ProfileField.h \
@@ -51,11 +50,17 @@ HEADERS += common/Logger.h \
            profile/SyncProfile.h \
            profile/SyncResults.h \
            profile/SyncSchedule.h \
-           profile/SyncSchedule_p.h \
            profile/TargetResults.h \
            pluginmgr/OOPClientPlugin.h \
            pluginmgr/OOPServerPlugin.h \
            pluginmgr/ButeoPluginIface.h
+
+HEADERS += $$PUBLIC_HEADERS \
+           clientfw/SyncClientInterfacePrivate.h \
+           profile/Profile_p.h \
+           profile/SyncSchedule_p.h \
+
+
 SOURCES += common/Logger.cpp \
            common/TransportTracker.cpp \
            common/NetworkManager.cpp \
@@ -92,11 +97,6 @@ usb-moded {
   SOURCES += common/USBModedProxy.cpp
 }
 
-QMAKE_CXXFLAGS = -Wall \
-    -g \
-    -Wno-cast-align \
-    -O2 -finline-functions
-
 # clean
 QMAKE_CLEAN += $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 
@@ -107,41 +107,7 @@ QMAKE_CLEAN += lib$${TARGET}.prl pkgconfig/*
 target.path = $$[QT_INSTALL_LIBS]
 headers.path = /usr/include/buteosyncfw5/
 
-headers.files = common/Logger.h \
-           common/LogMacros.h \
-           common/SyncCommonDefs.h \
-           common/TransportTracker.h \
-           common/NetworkManager.h \
-           clientfw/SyncClientInterface.h \
-           clientfw/SyncClientInterfacePrivate.h \
-           clientfw/SyncDaemonProxy.h \
-           pluginmgr/ClientPlugin.h \
-           pluginmgr/DeletedItemsIdStorage.h \
-           pluginmgr/PluginCbInterface.h \
-           pluginmgr/PluginManager.h \
-           pluginmgr/ServerPlugin.h \
-           pluginmgr/StorageChangeNotifierPlugin.h \
-           pluginmgr/StorageChangeNotifierPluginLoader.h \
-           pluginmgr/StorageItem.h \
-           pluginmgr/StoragePlugin.h \
-           pluginmgr/StoragePluginLoader.h \
-           pluginmgr/SyncPluginBase.h \
-           pluginmgr/SyncPluginLoader.h \
-           pluginmgr/ButeoPluginIface.h \
-           profile/BtHelper.h \
-           profile/Profile.h \
-           profile/Profile_p.h \
-           profile/ProfileEngineDefs.h \
-           profile/ProfileFactory.h \
-           profile/ProfileField.h \
-           profile/ProfileManager.h \
-           profile/StorageProfile.h \
-           profile/SyncLog.h \
-           profile/SyncProfile.h \
-           profile/SyncResults.h \
-           profile/SyncSchedule.h \
-           profile/SyncSchedule_p.h \
-           profile/TargetResults.h
+headers.files = $$PUBLIC_HEADERS
 
 INSTALLS += target headers
 
