@@ -97,11 +97,6 @@ usb-moded {
   SOURCES += common/USBModedProxy.cpp
 }
 
-QMAKE_CXXFLAGS = -Wall \
-    -g \
-    -Wno-cast-align \
-    -O2 -finline-functions
-
 # clean
 QMAKE_CLEAN += $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 

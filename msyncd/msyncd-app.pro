@@ -39,12 +39,6 @@ SOURCES += \
         main.cpp \
         UnitTest.cpp
 
-QMAKE_CXXFLAGS = -Wall \
-    -g \
-    -Wno-cast-align \
-    -O2 \
-    -finline-functions
-
 # install
 target.path = /usr/bin/
 service.files = bin/msyncd.service
@@ -53,6 +47,7 @@ syncwidget.path = /etc/syncwidget/
 syncwidget.files = com.meego.msyncd
 gschemas.path = /usr/share/glib-2.0/schemas
 gschemas.files = gschemas/com.meego.msyncd.gschema.xml
+
 INSTALLS += target \
     syncwidget \
     service \
