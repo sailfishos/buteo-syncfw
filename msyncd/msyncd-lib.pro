@@ -90,7 +90,7 @@ contains(DEFINES, USE_KEEPALIVE) {
     SOURCES += \
         BackgroundSync.cpp
 
-} else {
+} else:contains(DEFINES, USE_IPHB) {
     PKGCONFIG += libiphb
 
     HEADERS += \

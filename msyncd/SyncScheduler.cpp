@@ -21,9 +21,9 @@
  * 02110-1301 USA
  *
  */
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
 #include "BackgroundSync.h"
-#else
+#elif defined(USE_IPHB)
 #include "IPHeartBeat.h"
 #endif
 #include "SyncScheduler.h"
@@ -40,13 +40,13 @@ SyncScheduler::SyncScheduler(QObject *aParent)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
     iBackgroundActivity = new BackgroundSync(this);
 
     connect(iBackgroundActivity, SIGNAL(onBackgroundSyncRunning(QString)), this, SLOT(doIPHeartbeatActions(QString)));
     connect(iBackgroundActivity, SIGNAL(onBackgroundSwitchRunning(QString)), this,
             SLOT(rescheduleBackgroundActivity(QString)));
-#else
+#elif defined(USE_IPHB)
     iIPHeartBeatMan = new IPHeartBeat(this);
 
     connect(iIPHeartBeatMan, SIGNAL(onHeartBeat(QString)), this, SLOT(doIPHeartbeatActions(QString)));
@@ -66,9 +66,9 @@ SyncScheduler::~SyncScheduler()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
     iBackgroundActivity->removeAll();
-#else
+#elif defined(USE_IPHB)
     removeAllAlarms();
     delete iAlarmInventory;
     iAlarmInventory = 0;
@@ -80,9 +80,9 @@ void SyncScheduler::addProfileForSyncRetry(const SyncProfile *aProfile, QDateTim
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfile && aProfile->isEnabled()) {
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
         setNextAlarm(aProfile, aNextSyncTime);
-#else
+#elif defined(USE_IPHB)
         //remove alarm
         removeProfile(aProfile->name());
 
@@ -104,7 +104,7 @@ bool SyncScheduler::addProfile(const SyncProfile *aProfile)
 
 // In case Keepalive is used no need to remove
 // existent profile will be updated
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
     if (aProfile->isEnabled() &&
             aProfile->syncType() == SyncProfile::SYNC_SCHEDULED) {
         setNextAlarm(aProfile);
@@ -114,7 +114,7 @@ bool SyncScheduler::addProfile(const SyncProfile *aProfile)
         return false;
     }
 
-#else
+#elif defined(USE_IPHB)
     bool profileAdded = false;
 
     // Remove possible old alarm first.
@@ -132,17 +132,19 @@ bool SyncScheduler::addProfile(const SyncProfile *aProfile)
     }
 
     return profileAdded;
+#else
+    return false;
 #endif
 }
 
 void SyncScheduler::removeProfile(const QString &aProfileName)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
     if (iBackgroundActivity->remove(aProfileName)) {
         qCDebug(lcButeoMsyncd) << "Scheduled sync removed: profile =" << aProfileName;
     }
-#else
+#elif defined(USE_IPHB)
     if (iSyncScheduleProfiles.contains(aProfileName)) {
         int alarmEventID = iSyncScheduleProfiles.value(aProfileName);
         removeAlarmEvent(alarmEventID);
@@ -168,7 +170,7 @@ void SyncScheduler::syncStatusChanged(const QString &aProfileName, int aStatus,
         qCDebug(lcButeoMsyncd) << "Background sync" << aProfileName << "finished with status:" << aStatus <<
                   "and extra:" << aMessage << "," << aMoreDetails;
         iActiveBackgroundSyncProfiles.remove(aProfileName);
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
         iBackgroundActivity->onBackgroundSyncCompleted(aProfileName);
 
         // and schedule the next background sync if necessary.
@@ -181,7 +183,7 @@ void SyncScheduler::syncStatusChanged(const QString &aProfileName, int aStatus,
     }
 }
 
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
 void SyncScheduler::rescheduleBackgroundActivity(const QString &aProfileName)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -220,7 +222,7 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
         // The existing event object can be used by just updating the alarm time
         // and enqueuing it again.
 
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
         alarmEventID = 1;
         iBackgroundActivity->set(aProfile->name(), QDateTime::currentDateTime().secsTo(nextSyncTime) + 1);
 
@@ -236,7 +238,7 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
         } else {
             iBackgroundActivity->removeSwitch(aProfile->name());
         }
-#else
+#elif defined(USE_IPHB)
         iAlarmInventory->addAlarm(nextSyncTime);
 #endif
         if (alarmEventID == 0) {
@@ -244,7 +246,7 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
                         << aProfile->name();
         }
     } else {
-#ifdef USE_KEEPALIVE
+#if defined(USE_KEEPALIVE)
         // no valid next scheduled sync time for background sync.
         // stop the background activity to allow device suspend.
         iBackgroundActivity->remove(aProfile->name());
@@ -266,7 +268,7 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
     return alarmEventID;
 }
 
-#ifndef USE_KEEPALIVE
+#if defined(USE_IPHB)
 void SyncScheduler::doAlarmActions(int aAlarmEventID)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
