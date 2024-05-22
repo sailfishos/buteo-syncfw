@@ -18,7 +18,6 @@ BuildRequires: pkgconfig(Qt5Qml)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(accounts-qt5) >= 1.13
 BuildRequires: pkgconfig(libsignon-qt5)
-BuildRequires: pkgconfig(libiphb)
 BuildRequires: pkgconfig(qt5-boostable)
 BuildRequires: pkgconfig(keepalive)
 BuildRequires: pkgconfig(gio-2.0)
