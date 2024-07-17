@@ -25,6 +25,7 @@
 #define SYNCCLIENTINTERFACEPRIVATE_H
 
 #include <QObject>
+#include <QDBusPendingCallWatcher>
 #include <QDBusServiceWatcher>
 #include "SyncDaemonProxy.h"
 #include <SyncProfile.h>
@@ -56,6 +57,7 @@ public:
      * @param aProfileId - id of the profile to start the sync
      */
     bool startSync(const QString &aProfileId) const;
+    QDBusPendingCallWatcher* requestSync(const QString &aProfileId, QObject *aParent);
 
     /*! \brief function to abort the sync
      *
@@ -68,6 +70,7 @@ public:
      * @return  - list of running sync profile ids
      */
     QStringList getRunningSyncList();
+    QDBusPendingCallWatcher* requestRunningSyncList(QObject *aParent);
 
     /*! \brief function to remove a profile
      *
@@ -127,6 +130,7 @@ public:
      * \return The list of sync profiles.
      */
     QList<QString /*profileAsXml*/> allVisibleSyncProfiles();
+    QDBusPendingCallWatcher* requestAllVisibleSyncProfiles(QObject *aParent);
 
     /*! \brief Gets a sync profile.
      *
@@ -148,6 +152,7 @@ public:
      * \return The sync profiles as Xml string list.
      */
     QStringList syncProfilesByKey(const QString &aKey, const QString &aValue);
+    QDBusPendingCallWatcher* requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent);
 
     /*! \brief Gets profiles matching the profile type.
      *
@@ -155,6 +160,7 @@ public:
      * \return The profiles as Xml string list.
      */
     QStringList profilesByType(const QString &aType);
+    QDBusPendingCallWatcher* requestProfilesByType(const QString &aType, QObject *aParent);
 
     /*! \brief Gets a profiles  matching the profile type.
      *

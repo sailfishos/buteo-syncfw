@@ -24,6 +24,8 @@
 #include "SyncClientInterface.h"
 #include "SyncClientInterfacePrivate.h"
 
+#include <QDBusPendingCallWatcher>
+
 using namespace Buteo;
 
 QSharedPointer<SyncClientInterface> SyncClientInterface::sharedInstance()
@@ -55,6 +57,11 @@ bool SyncClientInterface::startSync(const QString &aProfileId) const
     return d_ptr->startSync(aProfileId);
 }
 
+QDBusPendingCallWatcher* SyncClientInterface::requestSync(const QString &aProfileId, QObject *aParent) const
+{
+    return d_ptr->requestSync(aProfileId, aParent);
+}
+
 void SyncClientInterface::abortSync(const QString &aProfileId) const
 {
     d_ptr->abortSync(aProfileId);
@@ -63,6 +70,11 @@ void SyncClientInterface::abortSync(const QString &aProfileId) const
 QStringList SyncClientInterface::getRunningSyncList() const
 {
     return d_ptr->getRunningSyncList();
+}
+
+QDBusPendingCallWatcher* SyncClientInterface::requestRunningSyncList(QObject *aParent) const
+{
+    return d_ptr->requestRunningSyncList(aParent);
 }
 
 bool SyncClientInterface::removeProfile(const QString &aProfileId) const
@@ -106,6 +118,11 @@ QList<QString /*profileAsXml*/> SyncClientInterface::allVisibleSyncProfiles()
     return d_ptr->allVisibleSyncProfiles();
 }
 
+QDBusPendingCallWatcher* SyncClientInterface::requestAllVisibleSyncProfiles(QObject *aParent) const
+{
+    return d_ptr->requestAllVisibleSyncProfiles(aParent);
+}
+
 
 QString SyncClientInterface::syncProfile(const QString &aProfileId)
 {
@@ -117,6 +134,11 @@ QStringList SyncClientInterface::syncProfilesByKey(const QString &aKey, const QS
     return d_ptr->syncProfilesByKey(aKey, aValue);
 }
 
+QDBusPendingCallWatcher* SyncClientInterface::requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent) const
+{
+    return d_ptr->requestSyncProfilesByKey(aKey, aValue, aParent);
+}
+
 QStringList SyncClientInterface::syncProfilesByType(const QString &aType)
 {
     return d_ptr->syncProfilesByType(aType);
@@ -125,4 +147,9 @@ QStringList SyncClientInterface::syncProfilesByType(const QString &aType)
 QStringList SyncClientInterface::profilesByType(const QString &aType)
 {
     return d_ptr->profilesByType(aType);
+}
+
+QDBusPendingCallWatcher* SyncClientInterface::requestProfilesByType(const QString &aType, QObject *aParent) const
+{
+    return d_ptr->requestProfilesByType(aType, aParent);
 }

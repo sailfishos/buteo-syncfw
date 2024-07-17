@@ -66,7 +66,7 @@ public:
 
     bool synchronizing() const;
 
-    Q_INVOKABLE void startSync() const;
+    Q_INVOKABLE void startSync();
     Q_INVOKABLE void abortSync() const;
 
 signals:

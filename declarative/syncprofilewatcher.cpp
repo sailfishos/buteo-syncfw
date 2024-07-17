@@ -23,6 +23,8 @@
 
 #include "syncprofilewatcher.h"
 
+#include <QDBusPendingCallWatcher>
+#include <QDBusPendingReply>
 #include <QDebug>
 
 using namespace Buteo;
@@ -147,10 +149,26 @@ bool SyncProfileWatcher::synchronizing() const
     return mSyncStatus < Sync::SYNC_ERROR;
 }
 
-void SyncProfileWatcher::startSync() const
+void SyncProfileWatcher::startSync()
 {
     if (mSyncProfile) {
-        mSyncClient->startSync(mSyncProfile->name());
+        const QString profileId = mSyncProfile->name();
+        connect(mSyncClient->requestSync(profileId, this),
+                &QDBusPendingCallWatcher::finished,
+                [this, profileId] (QDBusPendingCallWatcher *call) {
+                    QDBusPendingReply<bool> reply = *call;
+                    if (reply.isError() || !reply.value()) {
+                        qWarning() << "cannot start sync for" << profileId
+                                   << ":" << (reply.isError() ? reply.error().message() : "no such profile");
+                        if (mSyncProfile && mSyncProfile->name() == profileId) {
+                            mSyncStatus = Sync::SYNC_ERROR;
+                            emit syncStatusChanged();
+                        }
+                    }
+                    call->deleteLater();
+                });
+        mSyncStatus = Sync::SYNC_QUEUED;
+        emit syncStatusChanged();
     }
 }
 

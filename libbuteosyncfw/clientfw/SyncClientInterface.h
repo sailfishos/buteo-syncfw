@@ -32,6 +32,7 @@
 #include <SyncResults.h>
 #include <SyncSchedule.h>
 
+class QDBusPendingCallWatcher;
 
 namespace Buteo {
 
@@ -78,6 +79,15 @@ public:
     bool startSync(const QString &aProfileId) const;
 
     /*!
+     * \brief asynchronous version of startSync()
+     *
+     * \param aProfileId Id of the profile to use in sync.
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<bool>.
+     */
+    QDBusPendingCallWatcher* requestSync(const QString &aProfileId, QObject *aParent = nullptr) const;
+
+    /*!
      * \brief Stops synchronizing the profile with the given Id.
      *
      * If the sync request is still in queue and not yet started, the queue
@@ -93,6 +103,14 @@ public:
      * \return Profile name list.
      */
     QStringList getRunningSyncList() const;
+
+    /*!
+     * \brief asynchronous version of getRunningSyncList()
+     *
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestRunningSyncList(QObject *aParent = nullptr) const;
 
 
     /*!
@@ -162,6 +180,14 @@ public:
      */
     QList<QString /*profileAsXml*/> allVisibleSyncProfiles();
 
+    /*!
+     * \brief asynchronous version of allVisibleSyncProfiles()
+     *
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestAllVisibleSyncProfiles(QObject *aParent = nullptr) const;
+
     /*! \brief Gets a sync profile.
      *
      * Loads and merges also all sub-profiles that are referenced from the
@@ -183,12 +209,30 @@ public:
      */
     QStringList syncProfilesByKey(const QString &aKey, const QString &aValue);
 
+    /*! \brief asynchronous version of syncProfilesByKey().
+     *
+     * \param aKey Key to match for profile.
+     * \param aValue Value to match for profile.
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent = nullptr) const;
+
     /*! \brief Gets profiles matching the profile type.
      *
      * \param aType Type of the profile service/storage/sync.
      * \return The profiles as Xml string list.
      */
     QStringList profilesByType(const QString &aType);
+
+    /*!
+     * \brief asynchronous version of profilesByType()
+     *
+     * \param aType Type of the profile service/storage/sync.
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestProfilesByType(const QString &aProfileId, QObject *aParent = nullptr) const;
 
     /*! \brief Gets a profiles  matching the profile type.
      *
