@@ -28,6 +28,7 @@
 
 #include "profile/SyncResults.h"
 #include "profile/SyncSchedule.h"
+#include "syncmanager.h"
 #include "syncresultmodel.h"
 #include "multisyncresultmodel.h"
 #include "syncprofilewatcher.h"
@@ -53,6 +54,9 @@ public:
     {
         Q_ASSERT(uri == QLatin1String("Buteo.Profiles"));
 
+        qmlRegisterType<SyncManager>(uri, 0, 1, "SyncManager");
+        qmlRegisterUncreatableType<ProfileFilter>(uri, 0, 1, "ProfileFilter",
+                                                  "ProfileFilter is used as a group property of SyncManager");
         qmlRegisterType<SyncProfileWatcher>(uri, 0, 1, "SyncProfileWatcher");
         qRegisterMetaType<Buteo::SyncSchedule>("SyncSchedule");
         qmlRegisterUncreatableType<Buteo::SyncSchedule>(uri, 0, 1, "SyncSchedule",

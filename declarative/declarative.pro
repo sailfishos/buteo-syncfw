@@ -14,12 +14,15 @@ SOURCES += plugin.cpp \
     syncresultmodelbase.cpp \
     syncresultmodel.cpp \
     multisyncresultmodel.cpp \
-    syncprofilewatcher.cpp
+    syncprofilewatcher.cpp \
+    syncmanager.cpp
 
 HEADERS += syncresultmodelbase.h \
     syncresultmodel.h \
     multisyncresultmodel.h \
-    syncprofilewatcher.h
+    syncprofilewatcher.h \
+    profileentry.h \
+    syncmanager.h
 
 OTHER_FILES += qmldir
 

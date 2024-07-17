@@ -24,19 +24,8 @@
 #ifndef MULTISYNCRESULTMODEL_H
 #define MULTISYNCRESULTMODEL_H
 
-#include <syncresultmodelbase.h>
-
-struct ProfileEntry {
-    Q_GADGET
-    Q_PROPERTY(QString id MEMBER id)
-    Q_PROPERTY(QString label MEMBER label)
-    Q_PROPERTY(QString clientName MEMBER clientName)
-public:
-    QString id;
-    QString label;
-    QString clientName;
-    bool operator<(const struct ProfileEntry &other);
-};
+#include "syncresultmodelbase.h"
+#include "profileentry.h"
 
 class MultiSyncResultModel: public SyncResultModelBase
 {

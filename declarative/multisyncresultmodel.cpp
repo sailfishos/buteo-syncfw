@@ -27,11 +27,6 @@
 
 using namespace Buteo;
 
-bool ProfileEntry::operator<(const struct ProfileEntry &other)
-{
-    return label < other.label;
-}
-
 MultiSyncResultModel::MultiSyncResultModel(QObject *parent)
     : SyncResultModelBase(parent)
     , mSortOption(MultiSyncResultModel::ByDate)
