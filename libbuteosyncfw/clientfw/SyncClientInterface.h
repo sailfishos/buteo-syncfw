@@ -26,6 +26,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QSharedPointer>
 #include <Profile.h>
 #include <SyncProfile.h>
 #include <SyncResults.h>
@@ -188,6 +189,15 @@ public:
      * \return The sync profile ids as string list.
      */
     QStringList syncProfilesByType(const QString &aType);
+    /*!
+     * \brief creates a process singleton
+     *
+     * Use this instance to share a same D-Bus connection to the daemon
+     * between several clients in a process.
+     * \return a singleton instance, don't free it.
+     */
+    static QSharedPointer<SyncClientInterface> sharedInstance();
+
 signals:
 
     /*! \brief Notifies when the synchronisation service is available or not.

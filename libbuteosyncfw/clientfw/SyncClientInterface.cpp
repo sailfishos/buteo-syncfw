@@ -26,6 +26,18 @@
 
 using namespace Buteo;
 
+QSharedPointer<SyncClientInterface> SyncClientInterface::sharedInstance()
+{
+    static QWeakPointer<SyncClientInterface> sharedObj;
+    QSharedPointer<SyncClientInterface> obj = sharedObj.toStrongRef();
+
+    if (!obj) {
+        obj = QSharedPointer<SyncClientInterface>(new SyncClientInterface);
+        sharedObj = obj;
+    }
+    return obj;
+}
+
 SyncClientInterface::SyncClientInterface():
     d_ptr(new SyncClientInterfacePrivate(this))
 {

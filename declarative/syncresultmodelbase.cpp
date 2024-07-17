@@ -29,8 +29,9 @@ using namespace Buteo;
 
 SyncResultModelBase::SyncResultModelBase(QObject *parent)
     : QAbstractListModel(parent)
+    , mSyncClient(SyncClientInterface::sharedInstance())
 {
-    connect(&mSyncClient, &SyncClientInterface::profileChanged,
+    connect(mSyncClient.data(), &SyncClientInterface::profileChanged,
             this, &SyncResultModelBase::onProfileChanged);
 }
 

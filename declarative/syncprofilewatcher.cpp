@@ -28,13 +28,16 @@
 using namespace Buteo;
 
 SyncProfileWatcher::SyncProfileWatcher(QObject *parent)
-    : QObject(parent), mSyncProfile(nullptr), mSyncStatus(Sync::SYNC_DONE)
+    : QObject(parent)
+    , mSyncClient(SyncClientInterface::sharedInstance())
+    , mSyncProfile(nullptr)
+    , mSyncStatus(Sync::SYNC_DONE)
 {
     connect(&mManager, &ProfileManager::signalProfileChanged,
             this, &SyncProfileWatcher::onProfileChanged);
-    connect(&mSyncClient, &SyncClientInterface::profileChanged,
+    connect(mSyncClient.data(), &SyncClientInterface::profileChanged,
             this, &SyncProfileWatcher::onProfileChanged);
-    connect(&mSyncClient, &SyncClientInterface::syncStatus,
+    connect(mSyncClient.data(), &SyncClientInterface::syncStatus,
             this, &SyncProfileWatcher::onSyncStatus);
 }
 
@@ -142,14 +145,14 @@ Sync::SyncStatus SyncProfileWatcher::syncStatus() const
 void SyncProfileWatcher::startSync() const
 {
     if (mSyncProfile) {
-        mSyncClient.startSync(mSyncProfile->name());
+        mSyncClient->startSync(mSyncProfile->name());
     }
 }
 
 void SyncProfileWatcher::abortSync() const
 {
     if (mSyncProfile) {
-        mSyncClient.abortSync(mSyncProfile->name());
+        mSyncClient->abortSync(mSyncProfile->name());
     }
 }
 

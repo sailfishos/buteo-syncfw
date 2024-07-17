@@ -44,7 +44,7 @@ MultiSyncResultModel::MultiSyncResultModel(QObject *parent)
     }
     sort();
     sortFilterList();
-    connect(&mSyncClient, &SyncClientInterface::profileChanged,
+    connect(mSyncClient.data(), &SyncClientInterface::profileChanged,
             this, &MultiSyncResultModel::onProfileChanged);
 }
 

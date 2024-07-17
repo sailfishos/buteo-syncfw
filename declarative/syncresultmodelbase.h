@@ -58,7 +58,7 @@ protected:
     void addProfileResults(QSharedPointer<SyncProfile> &profile);
     virtual void sort();
 
-    SyncClientInterface mSyncClient;
+    QSharedPointer<SyncClientInterface> mSyncClient;
     ProfileManager mManager;
     struct SyncResultEntry {
         QSharedPointer<SyncProfile> profile;

@@ -86,7 +86,7 @@ private:
 
 protected:
     ProfileManager mManager;
-    SyncClientInterface mSyncClient;
+    QSharedPointer<SyncClientInterface> mSyncClient;
     SyncProfile *mSyncProfile;
     QVariantMap mKeys;
     Sync::SyncStatus mSyncStatus;
