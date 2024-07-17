@@ -234,16 +234,6 @@ public:
      */
     Profile *profile(const QString &aName, const QString &aType);
 
-    /*! \brief Gets a profile object from an xml document.
-     *
-     * \param aProfileAsXml Name of the profile to get.
-     * \return Pointer to the profile. If the xml is not valid, NULL is
-     *  returned. Caller is responsible for deleting the returned object.
-     *  Changes made to the profile are not saved to profile storage, unless
-     *  updateProfile function of this class is called
-     */
-    Profile *profileFromXml(const QString &aProfileAsXml);
-
     /*! \brief Gets a temporary profile (saved if sync is sucessfull).
      *
      * \param btAddress  Address of the remote device bt address/usb .
@@ -346,6 +336,16 @@ public:
     // configPath is the root of primary profile directory, used for writing changes
     // systemConfigPath is for read-only system profiles
     void setPaths(const QString &configPath, const QString &systemConfigPath);
+
+    /*! \brief Gets a profile object from an xml document.
+     *
+     * \param aProfileAsXml Name of the profile to get.
+     * \return Pointer to the profile. If the xml is not valid, NULL is
+     *  returned. Caller is responsible for deleting the returned object.
+     *  Changes made to the profile are not saved to profile storage, unless
+     *  updateProfile function of this class is called
+     */
+    static Profile *profileFromXml(const QString &aProfileAsXml);
 
 signals:
     /*! \brief Notifies about a change in profile.
