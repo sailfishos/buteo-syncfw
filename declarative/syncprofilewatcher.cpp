@@ -142,6 +142,11 @@ Sync::SyncStatus SyncProfileWatcher::syncStatus() const
     return mSyncStatus;
 }
 
+bool SyncProfileWatcher::synchronizing() const
+{
+    return mSyncStatus < Sync::SYNC_ERROR;
+}
+
 void SyncProfileWatcher::startSync() const
 {
     if (mSyncProfile) {

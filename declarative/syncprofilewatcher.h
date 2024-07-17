@@ -43,6 +43,7 @@ class Q_DECL_EXPORT SyncProfileWatcher: public QObject
     Q_PROPERTY(SyncSchedule schedule READ schedule NOTIFY scheduleChanged)
     Q_PROPERTY(QVariantMap keys READ keys NOTIFY keysChanged)
     Q_PROPERTY(Sync::SyncStatus syncStatus READ syncStatus NOTIFY syncStatusChanged)
+    Q_PROPERTY(bool synchronizing READ synchronizing NOTIFY syncStatusChanged)
 
 public:
     SyncProfileWatcher(QObject *parent = nullptr);
@@ -62,6 +63,8 @@ public:
     QVariantMap keys() const;
 
     Sync::SyncStatus syncStatus() const;
+
+    bool synchronizing() const;
 
     Q_INVOKABLE void startSync() const;
     Q_INVOKABLE void abortSync() const;
