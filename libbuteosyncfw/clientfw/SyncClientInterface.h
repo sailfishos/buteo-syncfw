@@ -141,8 +141,8 @@ public:
     bool  getBackUpRestoreState();
 
     /*!
-     * \brief Use this function to understand if the creation of dbus connection to msyncd
-     *        succeeded or not.
+     * \brief Use this function to understand if the dbus connection to msyncd
+     *        is working or not.
      * \return  - status of the dbus object created for msyncd
      */
     bool isValid() const;
@@ -189,6 +189,12 @@ public:
      */
     QStringList syncProfilesByType(const QString &aType);
 signals:
+
+    /*! \brief Notifies when the synchronisation service is available or not.
+     *
+     * This signal is sent when the synchronisation daemon is rnning or not.
+     */
+    void isValidChanged();
 
     /*! \brief Notifies about Backup start.
      *

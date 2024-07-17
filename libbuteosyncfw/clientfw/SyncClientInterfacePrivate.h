@@ -25,6 +25,7 @@
 #define SYNCCLIENTINTERFACEPRIVATE_H
 
 #include <QObject>
+#include <QDBusServiceWatcher>
 #include "SyncDaemonProxy.h"
 #include <SyncProfile.h>
 
@@ -215,8 +216,10 @@ signals:
     void resultsAvailable(QString aProfileId, Buteo::SyncResults aLastResults);
 
 private:
+    void onServiceOwnerChanged(const QString &serviceName, const QString &oldOwner, const QString &newOwner);
 
     SyncDaemonProxy *iSyncDaemon;
+    QDBusServiceWatcher iServiceWatcher;
 
     Buteo::SyncClientInterface *iParent;
 

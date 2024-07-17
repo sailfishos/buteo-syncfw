@@ -40,6 +40,11 @@ SyncClientInterfacePrivate::SyncClientInterfacePrivate(SyncClientInterface *aPar
     iParent(aParent)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
+    iServiceWatcher.addWatchedService(SYNC_DBUS_SERVICE);
+    iServiceWatcher.setConnection(QDBusConnection::sessionBus());
+    connect(&iServiceWatcher, &QDBusServiceWatcher::serviceOwnerChanged,
+            this, &SyncClientInterfacePrivate::onServiceOwnerChanged);
+
     iSyncDaemon = new SyncDaemonProxy(SYNC_DBUS_SERVICE, SYNC_DBUS_OBJECT,
                                       QDBusConnection::sessionBus(), this);
 
@@ -82,6 +87,15 @@ SyncClientInterfacePrivate::~SyncClientInterfacePrivate()
     FUNCTION_CALL_TRACE(lcButeoTrace);
     delete iSyncDaemon;
     iSyncDaemon = nullptr;
+}
+
+void SyncClientInterfacePrivate::onServiceOwnerChanged(const QString &serviceName, const QString &oldOwner, const QString &newOwner)
+{
+    Q_UNUSED(serviceName);
+    Q_UNUSED(oldOwner);
+    Q_UNUSED(newOwner);
+
+    emit iParent->isValidChanged();
 }
 
 bool SyncClientInterfacePrivate::startSync(const QString &aProfileId) const
