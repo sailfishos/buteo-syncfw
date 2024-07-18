@@ -48,22 +48,22 @@ void SyncClientInterface::abortSync(const QString &aProfileId) const
     d_ptr->abortSync(aProfileId);
 }
 
-QStringList SyncClientInterface::getRunningSyncList()
+QStringList SyncClientInterface::getRunningSyncList() const
 {
     return d_ptr->getRunningSyncList();
 }
 
-bool SyncClientInterface::removeProfile(QString &aProfileId)
+bool SyncClientInterface::removeProfile(const QString &aProfileId) const
 {
     return d_ptr->removeProfile(aProfileId);
 }
 
-bool SyncClientInterface::updateProfile(Buteo::SyncProfile &aProfile)
+bool SyncClientInterface::updateProfile(const Buteo::SyncProfile &aProfile)
 {
     return d_ptr->updateProfile(aProfile);
 }
 
-bool SyncClientInterface::setSyncSchedule(QString &aProfileId, SyncSchedule &aSchedule)
+bool SyncClientInterface::setSyncSchedule(const QString &aProfileId, const SyncSchedule &aSchedule)
 {
     return d_ptr->setSyncSchedule(aProfileId, aSchedule);
 }
@@ -78,7 +78,7 @@ bool SyncClientInterface::getBackUpRestoreState()
     return d_ptr->getBackUpRestoreState();
 }
 
-bool SyncClientInterface::isValid()
+bool SyncClientInterface::isValid() const
 {
     return d_ptr->isValid();
 }

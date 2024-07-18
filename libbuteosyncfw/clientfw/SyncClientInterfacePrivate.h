@@ -72,13 +72,13 @@ public:
      *
      * @param aProfileId id of the profule to remove to add
      */
-    bool removeProfile(QString &aProfileId);
+    bool removeProfile(const QString &aProfileId);
 
     /*! \brief function to update an existing profile
      *
      * @param aProfile profile object to add
      */
-    bool updateProfile(Buteo::SyncProfile &aProfile);
+    bool updateProfile(const Buteo::SyncProfile &aProfile);
 
     /*! \brief function to add a profile
      *
@@ -103,7 +103,7 @@ public:
      * @param aProfileId - profile id
      * @param aSchedule - schedule object
      */
-    bool setSyncSchedule(QString &aProfileId, SyncSchedule &aSchedule);
+    bool setSyncSchedule(const QString &aProfileId, const SyncSchedule &aSchedule);
 
     /*! \brief this function converts the save the syncResults into
      * log.xml file corresponding to profileName.

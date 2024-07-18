@@ -91,7 +91,7 @@ public:
      *
      * \return Profile name list.
      */
-    QStringList getRunningSyncList();
+    QStringList getRunningSyncList() const;
 
 
     /*!
@@ -105,7 +105,7 @@ public:
      *
      * \return status of the operation
      */
-    bool setSyncSchedule(QString &aProfileId, SyncSchedule &aSchedule);
+    bool setSyncSchedule(const QString &aProfileId, const SyncSchedule &aSchedule);
 
     /*!
      * \brief Save SyncResults to log.xml file.
@@ -121,7 +121,7 @@ public:
      * \param aProfileId Id of the profile to be deleted.
      * \return status of the remove operation
      */
-    bool removeProfile(QString &aProfileId);
+    bool removeProfile(const QString &aProfileId) const;
 
     /*!
      * \brief This function should be called when sync profile information has
@@ -132,7 +132,7 @@ public:
      * \return status of the update operation
      *
      */
-    bool updateProfile(Buteo::SyncProfile &aSyncProfile);
+    bool updateProfile(const Buteo::SyncProfile &aSyncProfile);
 
     /*!
     * \brief This function returns true if backup/restore in progress else
@@ -145,7 +145,7 @@ public:
      *        succeeded or not.
      * \return  - status of the dbus object created for msyncd
      */
-    bool isValid();
+    bool isValid() const;
 
     /*! \brief To get lastSyncResult.
      *  \param aProfileId

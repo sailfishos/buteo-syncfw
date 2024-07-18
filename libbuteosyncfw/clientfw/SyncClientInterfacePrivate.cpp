@@ -114,7 +114,7 @@ QStringList SyncClientInterfacePrivate::getRunningSyncList()
     return runningSyncList;
 }
 
-bool SyncClientInterfacePrivate::removeProfile(QString &aProfileId)
+bool SyncClientInterfacePrivate::removeProfile(const QString &aProfileId)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
@@ -124,7 +124,7 @@ bool SyncClientInterfacePrivate::removeProfile(QString &aProfileId)
     return status;
 }
 
-bool SyncClientInterfacePrivate::updateProfile(Buteo::SyncProfile &aProfile)
+bool SyncClientInterfacePrivate::updateProfile(const Buteo::SyncProfile &aProfile)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
@@ -155,8 +155,8 @@ void SyncClientInterfacePrivate::resultsAvailable(QString aProfileId,
     }
 }
 
-bool SyncClientInterfacePrivate::setSyncSchedule(QString &aProfileId,
-                                                 SyncSchedule &aSchedule)
+bool SyncClientInterfacePrivate::setSyncSchedule(const QString &aProfileId,
+                                                 const SyncSchedule &aSchedule)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
