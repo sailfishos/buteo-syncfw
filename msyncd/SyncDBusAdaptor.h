@@ -145,6 +145,10 @@ class SyncDBusAdaptor: public QDBusAbstractAdaptor
                 "      <arg direction=\"out\" type=\"as\"/>\n"
                 "      <arg direction=\"in\" type=\"s\" name=\"aType\"/>\n"
                 "    </method>\n"
+                "    <method name=\"profilesByType\">\n"
+                "      <arg direction=\"out\" type=\"as\"/>\n"
+                "      <arg direction=\"in\" type=\"s\" name=\"aType\"/>\n"
+                "    </method>\n"
                 "    <method name=\"start\">\n"
                 "      <arg direction=\"in\" type=\"u\" name=\"aAccountId\"/>\n"
                 "      <annotation value=\"true\" name=\"org.freedesktop.DBus.Method.NoReply\"/>\n"
@@ -199,6 +203,7 @@ public Q_SLOTS: // METHODS
     QString syncProfile(const QString &aProfileId);
     QStringList syncProfilesByKey(const QString &aKey, const QString &aValue);
     QStringList syncProfilesByType(const QString &aType);
+    QStringList profilesByType(const QString &aType);
     QList<uint> syncingAccounts();
     bool updateProfile(const QString &aProfileAsXml);
     Q_NOREPLY void isSyncedExternally(uint aAccountId, const QString aClientProfileName);

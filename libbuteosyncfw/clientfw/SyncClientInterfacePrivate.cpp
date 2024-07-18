@@ -285,3 +285,15 @@ QStringList SyncClientInterfacePrivate::syncProfilesByType(const QString &aType)
 
     return profileIds;
 }
+
+QStringList SyncClientInterfacePrivate::profilesByType(const QString &aType)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+    QStringList profileIds;
+
+    if (iSyncDaemon) {
+        profileIds = iSyncDaemon->profilesByType(aType);
+    }
+
+    return profileIds;
+}

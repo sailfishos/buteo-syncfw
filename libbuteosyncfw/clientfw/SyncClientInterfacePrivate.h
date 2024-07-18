@@ -149,6 +149,13 @@ public:
      */
     QStringList syncProfilesByKey(const QString &aKey, const QString &aValue);
 
+    /*! \brief Gets profiles matching the profile type.
+     *
+     * \param aType Type of the profile service/storage/sync.
+     * \return The profiles as Xml string list.
+     */
+    QStringList profilesByType(const QString &aType);
+
     /*! \brief Gets a profiles  matching the profile type.
      *
      * \param aType Type of the profile service/storage/sync.

@@ -121,3 +121,8 @@ QStringList SyncClientInterface::syncProfilesByType(const QString &aType)
 {
     return d_ptr->syncProfilesByType(aType);
 }
+
+QStringList SyncClientInterface::profilesByType(const QString &aType)
+{
+    return d_ptr->profilesByType(aType);
+}
