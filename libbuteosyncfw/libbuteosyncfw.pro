@@ -26,7 +26,6 @@ PUBLIC_HEADERS += \
            common/TransportTracker.h \
            common/NetworkManager.h \
            clientfw/SyncClientInterface.h \
-           clientfw/SyncDaemonProxy.h \
            pluginmgr/ClientPlugin.h \
            pluginmgr/DeletedItemsIdStorage.h \
            pluginmgr/PluginCbInterface.h \
@@ -57,6 +56,7 @@ PUBLIC_HEADERS += \
 
 HEADERS += $$PUBLIC_HEADERS \
            clientfw/SyncClientInterfacePrivate.h \
+           clientfw/SyncDaemonProxy.h \
            profile/Profile_p.h \
            profile/SyncSchedule_p.h \
 

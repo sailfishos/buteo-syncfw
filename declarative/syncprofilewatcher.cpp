@@ -23,18 +23,23 @@
 
 #include "syncprofilewatcher.h"
 
+#include <QDBusPendingCallWatcher>
+#include <QDBusPendingReply>
 #include <QDebug>
 
 using namespace Buteo;
 
 SyncProfileWatcher::SyncProfileWatcher(QObject *parent)
-    : QObject(parent), mSyncProfile(nullptr), mSyncStatus(Sync::SYNC_DONE)
+    : QObject(parent)
+    , mSyncClient(SyncClientInterface::sharedInstance())
+    , mSyncProfile(nullptr)
+    , mSyncStatus(Sync::SYNC_DONE)
 {
     connect(&mManager, &ProfileManager::signalProfileChanged,
             this, &SyncProfileWatcher::onProfileChanged);
-    connect(&mSyncClient, &SyncClientInterface::profileChanged,
+    connect(mSyncClient.data(), &SyncClientInterface::profileChanged,
             this, &SyncProfileWatcher::onProfileChanged);
-    connect(&mSyncClient, &SyncClientInterface::syncStatus,
+    connect(mSyncClient.data(), &SyncClientInterface::syncStatus,
             this, &SyncProfileWatcher::onSyncStatus);
 }
 
@@ -139,17 +144,38 @@ Sync::SyncStatus SyncProfileWatcher::syncStatus() const
     return mSyncStatus;
 }
 
-void SyncProfileWatcher::startSync() const
+bool SyncProfileWatcher::synchronizing() const
+{
+    return mSyncStatus < Sync::SYNC_ERROR;
+}
+
+void SyncProfileWatcher::startSync()
 {
     if (mSyncProfile) {
-        mSyncClient.startSync(mSyncProfile->name());
+        const QString profileId = mSyncProfile->name();
+        connect(mSyncClient->requestSync(profileId, this),
+                &QDBusPendingCallWatcher::finished,
+                [this, profileId] (QDBusPendingCallWatcher *call) {
+                    QDBusPendingReply<bool> reply = *call;
+                    if (reply.isError() || !reply.value()) {
+                        qWarning() << "cannot start sync for" << profileId
+                                   << ":" << (reply.isError() ? reply.error().message() : "no such profile");
+                        if (mSyncProfile && mSyncProfile->name() == profileId) {
+                            mSyncStatus = Sync::SYNC_ERROR;
+                            emit syncStatusChanged();
+                        }
+                    }
+                    call->deleteLater();
+                });
+        mSyncStatus = Sync::SYNC_QUEUED;
+        emit syncStatusChanged();
     }
 }
 
 void SyncProfileWatcher::abortSync() const
 {
     if (mSyncProfile) {
-        mSyncClient.abortSync(mSyncProfile->name());
+        mSyncClient->abortSync(mSyncProfile->name());
     }
 }
 

@@ -26,11 +26,13 @@
 
 #include <QObject>
 #include <QString>
+#include <QSharedPointer>
 #include <Profile.h>
 #include <SyncProfile.h>
 #include <SyncResults.h>
 #include <SyncSchedule.h>
 
+class QDBusPendingCallWatcher;
 
 namespace Buteo {
 
@@ -77,6 +79,15 @@ public:
     bool startSync(const QString &aProfileId) const;
 
     /*!
+     * \brief asynchronous version of startSync()
+     *
+     * \param aProfileId Id of the profile to use in sync.
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<bool>.
+     */
+    QDBusPendingCallWatcher* requestSync(const QString &aProfileId, QObject *aParent = nullptr) const;
+
+    /*!
      * \brief Stops synchronizing the profile with the given Id.
      *
      * If the sync request is still in queue and not yet started, the queue
@@ -91,7 +102,15 @@ public:
      *
      * \return Profile name list.
      */
-    QStringList getRunningSyncList();
+    QStringList getRunningSyncList() const;
+
+    /*!
+     * \brief asynchronous version of getRunningSyncList()
+     *
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestRunningSyncList(QObject *aParent = nullptr) const;
 
 
     /*!
@@ -105,7 +124,7 @@ public:
      *
      * \return status of the operation
      */
-    bool setSyncSchedule(QString &aProfileId, SyncSchedule &aSchedule);
+    bool setSyncSchedule(const QString &aProfileId, const SyncSchedule &aSchedule);
 
     /*!
      * \brief Save SyncResults to log.xml file.
@@ -121,7 +140,7 @@ public:
      * \param aProfileId Id of the profile to be deleted.
      * \return status of the remove operation
      */
-    bool removeProfile(QString &aProfileId);
+    bool removeProfile(const QString &aProfileId) const;
 
     /*!
      * \brief This function should be called when sync profile information has
@@ -132,7 +151,7 @@ public:
      * \return status of the update operation
      *
      */
-    bool updateProfile(Buteo::SyncProfile &aSyncProfile);
+    bool updateProfile(const Buteo::SyncProfile &aSyncProfile);
 
     /*!
     * \brief This function returns true if backup/restore in progress else
@@ -141,11 +160,11 @@ public:
     bool  getBackUpRestoreState();
 
     /*!
-     * \brief Use this function to understand if the creation of dbus connection to msyncd
-     *        succeeded or not.
+     * \brief Use this function to understand if the dbus connection to msyncd
+     *        is working or not.
      * \return  - status of the dbus object created for msyncd
      */
-    bool isValid();
+    bool isValid() const;
 
     /*! \brief To get lastSyncResult.
      *  \param aProfileId
@@ -160,6 +179,14 @@ public:
      * \return The list of sync profiles.
      */
     QList<QString /*profileAsXml*/> allVisibleSyncProfiles();
+
+    /*!
+     * \brief asynchronous version of allVisibleSyncProfiles()
+     *
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestAllVisibleSyncProfiles(QObject *aParent = nullptr) const;
 
     /*! \brief Gets a sync profile.
      *
@@ -182,13 +209,54 @@ public:
      */
     QStringList syncProfilesByKey(const QString &aKey, const QString &aValue);
 
+    /*! \brief asynchronous version of syncProfilesByKey().
+     *
+     * \param aKey Key to match for profile.
+     * \param aValue Value to match for profile.
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent = nullptr) const;
+
+    /*! \brief Gets profiles matching the profile type.
+     *
+     * \param aType Type of the profile service/storage/sync.
+     * \return The profiles as Xml string list.
+     */
+    QStringList profilesByType(const QString &aType);
+
+    /*!
+     * \brief asynchronous version of profilesByType()
+     *
+     * \param aType Type of the profile service/storage/sync.
+     * \param aParent set the parent of the returned QDBusPendingCallWatcher.
+     * \return a newly created watcher on a QDBusPendingReply<QStringList>.
+     */
+    QDBusPendingCallWatcher* requestProfilesByType(const QString &aProfileId, QObject *aParent = nullptr) const;
+
     /*! \brief Gets a profiles  matching the profile type.
      *
      * \param aType Type of the profile service/storage/sync.
      * \return The sync profile ids as string list.
      */
     QStringList syncProfilesByType(const QString &aType);
+
+    /*!
+     * \brief creates a process singleton
+     *
+     * Use this instance to share a same D-Bus connection to the daemon
+     * between several clients in a process.
+     * \return a singleton instance, don't free it.
+     */
+    static QSharedPointer<SyncClientInterface> sharedInstance();
+
 signals:
+
+    /*! \brief Notifies when the synchronisation service is available or not.
+     *
+     * This signal is sent when the synchronisation daemon is rnning or not.
+     */
+    void isValidChanged();
 
     /*! \brief Notifies about Backup start.
      *

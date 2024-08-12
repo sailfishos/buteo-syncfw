@@ -1818,6 +1818,23 @@ QStringList Synchronizer::syncProfilesByType(const QString &aType)
     return iProfileManager.profileNames(aType);
 }
 
+QStringList Synchronizer::profilesByType(const QString &aType)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+    QStringList profilesAsXml;
+
+    qCDebug(lcButeoMsyncd) << "Profile Type : " << aType;
+    for (const QString &profileId : iProfileManager.profileNames(aType)) {
+        SyncProfile *profile = iProfileManager.syncProfile(profileId);
+        if (profile) {
+            profilesAsXml.append(profile->toString());
+        }
+        delete profile;
+    }
+    qCDebug(lcButeoMsyncd) << "profilesByType profilesAsXml" << profilesAsXml;
+    return profilesAsXml;
+}
+
 void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionType type)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);

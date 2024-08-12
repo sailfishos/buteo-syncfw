@@ -25,6 +25,8 @@
 #define SYNCCLIENTINTERFACEPRIVATE_H
 
 #include <QObject>
+#include <QDBusPendingCallWatcher>
+#include <QDBusServiceWatcher>
 #include "SyncDaemonProxy.h"
 #include <SyncProfile.h>
 
@@ -55,6 +57,7 @@ public:
      * @param aProfileId - id of the profile to start the sync
      */
     bool startSync(const QString &aProfileId) const;
+    QDBusPendingCallWatcher* requestSync(const QString &aProfileId, QObject *aParent);
 
     /*! \brief function to abort the sync
      *
@@ -67,18 +70,19 @@ public:
      * @return  - list of running sync profile ids
      */
     QStringList getRunningSyncList();
+    QDBusPendingCallWatcher* requestRunningSyncList(QObject *aParent);
 
     /*! \brief function to remove a profile
      *
      * @param aProfileId id of the profule to remove to add
      */
-    bool removeProfile(QString &aProfileId);
+    bool removeProfile(const QString &aProfileId);
 
     /*! \brief function to update an existing profile
      *
      * @param aProfile profile object to add
      */
-    bool updateProfile(Buteo::SyncProfile &aProfile);
+    bool updateProfile(const Buteo::SyncProfile &aProfile);
 
     /*! \brief function to add a profile
      *
@@ -103,7 +107,7 @@ public:
      * @param aProfileId - profile id
      * @param aSchedule - schedule object
      */
-    bool setSyncSchedule(QString &aProfileId, SyncSchedule &aSchedule);
+    bool setSyncSchedule(const QString &aProfileId, const SyncSchedule &aSchedule);
 
     /*! \brief this function converts the save the syncResults into
      * log.xml file corresponding to profileName.
@@ -126,6 +130,7 @@ public:
      * \return The list of sync profiles.
      */
     QList<QString /*profileAsXml*/> allVisibleSyncProfiles();
+    QDBusPendingCallWatcher* requestAllVisibleSyncProfiles(QObject *aParent);
 
     /*! \brief Gets a sync profile.
      *
@@ -147,6 +152,15 @@ public:
      * \return The sync profiles as Xml string list.
      */
     QStringList syncProfilesByKey(const QString &aKey, const QString &aValue);
+    QDBusPendingCallWatcher* requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent);
+
+    /*! \brief Gets profiles matching the profile type.
+     *
+     * \param aType Type of the profile service/storage/sync.
+     * \return The profiles as Xml string list.
+     */
+    QStringList profilesByType(const QString &aType);
+    QDBusPendingCallWatcher* requestProfilesByType(const QString &aType, QObject *aParent);
 
     /*! \brief Gets a profiles  matching the profile type.
      *
@@ -215,8 +229,10 @@ signals:
     void resultsAvailable(QString aProfileId, Buteo::SyncResults aLastResults);
 
 private:
+    void onServiceOwnerChanged(const QString &serviceName, const QString &oldOwner, const QString &newOwner);
 
     SyncDaemonProxy *iSyncDaemon;
+    QDBusServiceWatcher iServiceWatcher;
 
     Buteo::SyncClientInterface *iParent;
 

@@ -40,6 +40,11 @@ SyncClientInterfacePrivate::SyncClientInterfacePrivate(SyncClientInterface *aPar
     iParent(aParent)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
+    iServiceWatcher.addWatchedService(SYNC_DBUS_SERVICE);
+    iServiceWatcher.setConnection(QDBusConnection::sessionBus());
+    connect(&iServiceWatcher, &QDBusServiceWatcher::serviceOwnerChanged,
+            this, &SyncClientInterfacePrivate::onServiceOwnerChanged);
+
     iSyncDaemon = new SyncDaemonProxy(SYNC_DBUS_SERVICE, SYNC_DBUS_OBJECT,
                                       QDBusConnection::sessionBus(), this);
 
@@ -84,6 +89,15 @@ SyncClientInterfacePrivate::~SyncClientInterfacePrivate()
     iSyncDaemon = nullptr;
 }
 
+void SyncClientInterfacePrivate::onServiceOwnerChanged(const QString &serviceName, const QString &oldOwner, const QString &newOwner)
+{
+    Q_UNUSED(serviceName);
+    Q_UNUSED(oldOwner);
+    Q_UNUSED(newOwner);
+
+    emit iParent->isValidChanged();
+}
+
 bool SyncClientInterfacePrivate::startSync(const QString &aProfileId) const
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -94,6 +108,13 @@ bool SyncClientInterfacePrivate::startSync(const QString &aProfileId) const
     }
 
     return syncStatus;
+}
+
+QDBusPendingCallWatcher* SyncClientInterfacePrivate::requestSync(const QString &aProfileId, QObject *aParent)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+
+    return new QDBusPendingCallWatcher(iSyncDaemon->startSync(aProfileId), aParent ? aParent : this);
 }
 
 void SyncClientInterfacePrivate::abortSync(const QString &aProfileId) const
@@ -114,7 +135,14 @@ QStringList SyncClientInterfacePrivate::getRunningSyncList()
     return runningSyncList;
 }
 
-bool SyncClientInterfacePrivate::removeProfile(QString &aProfileId)
+QDBusPendingCallWatcher* SyncClientInterfacePrivate::requestRunningSyncList(QObject *aParent)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+
+    return new QDBusPendingCallWatcher(iSyncDaemon->runningSyncs(), aParent ? aParent : this);
+}
+
+bool SyncClientInterfacePrivate::removeProfile(const QString &aProfileId)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
@@ -124,7 +152,7 @@ bool SyncClientInterfacePrivate::removeProfile(QString &aProfileId)
     return status;
 }
 
-bool SyncClientInterfacePrivate::updateProfile(Buteo::SyncProfile &aProfile)
+bool SyncClientInterfacePrivate::updateProfile(const Buteo::SyncProfile &aProfile)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
@@ -155,8 +183,8 @@ void SyncClientInterfacePrivate::resultsAvailable(QString aProfileId,
     }
 }
 
-bool SyncClientInterfacePrivate::setSyncSchedule(QString &aProfileId,
-                                                 SyncSchedule &aSchedule)
+bool SyncClientInterfacePrivate::setSyncSchedule(const QString &aProfileId,
+                                                 const SyncSchedule &aSchedule)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool status = false;
@@ -234,6 +262,12 @@ QList<QString /*profilesAsXml*/> SyncClientInterfacePrivate::allVisibleSyncProfi
     return profilesAsXml;
 }
 
+QDBusPendingCallWatcher* SyncClientInterfacePrivate::requestAllVisibleSyncProfiles(QObject *aParent)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+
+    return new QDBusPendingCallWatcher(iSyncDaemon->allVisibleSyncProfiles(), aParent ? aParent : this);
+}
 
 QString SyncClientInterfacePrivate::syncProfile(const QString &aProfileId)
 {
@@ -260,6 +294,13 @@ QStringList SyncClientInterfacePrivate::syncProfilesByKey(const QString &aKey, c
     return profileAsXml;
 }
 
+QDBusPendingCallWatcher* SyncClientInterfacePrivate::requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+
+    return new QDBusPendingCallWatcher(iSyncDaemon->syncProfilesByKey(aKey, aValue), aParent ? aParent : this);
+}
+
 QStringList SyncClientInterfacePrivate::syncProfilesByType(const QString &aType)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -270,4 +311,23 @@ QStringList SyncClientInterfacePrivate::syncProfilesByType(const QString &aType)
     }
 
     return profileIds;
+}
+
+QStringList SyncClientInterfacePrivate::profilesByType(const QString &aType)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+    QStringList profileIds;
+
+    if (iSyncDaemon) {
+        profileIds = iSyncDaemon->profilesByType(aType);
+    }
+
+    return profileIds;
+}
+
+QDBusPendingCallWatcher* SyncClientInterfacePrivate::requestProfilesByType(const QString &aType, QObject *aParent)
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+
+    return new QDBusPendingCallWatcher(iSyncDaemon->profilesByType(aType), aParent ? aParent : this);
 }

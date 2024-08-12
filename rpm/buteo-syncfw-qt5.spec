@@ -24,9 +24,6 @@ BuildRequires: pkgconfig(gio-2.0)
 BuildRequires: pkgconfig(mce-qt5) >= 1.1.0
 BuildRequires: pkgconfig(systemd)
 BuildRequires: oneshot
-Requires: mapplauncherd-qt5
-Requires: glib2
-Requires: libmce-qt5 >= 1.1.0
 Requires: oneshot
 %{_oneshot_requires_post}
 
@@ -45,6 +42,7 @@ Summary: Buteo sync daemon
 Requires: %{name} = %{version}-%{release}
 Requires: systemd
 Requires: systemd-user-session-targets
+Requires: mapplauncherd-qt5
 Provides: buteo-syncfw-msyncd = %{version}
 Obsoletes: buteo-syncfw-msyncd < %{version}
 
