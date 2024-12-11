@@ -172,6 +172,42 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
     account->selectService();
 }
 
+void AccountsHelper::syncEnableWithService(Accounts::Account *account, const QString &serviceName, bool enabled)
+{
+    account->selectService();
+    // Always use the current enabled value since signals may be emitted with delays.
+    bool accountEnabled = account->enabled();
+    bool serviceExists = false;
+    const QList<SyncProfile *> profiles = getProfilesByAccountId(account->id());
+    for (SyncProfile *profile : profiles) {
+
+        if (!profile) {
+            continue;
+        }
+
+        // Global account is disabled, unconditionally disable all profiles
+        if(!accountEnabled && profile->isEnabled()) {
+            profile->setEnabled(false);
+            iProfileManager.updateProfile(*profile);
+            emit removeScheduledSync(profile->name());
+        } else if (profile->key(REMOTE_SERVICE_NAME, "") == serviceName) {
+            serviceExists = true;
+            if (profile->isEnabled() != enabled) {
+                profile->setEnabled(enabled);
+                iProfileManager.updateProfile(*profile);
+                emit scheduleUpdated(profile->name());
+            }
+        }
+        delete profile;
+    }
+
+    if (!serviceExists && accountEnabled) {
+        addProfileForAccount(account, serviceName, enabled);
+    }
+
+    account->selectService();
+}
+
 void AccountsHelper::setSyncSchedule(SyncProfile *syncProfile, Accounts::AccountId id, bool aCreateNew)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -335,8 +371,13 @@ void AccountsHelper::registerAccountListener(Accounts::AccountId id)
     QObject::connect(account, &Accounts::Account::enabledChanged,
     [this, account] (const QString & serviceName, bool enabled) {
         qCDebug(lcButeoMsyncd) << "Received account enabled changed signal" << serviceName << enabled << account->displayName();
+#ifdef HAS_LOMIRI
+        syncEnableWithService(account, serviceName, enabled);
+#else
         syncEnableWithAccount(account);
+#endif
     });
+
 
 #ifndef USE_ACCOUNTSHELPER_SCHEDULER_WATCHER
     qCDebug(lcButeoMsyncd) << "AccountsHelper::registerAccountListener() is disabled!  Not listening to scheduler change signals for account:"
