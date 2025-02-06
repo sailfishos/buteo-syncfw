@@ -33,7 +33,7 @@ SyncProfileWatcher::SyncProfileWatcher(QObject *parent)
     : QObject(parent)
     , mSyncClient(SyncClientInterface::sharedInstance())
     , mSyncProfile(nullptr)
-    , mSyncStatus(Sync::SYNC_DONE)
+    , mSyncStatus(Done)
 {
     connect(&mManager, &ProfileManager::signalProfileChanged,
             this, &SyncProfileWatcher::onProfileChanged);
@@ -56,18 +56,18 @@ void SyncProfileWatcher::setName(const QString &aName)
     delete mSyncProfile;
     mSyncProfile = mManager.syncProfile(aName);
     setKeys();
-    Sync::SyncStatus status = Sync::SYNC_DONE;
+    Status status = Done;
     if (mSyncProfile && mSyncProfile->lastResults()) {
         switch (mSyncProfile->lastResults()->majorCode()) {
         case (SyncResults::SYNC_RESULT_INVALID): // Fallthrough
         case (SyncResults::SYNC_RESULT_SUCCESS):
-            status = Sync::SYNC_DONE;
+            status = Done;
             break;
         case (SyncResults::SYNC_RESULT_FAILED):
-            status = Sync::SYNC_ERROR;
+            status = Error;
             break;
         case (SyncResults::SYNC_RESULT_CANCELLED):
-            status = Sync::SYNC_CANCELLED;
+            status = Cancelled;
             break;
         }
     }
@@ -139,14 +139,14 @@ QVariantMap SyncProfileWatcher::keys() const
     return mKeys;
 }
 
-Sync::SyncStatus SyncProfileWatcher::syncStatus() const
+SyncProfileWatcher::Status SyncProfileWatcher::syncStatus() const
 {
     return mSyncStatus;
 }
 
 bool SyncProfileWatcher::synchronizing() const
 {
-    return mSyncStatus < Sync::SYNC_ERROR;
+    return mSyncStatus < Error;
 }
 
 void SyncProfileWatcher::startSync()
@@ -161,13 +161,13 @@ void SyncProfileWatcher::startSync()
                         qWarning() << "cannot start sync for" << profileId
                                    << ":" << (reply.isError() ? reply.error().message() : "no such profile");
                         if (mSyncProfile && mSyncProfile->name() == profileId) {
-                            mSyncStatus = Sync::SYNC_ERROR;
+                            mSyncStatus = Error;
                             emit syncStatusChanged();
                         }
                     }
                     call->deleteLater();
                 });
-        mSyncStatus = Sync::SYNC_QUEUED;
+        mSyncStatus = Queued;
         emit syncStatusChanged();
     }
 }
@@ -217,8 +217,8 @@ void SyncProfileWatcher::onSyncStatus(QString aProfileId, int aStatus,
     if (aProfileId.isEmpty() || aProfileId != name())
         return;
 
-    if (mSyncStatus != Sync::SyncStatus(aStatus)) {
-        mSyncStatus = Sync::SyncStatus(aStatus);
+    if (mSyncStatus != Status(aStatus)) {
+        mSyncStatus = Status(aStatus);
         emit syncStatusChanged();
     }
 }
