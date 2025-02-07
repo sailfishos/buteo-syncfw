@@ -42,10 +42,30 @@ class Q_DECL_EXPORT SyncProfileWatcher: public QObject
     Q_PROPERTY(QVariantList log READ log NOTIFY logChanged)
     Q_PROPERTY(SyncSchedule schedule READ schedule NOTIFY scheduleChanged)
     Q_PROPERTY(QVariantMap keys READ keys NOTIFY keysChanged)
-    Q_PROPERTY(Sync::SyncStatus syncStatus READ syncStatus NOTIFY syncStatusChanged)
+    Q_PROPERTY(Status syncStatus READ syncStatus NOTIFY syncStatusChanged)
     Q_PROPERTY(bool synchronizing READ synchronizing NOTIFY syncStatusChanged)
 
 public:
+    enum Status {
+        Queued = Sync::SYNC_QUEUED,
+        Started,
+        Progress,
+        Error,
+        Done,
+        Aborted,
+        Cancelled,
+        Stopping,
+        NotPossible,
+        AuthenticationFailure,
+        DatabaseFailure,
+        ConnectionError,
+        ServerFailure,
+        BadRequest,
+        PluginError,
+        PluginTimeout
+    };
+    Q_ENUM(Status)
+
     SyncProfileWatcher(QObject *parent = nullptr);
     ~SyncProfileWatcher();
 
@@ -62,7 +82,7 @@ public:
 
     QVariantMap keys() const;
 
-    Sync::SyncStatus syncStatus() const;
+    Status syncStatus() const;
 
     bool synchronizing() const;
 
@@ -92,7 +112,7 @@ protected:
     QSharedPointer<SyncClientInterface> mSyncClient;
     SyncProfile *mSyncProfile;
     QVariantMap mKeys;
-    Sync::SyncStatus mSyncStatus;
+    Status mSyncStatus;
 };
 
 #endif
