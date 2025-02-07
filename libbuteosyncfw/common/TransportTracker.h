@@ -93,14 +93,11 @@ signals:
     void sessionError();
 
 private slots:
-
     void onUsbStateChanged(bool aConnected);
 
 #ifdef HAVE_BLUEZ_5
     void onBtStateChanged(const QString &interface, const QVariantMap &changed, const QStringList &invalidated);
-
     void onBtInterfacesAdded(const QDBusObjectPath &path, const InterfacesMap &interfaces);
-
     void onBtInterfacesRemoved(const QDBusObjectPath &path, const QStringList &interfaces);
 #endif
 
@@ -133,7 +130,6 @@ private:
 #ifdef HAVE_BLUEZ_5
     bool btConnectivityStatus();
 #endif
-
 };
 
 } // namespace Buteo
