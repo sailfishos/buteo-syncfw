@@ -40,7 +40,6 @@ class ClientPluginRunner : public PluginRunner
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * @param aPluginName Name of the plug-in to run
@@ -80,7 +79,6 @@ public:
     virtual bool cleanUp();
 
 private slots:
-
     // Slots for catching plug-in signals.
 
     void onTransferProgress(const QString &aProfileName,

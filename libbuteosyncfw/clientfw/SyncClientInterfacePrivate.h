@@ -41,6 +41,7 @@ class SyncClientInterface;
 class SyncClientInterfacePrivate: public QObject
 {
     Q_OBJECT
+
 public:
     /*!\brief Constructor
      *
@@ -170,7 +171,6 @@ public:
     QStringList syncProfilesByType(const QString &aType);
 
 public slots:
-
     /*! \brief this is the slot where we will receive the xml data for profile from msyncd.
      * The XML Data received will be of the following format
      * \code <?xml version="1.0" encoding="UTF-8"?>
@@ -212,7 +212,6 @@ public slots:
     void resultsAvailable(QString aProfileId, QString aLastSyncResultAsXml);
 
 signals:
-
     /*! \brief Signal that gets emitted on receiving profileChanged from msyncd
      *
      * @param   aProfileId - id of the profile

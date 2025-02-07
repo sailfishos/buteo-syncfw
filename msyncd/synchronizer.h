@@ -68,8 +68,8 @@ class Synchronizer : public SyncDBusInterface, // Derived from QObject
     public PluginCbInterface
 {
     Q_OBJECT
-public:
 
+public:
     /// \brief The contructor.
     Synchronizer(QCoreApplication *aApplication);
 
@@ -114,7 +114,6 @@ public:
 // --------------------------------------------------------------------------
 
 public slots:
-
     //! \see SyncDBusInterface::startSync
     virtual bool startSync(QString aProfileName);
 
@@ -231,7 +230,6 @@ public slots:
     void isSyncedExternally(unsigned int aAccountId, const QString aClientProfileName);
 
 signals:
-
     //! emitted by releaseStorages call
     void storageReleased();
 
@@ -243,7 +241,6 @@ signals:
     void syncDone(const QString &aProfileName);
 
 private slots:
-
     /*! \brief Handler for storage released signal.
      *
      * Tries to start the next sync in queue, which may have been blocked
@@ -324,7 +321,6 @@ private slots:
     void profileChangeTriggerTimeout();
 
 private:
-
     bool startSync(const QString &aProfileName, bool aScheduled);
 
     /*! \brief Starts a sync with the given profile.

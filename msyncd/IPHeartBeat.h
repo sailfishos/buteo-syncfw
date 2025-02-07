@@ -85,7 +85,6 @@ signals:
     void onHeartBeat(QString aProfName);
 
 private slots:
-
     /*! \brief This signal will be emitted when a socket descriptor gets an event notification.
      *
      * \param aSockFd Socket descriptor who got the event.
@@ -93,7 +92,6 @@ private slots:
     void internalBeatTriggered(int aSockFd);
 
 private:
-
     /*! \brief Finds the name of the profile which uses particular file descriptor
      *
      * \param aSockFd Socket descriptor.

@@ -43,7 +43,6 @@ class AccountsHelper : public QObject
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * \param aProfileManager - reference to Profile Manager Object
@@ -65,7 +64,6 @@ public:
     QList<SyncProfile *> getProfilesByAccountId(Accounts::AccountId id);
 
 public Q_SLOTS:
-
     /*! \brief This method is used to create profiles for a specified
      * account
      * \param id Accounts Id
@@ -79,15 +77,14 @@ public Q_SLOTS:
     void slotAccountRemoved(Accounts::AccountId id);
 
     void slotSchedulerSettingsChanged(const char *aKey);
-Q_SIGNALS:
 
+Q_SIGNALS:
     void enableSOC(const QString &aProfileName);
     void scheduleUpdated(const QString &aProfileName);
     void removeProfile(QString profileId);
     void removeScheduledSync(const QString &profileId);
 
 private Q_SLOTS:
-
     void registerAccountListeners();
 
 private:

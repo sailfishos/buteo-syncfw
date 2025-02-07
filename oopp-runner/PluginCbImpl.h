@@ -33,7 +33,6 @@ class PluginCbImpl : public PluginCbInterface
 {
 public:
     PluginCbImpl();
-
     ~PluginCbImpl();
 
     /// \see PluginCbInterface::requestStorage
@@ -60,16 +59,12 @@ public:
     virtual QString getValue(const QString &aAddress, const QString &aKey);
 
 signals:
-
     //! emitted by releaseStorages call
     void storageReleased();
 
 private:
-
     SyncDaemonProxy  *imsyncIface;
-
     PluginManager   iPluginManager;
-
     TransportTracker  iTransportTracker;
 };
 

@@ -45,7 +45,6 @@ class SyncSession : public QObject
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * @param aProfile SyncProfile associated with the session. With server
@@ -185,7 +184,6 @@ public:
     Sync::SyncStatus mapToSyncStatusError(int aErrorCode);
 
 signals:
-
     //! @see SyncPluginBase::transferProgress
     void transferProgress(const QString &aProfileName,
                           Sync::TransferDatabase aDatabase, Sync::TransferType aType,
@@ -214,32 +212,22 @@ signals:
      * @param aProgressDetail Detail of the progress.
      */
     void syncProgressDetail(const QString &aProfileName, int aProgressDetail);
-private:
 
+private:
     bool tryStart();
 
 private slots:
-
     // Slots for catching plug-in runner signals.
-
     void onSuccess(const QString &aProfileName, const QString &aMessage);
-
     void onError(const QString &aProfileName, const QString &aMessage, SyncResults::MinorCode aErrorCode);
-
     void onTransferProgress(const QString &aProfileName,
                             Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                             const QString &aMimeType, int aCommittedItems);
-
     void onStorageAccquired (const QString &aMimeType);
-
     void onSyncProgressDetail(const QString &aProfileName, int aProgressDetail);
-
     void onDone();
-
     void onDestroyed(QObject *aPluginRunner);
-
     void onNetworkSessionOpened();
-
     void onNetworkSessionError();
 
 private:

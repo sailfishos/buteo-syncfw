@@ -45,17 +45,17 @@ const QString Profile::TYPE_SYNC("sync");
 Profile::Profile()
     : d_ptr(new ProfilePrivate())
 {
-
 }
+
 Profile::Profile(const QString &aName, const QString &aType)
-    :   d_ptr(new ProfilePrivate())
+    : d_ptr(new ProfilePrivate())
 {
     d_ptr->iName = aName;
     d_ptr->iType = aType;
 }
 
 Profile::Profile(const QDomElement &aRoot)
-    :   d_ptr(new ProfilePrivate())
+    : d_ptr(new ProfilePrivate())
 {
     d_ptr->iName = aRoot.attribute(ATTR_NAME);
     d_ptr->iType = aRoot.attribute(ATTR_TYPE);
@@ -90,7 +90,7 @@ Profile::Profile(const QDomElement &aRoot)
 }
 
 Profile::Profile(const Profile &aSource)
-    :   d_ptr(new ProfilePrivate(*aSource.d_ptr))
+    : d_ptr(new ProfilePrivate(*aSource.d_ptr))
 {
 }
 

@@ -83,7 +83,6 @@ public:
     SyncResults getSyncResults();
 
 signals:
-
     /*! \brief Emitted when synchronization cannot be started due to an
      *         error in plugin initialization
      *

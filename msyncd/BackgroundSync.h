@@ -122,7 +122,6 @@ public slots:
     void onBackgroundSyncCompleted(QString aProfName);
 
 private slots:
-
     /*! \brief Called when background sync timer starts running
      */
     void onBackgroundSyncStarted();
@@ -132,7 +131,6 @@ private slots:
     void onBackgroundSwitchStarted();
 
 private:
-
     /*! \brief Finds the name of the profile which uses particular background activity
      *
      * \param activityId Id of the background activity
@@ -162,7 +160,6 @@ private:
     QString getProfNameFromSwitchId(const QString activityId) const;
 
 private:
-
     ///Map of structures waiting for background sync
     QMap<QString, BActivityStruct> iScheduledSyncs;
 

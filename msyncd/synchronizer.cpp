@@ -88,16 +88,16 @@ public:
 };
 
 Synchronizer::Synchronizer(QCoreApplication *aApplication)
-    :   iNetworkManager(0),
-        iSyncScheduler(0),
-        iSyncBackup(0),
-        iTransportTracker(0),
-        iServerActivator(0),
-        iAccounts(0),
-        iClosing(false),
-        iSOCEnabled(false),
-        iSyncUIInterface(nullptr),
-        iBatteryInfo(new BatteryInfo)
+    : iNetworkManager(0)
+    , iSyncScheduler(0)
+    , iSyncBackup(0)
+    , iTransportTracker(0)
+    , iServerActivator(0)
+    , iAccounts(0)
+    , iClosing(false)
+    , iSOCEnabled(false)
+    , iSyncUIInterface(nullptr)
+    , iBatteryInfo(new BatteryInfo)
 {
     iSettings = g_settings_new_with_path("com.meego.msyncd", "/com/meego/msyncd/");
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -175,7 +175,7 @@ bool Synchronizer::initialize()
     startServers();
 
     // For Backup/restore handling
-    iSyncBackup =  new SyncBackup();
+    iSyncBackup = new SyncBackup();
 
     // Initialize scheduler
     initializeScheduler();
@@ -273,7 +273,6 @@ void Synchronizer::close()
     delete iSyncBackup;
     iSyncBackup = 0;
 
-
     // Unregister from D-Bus.
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.unregisterObject(SYNC_DBUS_OBJECT);
@@ -282,7 +281,6 @@ void Synchronizer::close()
     } else {
         qCDebug(lcButeoMsyncd) << "Unregistered from D-Bus";
     }
-
 }
 
 bool Synchronizer::startSync(QString aProfileName)
@@ -1544,7 +1542,7 @@ void Synchronizer::backupRestoreStarts()
 {
     qCDebug(lcButeoMsyncd) << "Synchronizer:backupRestoreStarts:";
 
-    iClosing =  true;
+    iClosing = true;
     // No active sessions currently !!
     if (iActiveSessions.size() == 0) {
         qCDebug(lcButeoMsyncd) << "No active sync sessions ";
@@ -1554,7 +1552,7 @@ void Synchronizer::backupRestoreStarts()
         // Stop running sessions
         QList<SyncSession *> sessions = iActiveSessions.values();
         foreach (SyncSession *session, sessions) {
-            if (session != 0) {
+            if (session) {
                 session->abort();
             }
         }
@@ -1760,7 +1758,6 @@ QStringList Synchronizer::allVisibleSyncProfiles()
     qCDebug(lcButeoMsyncd) << "allVisibleSyncProfiles profilesAsXml" << profilesAsXml;
     return profilesAsXml;
 }
-
 
 QString Synchronizer::syncProfile(const QString &aProfileId)
 {
@@ -2051,4 +2048,3 @@ void Synchronizer::isSyncedExternally(unsigned int aAccountId, const QString aCl
     }
     qDeleteAll(syncProfiles);
 }
-

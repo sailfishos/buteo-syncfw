@@ -34,7 +34,8 @@ static const QString REMOTE_SERVICE_NAME("remote_service_name");
 using namespace Buteo;
 
 AccountsHelper::AccountsHelper(ProfileManager &aProfileManager, QObject *aParent)
-    :   QObject(aParent), iProfileManager(aProfileManager)
+    : QObject(aParent)
+    , iProfileManager(aProfileManager)
 {
     iAccountManager = new Accounts::Manager(this);
     // Connect to signal for account creation and deletion.

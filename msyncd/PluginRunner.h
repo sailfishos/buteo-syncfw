@@ -46,7 +46,6 @@ class PluginRunner : public QObject
     Q_OBJECT
 
 public:
-
     //! Plug-in type: client or server
     enum PluginType {
         PLUGIN_CLIENT,
@@ -101,7 +100,6 @@ public:
      * @return Sync results
      */
     virtual SyncResults syncResults() = 0;
-
 
     /*! \brief Calls the cleanup for the plugin
      *
