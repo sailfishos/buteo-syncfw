@@ -32,18 +32,19 @@ struct ItemDetails {
     TargetResults::ItemOperationStatus status;
     QString message;
 
-    ItemDetails(): status(TargetResults::ITEM_OPERATION_SUCCEEDED) {};
+    ItemDetails(): status(TargetResults::ITEM_OPERATION_SUCCEEDED) {}
     ItemDetails(const QString &aUid,
                 TargetResults::ItemOperationStatus aStatus,
                 const QString &aMessage)
-        : uid(aUid), status(aStatus), message(aMessage) {};
+        : uid(aUid), status(aStatus), message(aMessage) {}
     ItemDetails(const QDomElement &aRoot)
         : uid(aRoot.attribute(ATTR_UID))
         , status(aRoot.attribute(ATTR_STATUS).compare(QLatin1String("failed"),
-                                                      Qt::CaseInsensitive) ? TargetResults::ITEM_OPERATION_SUCCEEDED : TargetResults::ITEM_OPERATION_FAILED)
+                                                      Qt::CaseInsensitive) ? TargetResults::ITEM_OPERATION_SUCCEEDED
+                                                                           : TargetResults::ITEM_OPERATION_FAILED)
         , message(aRoot.text())
     {
-    };
+    }
 
     QDomElement toXml(QDomDocument &aDoc, const QString &aTag) const
     {

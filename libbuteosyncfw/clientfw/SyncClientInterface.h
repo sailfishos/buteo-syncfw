@@ -112,7 +112,6 @@ public:
      */
     QDBusPendingCallWatcher* requestRunningSyncList(QObject *aParent = nullptr) const;
 
-
     /*!
      * \brief Sets Sync Schedule to the profile
      *
@@ -251,7 +250,6 @@ public:
     static QSharedPointer<SyncClientInterface> sharedInstance();
 
 signals:
-
     /*! \brief Notifies when the synchronisation service is available or not.
      *
      * This signal is sent when the synchronisation daemon is rnning or not.
@@ -353,12 +351,9 @@ signals:
                           int aTransferType, QString aMimeType, int aCommittedItems);
 
 private:
-
     SyncClientInterfacePrivate *d_ptr;
 };
 
-
 };
-
 
 #endif

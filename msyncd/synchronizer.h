@@ -68,8 +68,8 @@ class Synchronizer : public SyncDBusInterface, // Derived from QObject
     public PluginCbInterface
 {
     Q_OBJECT
-public:
 
+public:
     /// \brief The contructor.
     Synchronizer(QCoreApplication *aApplication);
 
@@ -114,7 +114,6 @@ public:
 // --------------------------------------------------------------------------
 
 public slots:
-
     //! \see SyncDBusInterface::startSync
     virtual bool startSync(QString aProfileName);
 
@@ -231,7 +230,6 @@ public slots:
     void isSyncedExternally(unsigned int aAccountId, const QString aClientProfileName);
 
 signals:
-
     //! emitted by releaseStorages call
     void storageReleased();
 
@@ -243,7 +241,6 @@ signals:
     void syncDone(const QString &aProfileName);
 
 private slots:
-
     /*! \brief Handler for storage released signal.
      *
      * Tries to start the next sync in queue, which may have been blocked
@@ -316,15 +313,14 @@ private slots:
     /*! \brief Handles externalSyncChanged signal
      *
      * @param aProfileName Name of the profile
-     * @param aQuery When true 'syncedExternallyStatus' dbus signal will be emitted even if the state did not change.
+     * @param force When true 'syncedExternallyStatus' dbus signal will be emitted even if the state did not change.
      */
-    void externalSyncStatus(const QString &aProfileName, bool aQuery);
+    void reportExternalSyncStatus(const QString &aProfileName, bool force);
 
     /*! \brief Triggers sync for profiles which were queued for sync due to profile changes. */
     void profileChangeTriggerTimeout();
 
 private:
-
     bool startSync(const QString &aProfileName, bool aScheduled);
 
     /*! \brief Starts a sync with the given profile.
@@ -405,9 +401,9 @@ private:
      * will be emitted to notify possible clients.
      *
      * @param aProfile the profile that the state will be checked
-     * @param aQuery When true 'syncedExternallyStatus' dbus signal will be emitted even if the state did not change.
+     * @param force When true 'syncedExternallyStatus' dbus signal will be emitted even if the state did not change.
      */
-    void externalSyncStatus(const SyncProfile *aProfile, bool aQuery = false);
+    void reportExternalSyncStatus(const SyncProfile *aProfile, bool force = false);
 
     QMap<QString, SyncSession *> iActiveSessions;
     QMap<QString, bool> iExternalSyncProfileStatus;

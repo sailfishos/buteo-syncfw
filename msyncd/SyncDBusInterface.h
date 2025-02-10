@@ -46,7 +46,6 @@ class SyncDBusInterface : public QObject
 public:
 
 signals:
-
     /*!
      * \brief Notifies about a change in synchronization status.
      *
@@ -180,7 +179,6 @@ signals:
     void syncedExternallyStatus(uint aAccountId, const QString &aClientProfileName, bool aState);
 
 public slots:
-
     /*!
      * \brief Requests to starts synchronizing using a profile with the given
      *        name.
@@ -259,13 +257,11 @@ public slots:
      */
     virtual QStringList runningSyncs() = 0;
 
-
     /*!
      * \brief This function returns true if backup/restore in progress else
      * false.
      */
     virtual bool  getBackUpRestoreState() = 0;
-
 
     /*!
      * \brief sets the schedule for a profile

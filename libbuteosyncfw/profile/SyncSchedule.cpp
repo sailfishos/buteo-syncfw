@@ -36,37 +36,43 @@ using namespace Buteo;
 static const QString DAY_SEPARATOR = ",";
 
 SyncSchedulePrivate::SyncSchedulePrivate()
-    :   iDays(SyncSchedule::NoDays), iInterval(0), iEnabled(false), iRushDays(SyncSchedule::NoDays), iRushInterval(0), iRushEnabled(false), iExternalRushEnabled(false)
+    : iDays(SyncSchedule::NoDays)
+    , iInterval(0)
+    , iEnabled(false)
+    , iRushDays(SyncSchedule::NoDays)
+    , iRushInterval(0)
+    , iRushEnabled(false)
+    , iExternalRushEnabled(false)
 {
 }
 
 SyncSchedulePrivate::SyncSchedulePrivate(const SyncSchedulePrivate &aSource)
-    :   iDays(aSource.iDays),
-        iTime(aSource.iTime),
-        iScheduleConfiguredTime(aSource.iScheduleConfiguredTime),
-        iInterval(aSource.iInterval),
-        iEnabled(aSource.iEnabled),
-        iRushDays(aSource.iRushDays),
-        iRushBegin(aSource.iRushBegin),
-        iRushEnd(aSource.iRushEnd),
-        iRushInterval(aSource.iRushInterval),
-        iRushEnabled(aSource.iRushEnabled),
-        iExternalRushEnabled(aSource.iExternalRushEnabled)
+    : iDays(aSource.iDays)
+    , iTime(aSource.iTime)
+    , iScheduleConfiguredTime(aSource.iScheduleConfiguredTime)
+    , iInterval(aSource.iInterval)
+    , iEnabled(aSource.iEnabled)
+    , iRushDays(aSource.iRushDays)
+    , iRushBegin(aSource.iRushBegin)
+    , iRushEnd(aSource.iRushEnd)
+    , iRushInterval(aSource.iRushInterval)
+    , iRushEnabled(aSource.iRushEnabled)
+    , iExternalRushEnabled(aSource.iExternalRushEnabled)
 {
 }
 
 SyncSchedule::SyncSchedule()
-    :   d_ptr(new SyncSchedulePrivate())
+    : d_ptr(new SyncSchedulePrivate())
 {
 }
 
 SyncSchedule::SyncSchedule(const SyncSchedule &aSource)
-    :   d_ptr(new SyncSchedulePrivate(*aSource.d_ptr))
+    : d_ptr(new SyncSchedulePrivate(*aSource.d_ptr))
 {
 }
 
 SyncSchedule::SyncSchedule(const QDomElement &aRoot)
-    :   d_ptr(new SyncSchedulePrivate())
+    : d_ptr(new SyncSchedulePrivate())
 {
     d_ptr->iTime = QTime::fromString(aRoot.attribute(ATTR_TIME), Qt::ISODate);
     d_ptr->iInterval = aRoot.attribute(ATTR_INTERVAL).toUInt();
@@ -652,5 +658,3 @@ bool SyncSchedulePrivate::isRush(const QDateTime &aTime) const
     return (daysMatch(iRushDays, aTime.date().dayOfWeek()) &&
             aTime.time() >= iRushBegin && aTime.time() < iRushEnd);
 }
-
-

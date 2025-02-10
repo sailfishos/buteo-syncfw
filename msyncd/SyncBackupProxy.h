@@ -45,8 +45,6 @@ class SyncBackupProxy : public QObject
 public:
 
 signals:
-
-
     /*! \brief Notifies about completion of backup.
      *
      * This signal is sent when the backup is completed
@@ -72,7 +70,6 @@ signals:
     void startRestore();
 
 public slots:
-
     /*!
      * \brief Sets the required params and stops the servers and any running sync
      * sessions.

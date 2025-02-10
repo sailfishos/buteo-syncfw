@@ -34,5 +34,4 @@ ClientPlugin::ClientPlugin(const QString &aPluginName,
 
 ClientPlugin::~ClientPlugin()
 {
-
 }

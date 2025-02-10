@@ -35,9 +35,7 @@ class SyncProfilePrivate
 {
 public:
     SyncProfilePrivate();
-
     SyncProfilePrivate(const SyncProfilePrivate &aSource);
-
     ~SyncProfilePrivate();
 
     SyncLog *iLog;

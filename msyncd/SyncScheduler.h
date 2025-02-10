@@ -56,7 +56,6 @@ class SyncScheduler : public QObject
     Q_OBJECT
 
 public:
-
     //! \brief Constructor.
     SyncScheduler(QObject *aParent = 0);
 
@@ -110,7 +109,6 @@ public slots:
                            const QString &aMessage, int aMoreDetails);
 
 private slots:
-
 #if defined(USE_IPHB)
     /**
      * \brief Performs needed actions when scheduled alarm is triggered
@@ -153,7 +151,6 @@ signals:
     void externalSyncChanged(QString aProfileName, bool aQuery = false);
 
 private: // functions
-
     /**
      * \brief Programs next alarm event to alarmd.
      *
@@ -182,7 +179,6 @@ private: // functions
 #endif
 
 private: // data
-
     QSet<QString> iActiveBackgroundSyncProfiles;
 #if defined(USE_KEEPALIVE)
     /// BackgroundSync management object

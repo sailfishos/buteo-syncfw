@@ -37,8 +37,8 @@ class ServerPlugin;
 class ServerThread : public QThread
 {
     Q_OBJECT
-public:
 
+public:
     /*! \brief Constructor
      *
      */
