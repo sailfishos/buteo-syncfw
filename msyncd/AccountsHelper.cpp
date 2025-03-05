@@ -334,14 +334,14 @@ void AccountsHelper::registerAccountListener(Accounts::AccountId id)
     // Initialisation and callback for account enabled/disabled
     syncEnableWithAccount(account);
     QObject::connect(account, &Accounts::Account::enabledChanged,
-    [this, account] (const QString & serviceName, bool enabled) {
+                     [this, account] (const QString & serviceName, bool enabled) {
         qCDebug(lcButeoMsyncd) << "Received account enabled changed signal" << serviceName << enabled << account->displayName();
         syncEnableWithAccount(account);
     });
 
 #ifndef USE_ACCOUNTSHELPER_SCHEDULER_WATCHER
     qCDebug(lcButeoMsyncd) << "AccountsHelper::registerAccountListener() is disabled!  Not listening to scheduler change signals for account:"
-              << id;
+                           << id;
 #else
     // Account SyncOnChange
     QList<SyncProfile *> profiles = getProfilesByAccountId(id);

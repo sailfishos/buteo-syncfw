@@ -29,9 +29,9 @@ using namespace Buteo;
 
 ServerActivator::ServerActivator(ProfileManager &aProfileManager,
                                  TransportTracker &aTransportTracker, QObject *aParent)
-    :   QObject(aParent),
-        iProfileManager(aProfileManager),
-        iTransportTracker(aTransportTracker)
+    : QObject(aParent)
+    , iProfileManager(aProfileManager)
+    , iTransportTracker(aTransportTracker)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 

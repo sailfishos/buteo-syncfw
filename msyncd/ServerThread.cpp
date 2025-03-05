@@ -30,8 +30,8 @@ using namespace Buteo;
 
 
 ServerThread::ServerThread()
-    :  iServerPlugin(0),
-       iRunning(false)
+    : iServerPlugin(0)
+    , iRunning(false)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }

@@ -33,11 +33,11 @@ using namespace Buteo;
 ServerPluginRunner::ServerPluginRunner(const QString &aPluginName,
                                        Profile *aProfile, PluginManager *aPluginMgr, PluginCbInterface *aPluginCbIf,
                                        ServerActivator *aServerActivator, QObject *aParent)
-    :   PluginRunner(PLUGIN_SERVER, aPluginName, aPluginMgr, aPluginCbIf, aParent),
-        iProfile(aProfile),
-        iPlugin(0),
-        iThread(0),
-        iServerActivator(aServerActivator)
+    : PluginRunner(PLUGIN_SERVER, aPluginName, aPluginMgr, aPluginCbIf, aParent)
+    , iProfile(aProfile)
+    , iPlugin(0)
+    , iThread(0)
+    , iServerActivator(aServerActivator)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }
@@ -90,9 +90,10 @@ bool ServerPluginRunner::init()
 
     // Connect signals from the plug-in.
 
-    connect(iPlugin, SIGNAL(transferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &,
-                                             int)),
-            this, SLOT(onTransferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &, int)));
+    connect(iPlugin,
+            SIGNAL(transferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &, int)),
+            this,
+            SLOT(onTransferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &, int)));
 
     connect(iPlugin, &ServerPlugin::error, this, &ServerPluginRunner::onError);
 

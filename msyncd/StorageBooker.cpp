@@ -27,7 +27,7 @@
 using namespace Buteo;
 
 StorageBooker::StorageBooker()
-    :   iMutex(QMutex::Recursive)
+    : iMutex(QMutex::Recursive)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }

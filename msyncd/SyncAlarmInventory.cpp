@@ -34,10 +34,10 @@ const QString ALARM_CONNECTION_NAME("alarms");
 
 const int TRIGGER_COUNT = 1;
 
-SyncAlarmInventory::SyncAlarmInventory():
-    iTimer(0),
-    currentAlarm(0),
-    triggerCount(TRIGGER_COUNT)
+SyncAlarmInventory::SyncAlarmInventory()
+    : iTimer(0)
+    , currentAlarm(0)
+    , triggerCount(TRIGGER_COUNT)
 {
     // empty.explicitly call init
 }

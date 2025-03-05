@@ -36,7 +36,7 @@
 using namespace Buteo;
 
 SyncScheduler::SyncScheduler(QObject *aParent)
-    :   QObject(aParent)
+    : QObject(aParent)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 

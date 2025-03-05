@@ -175,7 +175,6 @@ QString BackgroundSync::getProfNameFromId(const QString activityId) const
 
 BackgroundActivity::Frequency BackgroundSync::frequencyFromSeconds(int seconds)
 {
-
     // Don't allow frequencies smaller than 5 mins.
     // In rare cases is possible that seconds is 0
     int minutes = seconds / 60;
