@@ -6,9 +6,9 @@
 
 using namespace Buteo;
 
-SyncOnChange::SyncOnChange() :
-    iStorageChangeNotifier(new StorageChangeNotifier()),
-    iSOCScheduler(0)
+SyncOnChange::SyncOnChange()
+    : iStorageChangeNotifier(new StorageChangeNotifier())
+    , iSOCScheduler(0)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }

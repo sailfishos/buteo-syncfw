@@ -32,10 +32,10 @@ using namespace Buteo;
 
 static const char *DBUS_BACKUP_OBJECT = "/backup";
 
-SyncBackup::SyncBackup() :
-    iBackupRestore(false),
-    iReply(0),
-    iAdaptor(0)
+SyncBackup::SyncBackup()
+    : iBackupRestore(false)
+    , iReply(0)
+    , iAdaptor(0)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 

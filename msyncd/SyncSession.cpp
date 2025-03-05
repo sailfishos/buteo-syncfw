@@ -31,19 +31,19 @@
 using namespace Buteo;
 
 SyncSession::SyncSession(SyncProfile *aProfile, QObject *aParent)
-    :   QObject(aParent),
-        iProfile(aProfile),
-        iPluginRunner(0),
-        iStatus(Sync::SYNC_ERROR),
-        iErrorCode(SyncResults::NO_ERROR),
-        iPluginRunnerOwned(false),
-        iScheduled(false),
-        iAborted(false),
-        iStarted(false),
-        iFinished(false),
-        iCreateProfile(false),
-        iStorageBooker(0),
-        iNetworkManager(0)
+    : QObject(aParent)
+    , iProfile(aProfile)
+    , iPluginRunner(0)
+    , iStatus(Sync::SYNC_ERROR)
+    , iErrorCode(SyncResults::NO_ERROR)
+    , iPluginRunnerOwned(false)
+    , iScheduled(false)
+    , iAborted(false)
+    , iStarted(false)
+    , iFinished(false)
+    , iCreateProfile(false)
+    , iStorageBooker(0)
+    , iNetworkManager(0)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }
