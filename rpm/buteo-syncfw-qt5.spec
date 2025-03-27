@@ -73,7 +73,7 @@ Summary: QML plugin for %{name}
 
 
 %build
-%qmake5 -recursive "VERSION=%{version}" CONFIG+=usb-moded DEFINES+=USE_KEEPALIVE
+%qmake5 -recursive "VERSION=%{version}" DEFINES+=USE_KEEPALIVE
 %make_build
 make doc %{_smp_mflags}
 
