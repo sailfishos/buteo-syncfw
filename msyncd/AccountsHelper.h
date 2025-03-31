@@ -89,6 +89,7 @@ private Q_SLOTS:
 
 private:
     void syncEnableWithAccount(Accounts::Account *account);
+    void syncEnableWithService(Accounts::Account *account, const QString &serviceName, bool enabled);
     bool addProfileForAccount(Accounts::Account *account,
                               const QString &serviceName,
                               bool serviceEnabled,
