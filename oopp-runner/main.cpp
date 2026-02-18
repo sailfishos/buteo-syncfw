@@ -21,7 +21,7 @@
 */
 #include <QCoreApplication>
 #include <QDBusConnection>
-#include <QRegExp>
+#include <QRegularExpression>
 #include "PluginServiceObj.h"
 #include "ButeoPluginIfaceAdaptor.h"
 #include "Logger.h"
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
-    int numericIdx = profileName.indexOf(QRegExp("[0123456789]"));
+    int numericIdx = profileName.indexOf(QRegularExpression("[0123456789]"));
     QString servicePath = numericIdx == 0
                           ? QString(QLatin1String("%1%2%3"))
                           .arg(DBUS_SERVICE_NAME_PREFIX)

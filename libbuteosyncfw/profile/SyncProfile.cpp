@@ -329,7 +329,7 @@ QList<Sync::InternetConnectionType> SyncProfile::internetConnectionTypes() const
 {
     QSet<Sync::InternetConnectionType> types;
     const QStringList typeStrings = key(KEY_INTERNET_CONNECTION_TYPES).split(',');
-    foreach (QString typeString, typeStrings) {
+    for(QString typeString : typeStrings) {
         bool ok = false;
         int typeInt = typeString.toInt(&ok);
         if (!ok || typeInt < Sync::INTERNET_CONNECTION_UNKNOWN || typeInt > Sync::INTERNET_CONNECTION_LTE) {
@@ -337,13 +337,17 @@ QList<Sync::InternetConnectionType> SyncProfile::internetConnectionTypes() const
         }
         types.insert(Sync::InternetConnectionType(typeInt));
     }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return types.toList();
-}
+#else
+    return QList<Sync::InternetConnectionType>(types.begin(), types.end());
+#endif
+    }
 
 void SyncProfile::setInternetConnectionTypes(const QList<Sync::InternetConnectionType> &aTypes)
 {
     QStringList typeStrings;
-    foreach (Sync::InternetConnectionType type, aTypes) {
+    for (Sync::InternetConnectionType type : aTypes) {
         typeStrings.append(QString::number(int(type)));
     }
     setKey(KEY_INTERNET_CONNECTION_TYPES, typeStrings.join(','));
@@ -354,7 +358,7 @@ QStringList SyncProfile::storageBackendNames() const
     QStringList enabledStorageBackends;
     QStringList storageNames = subProfileNames(Profile::TYPE_STORAGE);
 
-    foreach (QString storage, storageNames) {
+    for (QString storage : storageNames) {
         const Profile *p = subProfile(storage, Profile::TYPE_STORAGE);
         if (p->isEnabled()) {
             // Get backend name from the storage profile. If the backend name
@@ -409,7 +413,7 @@ Profile *SyncProfile::serviceProfile()
 const Profile *SyncProfile::clientProfile() const
 {
     QList<const Profile *> subProfiles = allSubProfiles();
-    foreach (const Profile *p, subProfiles) {
+    for(const Profile *p : subProfiles) {
         if (p->type() == TYPE_CLIENT) {
             return p;
         }
@@ -421,7 +425,7 @@ const Profile *SyncProfile::clientProfile() const
 Profile *SyncProfile::clientProfile()
 {
     QList<Profile *> subProfiles = allSubProfiles();
-    foreach (Profile *p, subProfiles) {
+    for(Profile *p : subProfiles) {
         if (p->type() == TYPE_CLIENT) {
             return p;
         }
@@ -433,7 +437,7 @@ Profile *SyncProfile::clientProfile()
 const Profile *SyncProfile::serverProfile() const
 {
     QList<const Profile *> subProfiles = allSubProfiles();
-    foreach (const Profile *p, subProfiles) {
+    for(const Profile *p : subProfiles) {
         if (p->type() == TYPE_SERVER) {
             return p;
         }
@@ -445,7 +449,7 @@ const Profile *SyncProfile::serverProfile() const
 Profile *SyncProfile::serverProfile()
 {
     QList<Profile *> subProfiles = allSubProfiles();
-    foreach (Profile *p, subProfiles) {
+    for(Profile *p : subProfiles) {
         if (p->type() == TYPE_SERVER) {
             return p;
         }
@@ -458,7 +462,7 @@ QList<const Profile *> SyncProfile::storageProfiles() const
 {
     QList<const Profile *> storages;
     QList<const Profile *> subProfiles = allSubProfiles();
-    foreach (const Profile *p, subProfiles) {
+    for(const Profile *p : subProfiles) {
         if (p->type() == TYPE_STORAGE) {
             storages.append(p);
         }
@@ -471,7 +475,7 @@ QList<Profile *> SyncProfile::storageProfilesNonConst()
 {
     QList<Profile *> storages;
     QList<Profile *> subProfiles = allSubProfiles();
-    foreach (Profile *p, subProfiles) {
+    for(Profile *p : subProfiles) {
         if (p->type() == TYPE_STORAGE) {
             storages.append(p);
         }

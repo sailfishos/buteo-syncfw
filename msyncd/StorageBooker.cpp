@@ -23,11 +23,17 @@
 #include "StorageBooker.h"
 #include <QMutexLocker>
 #include "LogMacros.h"
+#include <QtCore/QtGlobal>
 
 using namespace Buteo;
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 StorageBooker::StorageBooker()
     : iMutex(QMutex::Recursive)
+#else
+StorageBooker::StorageBooker()
+    : iMutex()
+#endif
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }

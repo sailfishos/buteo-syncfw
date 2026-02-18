@@ -22,6 +22,7 @@
  */
 #include "SyncProfileTest.h"
 
+#include <QtCore/qglobal.h>
 #include <QDomDocument>
 #include <QScopedPointer>
 
@@ -69,7 +70,11 @@ void SyncProfileTest::testConstruction()
 
     // Create from XML.
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(PROFILE_XML, false));
+#else
+    QVERIFY(doc.setContent(PROFILE_XML));
+#endif
     SyncProfile p2(doc.documentElement());
     QCOMPARE(p2.name(), NAME);
     QCOMPARE(p2.type(), TYPE);
@@ -85,7 +90,11 @@ void SyncProfileTest::testProperties()
 {
     // Create from XML.
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(PROFILE_XML, false));
+#else
+    QVERIFY(doc.setContent(PROFILE_XML));
+#endif
     SyncProfile p(doc.documentElement());
 
     // Get non-storage keys.
@@ -209,7 +218,11 @@ void SyncProfileTest::testSubProfiles()
 {
     // Create from XML.
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(PROFILE_XML, false));
+#else
+    QVERIFY(doc.setContent(PROFILE_XML));
+#endif
     SyncProfile p(doc.documentElement());
 
     const Profile *client = p.clientProfile();

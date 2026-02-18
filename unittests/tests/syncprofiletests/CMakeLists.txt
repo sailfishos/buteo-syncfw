@@ -1,0 +1,8 @@
+add_subdirectory(ProfileFactoryTest)
+add_subdirectory(ProfileFieldTest)
+add_subdirectory(ProfileManagerTest)
+add_subdirectory(ProfileTest)
+add_subdirectory(StorageProfileTest)
+add_subdirectory(SyncLogTest)
+add_subdirectory(SyncProfileTest)
+add_subdirectory(SyncScheduleTest)

@@ -26,6 +26,7 @@
 #include "Profile.h"
 #include "ProfileEngineDefs.h"
 
+#include <QtCore/qglobal.h>
 #include <QTimer>
 
 static const QString ACCOUNTS_GLOBAL_SERVICE("global");
@@ -144,7 +145,11 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
 {
     account->selectService();
     // Always use the current enabled value since signals may be emitted with delays.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     bool enabled = account->enabled();
+#else
+    bool enabled = account->isEnabled();
+#endif
     const QList<SyncProfile *> profiles = getProfilesByAccountId(account->id());
     for (SyncProfile *profile : profiles) {
         qCDebug(lcButeoMsyncd) << "Changing profile enabled" << profile->name() << enabled;
@@ -154,8 +159,12 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
             Accounts::Service service = serviceForProfile(account, profile);
             if (service.isValid()) {
                 account->selectService(service);
-                serviceEnabled = account->enabled();
-            }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    serviceEnabled = account->enabled();
+#else
+    serviceEnabled = account->isEnabled();
+#endif
+    }
             qCDebug(lcButeoMsyncd) << "Enabled status for service ::" << profile->name() << serviceEnabled;
             if (profile->isEnabled() != serviceEnabled) {
                 profile->setEnabled(serviceEnabled);
@@ -280,7 +289,11 @@ bool AccountsHelper::addProfileForAccount(Accounts::Account *account,
         setSyncSchedule(profile, account->id(), true);
     }
     if (profile && (true == profile->boolKey(KEY_USE_ACCOUNTS, false))) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         profile->setEnabled(account->enabled() && serviceEnabled);
+#else
+        profile->setEnabled(account->isEnabled() && serviceEnabled);
+#endif
         iProfileManager.updateProfile(*profile);
         emit scheduleUpdated(profile->name());
         if (profile->isSOCProfile()) {

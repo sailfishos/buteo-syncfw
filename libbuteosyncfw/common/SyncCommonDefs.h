@@ -27,7 +27,10 @@
 #include <QMetaType>
 #include <QDir>
 #include <QStandardPaths>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QtNetwork/QNetworkConfiguration>
+#endif
 
 namespace Sync {
 
@@ -80,6 +83,7 @@ enum ConnectivityType {
 };
 
 enum InternetConnectionType {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     INTERNET_CONNECTION_UNKNOWN = QNetworkConfiguration::BearerUnknown,
     INTERNET_CONNECTION_ETHERNET = QNetworkConfiguration::BearerEthernet,
     INTERNET_CONNECTION_WLAN = QNetworkConfiguration::BearerWLAN,
@@ -93,6 +97,21 @@ enum InternetConnectionType {
     INTERNET_CONNECTION_WIMAX = QNetworkConfiguration::BearerWiMAX,
     INTERNET_CONNECTION_EVDO = QNetworkConfiguration::BearerEVDO,
     INTERNET_CONNECTION_LTE = QNetworkConfiguration::BearerLTE
+#else
+    INTERNET_CONNECTION_UNKNOWN = 0,
+    INTERNET_CONNECTION_ETHERNET = 1,
+    INTERNET_CONNECTION_WLAN = 3,
+    INTERNET_CONNECTION_2G = 11,
+    INTERNET_CONNECTION_3G = 15,
+    INTERNET_CONNECTION_4G = 18,
+    INTERNET_CONNECTION_CDMA2000 = 4,
+    INTERNET_CONNECTION_WCDMA = 5,
+    INTERNET_CONNECTION_HSPA = 9,
+    INTERNET_CONNECTION_BLUETOOTH = 2,
+    INTERNET_CONNECTION_WIMAX = 7,
+    INTERNET_CONNECTION_EVDO = 8,
+    INTERNET_CONNECTION_LTE = 13
+#endif
 };
 
 // These are values that can be used for the SyncSchedule::interval, to specify sync intervals

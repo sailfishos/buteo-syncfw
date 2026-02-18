@@ -22,6 +22,7 @@
  */
 #include "SyncLogTest.h"
 
+#include <QtCore/qglobal.h>
 #include <QDomDocument>
 
 #include "SyncLog.h"
@@ -50,7 +51,11 @@ void SyncLogTest::testLog()
 
     // Create from XML.
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(LOG_XML, false));
+#else
+    QVERIFY(doc.setContent(LOG_XML));
+#endif
     SyncLog log2(doc.documentElement());
     QCOMPARE(log2.profileName(), NAME);
     QVERIFY(log2.lastResults() != 0);
@@ -187,7 +192,11 @@ static const QString DETAILS_XML =
 void SyncLogTest::testDetailsFromXML()
 {
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(DETAILS_XML, false));
+#else
+    QVERIFY(doc.setContent(DETAILS_XML));
+#endif
     SyncLog log(doc.documentElement());
     QCOMPARE(log.allResults().length(), 1);
 

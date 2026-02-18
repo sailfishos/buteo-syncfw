@@ -22,7 +22,6 @@
  */
 
 
-
 #include "Profile.h"
 #include "Profile_p.h"
 
@@ -30,7 +29,6 @@
 
 #include "ProfileFactory.h"
 #include "ProfileEngineDefs.h"
-
 #include "LogMacros.h"
 
 using namespace Buteo;
@@ -66,7 +64,11 @@ Profile::Profile(const QDomElement &aRoot)
         QString name = key.attribute(ATTR_NAME);
         QString value = key.attribute(ATTR_VALUE);
         if (!name.isEmpty() && !value.isNull()) {
-            d_ptr->iLocalKeys.insertMulti(name, value);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        d_ptr->iLocalKeys.insertMulti(name, value);
+#else
+        d_ptr->iLocalKeys.insert(name, value);
+#endif
         } else {
             // Invalid key
         }
@@ -142,7 +144,12 @@ QString Profile::key(const QString &aName, const QString &aDefault) const
 QMap<QString, QString> Profile::allKeys() const
 {
     QMap<QString, QString> keys(d_ptr->iMergedKeys);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     keys.unite(d_ptr->iLocalKeys);
+#else
+    for (auto it = d_ptr->iLocalKeys.begin(); it != d_ptr->iLocalKeys.end(); ++it)
+        keys.insert(it.key(), it.value());
+#endif
 
     return keys;
 }
@@ -150,15 +157,26 @@ QMap<QString, QString> Profile::allKeys() const
 QMap<QString, QString> Profile::allNonStorageKeys() const
 {
     QMap<QString, QString> keys;
+    const QList<Profile *> &profiles = d_ptr->iSubProfiles;
 
-    foreach (Profile *p, d_ptr->iSubProfiles) {
+    for(Profile * const p : profiles) {
         if (p != 0 && p->type() != Profile::TYPE_STORAGE) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             keys.unite(p->allKeys());
+#else
+        QMap<QString, QString> pKeys = p->allKeys();
+        for (auto it = pKeys.begin(); it != pKeys.end(); ++it)
+            keys.insert(it.key(), it.value());
+#endif
         }
     }
-
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     keys.unite(allKeys());
-
+#else
+    QMap<QString, QString> allKeysMap = allKeys();
+    for (auto it = allKeysMap.begin(); it != allKeysMap.end(); ++it)
+        keys.insert(it.key(), it.value());
+#endif
     return keys;
 }
 
@@ -174,13 +192,26 @@ bool Profile::boolKey(const QString &aName, bool aDefault) const
 
 QStringList Profile::keyValues(const QString &aName) const
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return (d_ptr->iLocalKeys.values(aName) +
             d_ptr->iMergedKeys.values(aName));
+#else
+    QStringList result;
+    auto localIt = d_ptr->iLocalKeys.find(aName);
+    if (localIt != d_ptr->iLocalKeys.end()) result.append(localIt.value());
+    auto mergedIt = d_ptr->iMergedKeys.find(aName);
+    if (mergedIt != d_ptr->iMergedKeys.end()) result.append(mergedIt.value());
+    return result;
+#endif
 }
 
 QStringList Profile::keyNames() const
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return d_ptr->iLocalKeys.uniqueKeys() + d_ptr->iMergedKeys.uniqueKeys();
+#else
+    return QStringList(d_ptr->iLocalKeys.keys()) + QStringList(d_ptr->iMergedKeys.keys());
+#endif
 }
 
 void Profile::setKey(const QString &aName, const QString &aValue)
@@ -211,7 +242,11 @@ void Profile::setKeyValues(const QString &aName, const QStringList &aValues)
     unsigned i = aValues.size();
     do {
         i--;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         d_ptr->iLocalKeys.insertMulti(aName, aValues[i]);
+#else
+        d_ptr->iLocalKeys.insert(aName, aValues[i]);
+#endif
     } while (i > 0);
 }
 
@@ -228,8 +263,8 @@ void Profile::removeKey(const QString &aName)
 
 const ProfileField *Profile::field(const QString &aName) const
 {
-    QList<const ProfileField *> fields = allFields();
-    foreach (const ProfileField *f, fields) {
+    const QList<const ProfileField *> &fields = allFields();
+    for(const ProfileField * const f : fields) {
         if (f->name() == aName)
             return f;
     }
@@ -246,10 +281,10 @@ QList<const ProfileField *> Profile::allFields() const
 
 QList<const ProfileField *> Profile::visibleFields() const
 {
-    QList<const ProfileField *> fields = allFields();
+    const QList<const ProfileField *> &fields = allFields();
     QList<const ProfileField *> visibleFields;
 
-    foreach (const ProfileField *f, fields) {
+    for(const ProfileField * const f : fields) {
         // A field with VISIBLE_USER status is visible if a value for the field
         // does not come from a merged sub-profile, but from the top level
         // profile. This is the default visibility for a field.
@@ -282,8 +317,8 @@ QDomElement Profile::toXml(QDomDocument &aDoc, bool aLocalOnly) const
     }
 
     // Set local fields.
-    const ProfileField *field = 0;
-    foreach (field, d_ptr->iLocalFields) {
+    const auto &localFields = d_ptr->iLocalFields;
+    for(const ProfileField * const field : localFields) {
         root.appendChild(field->toXml(aDoc));
     }
 
@@ -297,16 +332,21 @@ QDomElement Profile::toXml(QDomDocument &aDoc, bool aLocalOnly) const
         }
 
         // Set merged fields.
-        foreach (field, d_ptr->iMergedFields) {
-            root.appendChild(field->toXml(aDoc));
+        {
+            const auto &mergedFields = d_ptr->iMergedFields;
+            for(const ProfileField * const field : mergedFields) {
+                root.appendChild(field->toXml(aDoc));
+            }
         }
     }
 
-    // Set sub-profiles.
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        if (!p->d_ptr->iMerged || !p->d_ptr->iLocalKeys.isEmpty() ||
-                !p->d_ptr->iLocalFields.isEmpty()) {
-            root.appendChild(p->toXml(aDoc, aLocalOnly));
+        {
+            const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+            for(Profile * const p : subProfiles) {
+            if (!p->d_ptr->iMerged || !p->d_ptr->iLocalKeys.isEmpty() ||
+                    !p->d_ptr->iLocalFields.isEmpty()) {
+                root.appendChild(p->toXml(aDoc, aLocalOnly));
+            }
         }
     }
 
@@ -341,15 +381,15 @@ bool Profile::isValid() const
 
     // For each field a key with the same name must exist, and the
     // key values must be valid for the field.
-    QList<const ProfileField *> fields = allFields();
-    foreach (const ProfileField *f, fields) {
-        QStringList values = keyValues(f->name());
+    const QList<const ProfileField *> &fields = allFields();
+    for(const ProfileField * const f : fields) {
+        const QStringList values = keyValues(f->name());
         if (values.isEmpty()) {
             qCDebug(lcButeoCore) << "Error: Cannot find value for field" << f->name() <<
                        "for profile" << d_ptr->iName;
             return false;
         }
-        foreach (QString value, values) {
+        for(const QString &value : values) { 
             if (!f->validate(value)) {
                 qCDebug(lcButeoCore) << "Error: Value" << value <<
                            "is not valid for profile" << d_ptr->iName;
@@ -360,21 +400,27 @@ bool Profile::isValid() const
     }
 
     // Enabled sub-profiles must be valid.
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        if (p->isEnabled() && !p->isValid())
-            return false;
+    {
+        const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+        for(const Profile * const p : subProfiles) {
+            if (p->isEnabled() && !p->isValid())
+                return false;
+        }
     }
 
     return true;
-}
+    }
 
-QStringList Profile::subProfileNames(const QString &aType) const
-{
+    QStringList Profile::subProfileNames(const QString &aType) const
+    {
     QStringList names;
     bool checkType = !aType.isEmpty();
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        if (!checkType || aType == p->type()) {
-            names.append(p->name());
+    {
+        const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+        for(const Profile * const p : subProfiles) {
+            if (!checkType || aType == p->type()) {
+                names.append(p->name());
+            }
         }
     }
 
@@ -385,9 +431,12 @@ Profile *Profile::subProfile(const QString &aName,
                              const QString &aType)
 {
     bool checkType = !aType.isEmpty();
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        if (aName == p->name() && (!checkType || aType == p->type())) {
-            return p;
+    {
+        const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+        for (Profile * const p : subProfiles) {
+            if (aName == p->name() && (!checkType || aType == p->type())) {
+                return p;
+            }
         }
     }
 
@@ -398,9 +447,12 @@ const Profile *Profile::subProfile(const QString &aName,
                                    const QString &aType) const
 {
     bool checkType = !aType.isEmpty();
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        if (aName == p->name() && (!checkType || aType == p->type())) {
-            return p;
+    {
+        const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+        for(const Profile * const p : subProfiles) {
+            if (aName == p->name() && (!checkType || aType == p->type())) {
+                return p;
+            }
         }
     }
 
@@ -413,11 +465,14 @@ const Profile *Profile::subProfileByKeyValue(const QString &aKey,
                                              bool aEnabledOnly) const
 {
     bool checkType = !aType.isEmpty();
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        if ((!checkType || aType == p->type()) &&
-                (aValue.compare(p->key(aKey), Qt::CaseInsensitive) == 0) &&
-                (!aEnabledOnly || p->isEnabled())) {
-            return p;
+    {
+        const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+        for(const Profile * const p : subProfiles) {
+            if ((!checkType || aType == p->type()) &&
+                    (aValue.compare(p->key(aKey), Qt::CaseInsensitive) == 0) &&
+                    (!aEnabledOnly || p->isEnabled())) {
+                return p;
+            }
         }
     }
 
@@ -432,8 +487,11 @@ QList<Profile *> Profile::allSubProfiles()
 QList<const Profile *> Profile::allSubProfiles() const
 {
     QList<const Profile *> constProfiles;
-    foreach (Profile *p, d_ptr->iSubProfiles) {
-        constProfiles.append(p);
+    {
+        const QList<Profile *> &subProfiles = d_ptr->iSubProfiles;
+        for(const Profile * const p : subProfiles) {
+            constProfiles.append(p);
+        }
     }
 
     return constProfiles;
@@ -454,23 +512,31 @@ void Profile::merge(const Profile &aSource)
 
     if (target != 0) {
         // Merge keys. Allow multiple keys with the same name.
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         target->d_ptr->iMergedKeys.unite(aSource.d_ptr->iLocalKeys);
         target->d_ptr->iMergedKeys.unite(aSource.d_ptr->iMergedKeys);
+#else
+        for (auto it = aSource.d_ptr->iLocalKeys.begin(); it != aSource.d_ptr->iLocalKeys.end(); ++it)
+            target->d_ptr->iMergedKeys.insert(it.key(), it.value());
+        for (auto it = aSource.d_ptr->iMergedKeys.begin(); it != aSource.d_ptr->iMergedKeys.end(); ++it)
+            target->d_ptr->iMergedKeys.insert(it.key(), it.value());
+#endif
 
         // Merge fields.
-        QList<const ProfileField *> sourceFields =
-            aSource.allFields();
-        foreach (const ProfileField *f, sourceFields) {
+        const QList<const ProfileField *> &sourceFields = aSource.allFields();
+        for(const ProfileField * const f : sourceFields) {
             if (0 == target->field(f->name())) {
                 target->d_ptr->iMergedFields.append(new ProfileField(*f));
             }
         }
-    }
+        }
 
-    // Merge sub-profiles.
-    foreach (Profile *p, aSource.d_ptr->iSubProfiles) {
-        merge(*p);
-    }
+        {
+            const QList<Profile *> &subProfiles = aSource.d_ptr->iSubProfiles;
+            for(const Profile * const p : subProfiles) {
+                merge(*p);
+            }
+        }
 }
 
 bool Profile::isLoaded() const

@@ -22,6 +22,7 @@
  */
 #include "ProfileFieldTest.h"
 
+#include <QtCore/qglobal.h>
 #include <QDomDocument>
 
 #include "ProfileField.h"
@@ -38,7 +39,11 @@ static const QString FIELD_XML =
 void ProfileFieldTest::testField()
 {
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(FIELD_XML, false));
+#else
+    QVERIFY(doc.setContent(FIELD_XML));
+#endif
 
     // Create from XML.
     ProfileField pf_original(doc.documentElement());

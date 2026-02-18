@@ -22,6 +22,7 @@
  */
 #include "StorageProfileTest.h"
 
+#include <QtCore/qglobal.h>
 #include <QDomDocument>
 
 #include "StorageProfile.h"
@@ -48,7 +49,11 @@ void StorageProfileTest::testStorageProfile()
 
     // Create from XML.
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(PROFILE_XML, false));
+#else
+    QVERIFY(doc.setContent(PROFILE_XML));
+#endif
     StorageProfile p2(doc.documentElement());
     QCOMPARE(p2.name(), NAME);
     QCOMPARE(p2.type(), TYPE);

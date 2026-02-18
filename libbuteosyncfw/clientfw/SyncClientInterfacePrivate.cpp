@@ -175,7 +175,11 @@ void SyncClientInterfacePrivate::resultsAvailable(QString aProfileId,
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (doc.setContent(aLastResultsAsXml, true)) {
+#else
+    if (doc.setContent(aLastResultsAsXml)) {
+#endif
         Buteo::SyncResults results(doc.documentElement());
         emit resultsAvailable(aProfileId, results);
     } else {
@@ -235,7 +239,11 @@ Buteo::SyncResults SyncClientInterfacePrivate::getLastSyncResult(const QString &
         QString resultASXmlString = iSyncDaemon->getLastSyncResult(aProfileId);
         QDomDocument doc;
 
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (doc.setContent(resultASXmlString, true)) {
+    #else
+        if (doc.setContent(resultASXmlString)) {
+    #endif
             Buteo::SyncResults result(doc.documentElement());
             return result;
         } else {
@@ -253,7 +261,7 @@ QList<QString /*profilesAsXml*/> SyncClientInterfacePrivate::allVisibleSyncProfi
     if (iSyncDaemon) {
         QStringList profilesList = iSyncDaemon->allVisibleSyncProfiles();
         if (!profilesList.isEmpty()) {
-            foreach (QString profileAsXml, profilesList) {
+            for (QString profileAsXml : profilesList) {
                 profilesAsXml.append(profileAsXml);
             }
         }

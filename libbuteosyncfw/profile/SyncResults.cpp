@@ -134,9 +134,9 @@ QDomElement SyncResults::toXml(QDomDocument &aDoc) const
     root.setAttribute(KEY_SYNC_SCHEDULED, d_ptr->iScheduled ? BOOLEAN_TRUE :
                       BOOLEAN_FALSE);
 
-    foreach (TargetResults tr, d_ptr->iTargetResults) {
+    for(TargetResults tr : d_ptr->iTargetResults) {
         root.appendChild(tr.toXml(aDoc));
-    }
+  }
 
     return root;
 }

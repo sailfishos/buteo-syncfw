@@ -24,13 +24,14 @@
 #include "SyncSchedule.h"
 #include "SyncSchedule_p.h"
 
+#include <QtCore/qglobal.h>
 #include <QDomDocument>
 
 using namespace Buteo;
 
 static const QString SCHEDULE_XML =
     "<schedule time=\"12:34:56\" interval=\"30\" days=\"1,2,3,4,5,6\">"
-    "<rush enabled=\"true\" interval=\"15\""
+    "<rush enabled=\"true\" interval=\"15\" "
     "begin=\"08:00:00\" end=\"16:00:00\" days=\"1,4,5\"/>"
     "</schedule>";
 
@@ -47,7 +48,11 @@ void SyncScheduleTest::testConstruction()
 
     // Create from XML.
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(SCHEDULE_XML, false));
+#else
+    QVERIFY(doc.setContent(SCHEDULE_XML));
+#endif
     SyncSchedule s2(doc.documentElement());
     QCOMPARE(s2.interval(), (unsigned)30);
     QVERIFY(s2.time() == QTime(12, 34, 56, 0));

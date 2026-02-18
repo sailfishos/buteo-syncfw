@@ -20,15 +20,21 @@
  * 02110-1301 USA
  *
  */
+#include <QTimer>
+#include <QtCore/QtGlobal>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QNetworkSession>
 #include <QNetworkConfiguration>
 #include <QNetworkConfigurationManager>
-#include <QTimer>
+#else
+#include <QNetworkInformation>
+#endif
 
 #include "NetworkManager.h"
 #include "LogMacros.h"
 
 namespace {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 Sync::InternetConnectionType convertNetworkConnectionType(QNetworkConfiguration::BearerType connectionType)
 {
     switch (connectionType) {
@@ -60,6 +66,24 @@ Sync::InternetConnectionType convertNetworkConnectionType(QNetworkConfiguration:
         return Sync::INTERNET_CONNECTION_UNKNOWN;
     }
 }
+#else
+Sync::InternetConnectionType convertNetworkConnectionType(QNetworkInformation::TransportMedium medium)
+{
+    switch (medium) {
+    case QNetworkInformation::TransportMedium::Ethernet:
+        return Sync::INTERNET_CONNECTION_ETHERNET;
+    case QNetworkInformation::TransportMedium::WiFi:
+        return Sync::INTERNET_CONNECTION_WLAN;
+    case QNetworkInformation::TransportMedium::Cellular:
+        return Sync::INTERNET_CONNECTION_LTE;
+    case QNetworkInformation::TransportMedium::Bluetooth:
+        return Sync::INTERNET_CONNECTION_BLUETOOTH;
+    case QNetworkInformation::TransportMedium::Unknown:
+    default:
+        return Sync::INTERNET_CONNECTION_UNKNOWN;
+    }
+}
+#endif
 }
 
 using namespace Buteo;
@@ -73,9 +97,9 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
     m_sessionTimer(0), m_connectionType(Sync::INTERNET_CONNECTION_UNKNOWN)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-    m_networkConfigManager = new QNetworkConfigurationManager();
 
-    // check for network status and configuration change (switch wifi, ethernet, mobile) a
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    m_networkConfigManager = new QNetworkConfigurationManager();
     connect(m_networkConfigManager,
             SIGNAL(onlineStateChanged(bool)),
             SLOT(slotConfigurationChanged()),
@@ -96,6 +120,14 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
             SIGNAL(updateCompleted()),
             SLOT(slotConfigurationChanged()),
             Qt::QueuedConnection);
+#else
+    if (QNetworkInformation::loadDefaultBackend()) {
+        auto networkInfo = QNetworkInformation::instance();
+        connect(networkInfo, &QNetworkInformation::reachabilityChanged,
+                this, &NetworkManager::slotConfigurationChanged,
+                Qt::QueuedConnection);
+    }
+#endif
 
     connect(&m_idleRefreshTimer,
             SIGNAL(timeout()),
@@ -118,10 +150,12 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
 NetworkManager::~NetworkManager()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     delete m_networkSession;
     m_networkSession = 0;
     delete m_networkConfigManager;
     m_networkConfigManager = 0;
+#endif
 }
 
 bool NetworkManager::isOnline()
@@ -138,6 +172,7 @@ Sync::InternetConnectionType NetworkManager::connectionType() const
 void NetworkManager::connectSession(bool connectInBackground /* = false*/)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (m_isSessionActive) {
         qCDebug(lcButeoCore) << "Network session already active, ignoring connect call";
         m_refCount++;
@@ -162,8 +197,23 @@ void NetworkManager::connectSession(bool connectInBackground /* = false*/)
     } else {
         slotSessionState(m_networkSession->state());
     }
+#else
+    if (m_isSessionActive) {
+        qCDebug(lcButeoCore) << "Network session already active, ignoring connect call";
+        m_refCount++;
+        emit connectionSuccess();
+        return;
+    }
+    if (m_isOnline) {
+        m_isSessionActive = true;
+        emit connectionSuccess();
+    } else {
+        emit connectionError();
+    }
+#endif
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void NetworkManager::sessionConnectionTimeout()
 {
     if (!m_errorEmitted && m_networkSession) {
@@ -173,6 +223,11 @@ void NetworkManager::sessionConnectionTimeout()
         }
     }
 }
+#else
+void NetworkManager::sessionConnectionTimeout()
+{
+}
+#endif
 
 void NetworkManager::slotConfigurationChanged()
 {
@@ -181,6 +236,7 @@ void NetworkManager::slotConfigurationChanged()
     m_idleRefreshTimer.start(3000);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void NetworkManager::idleRefresh()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -197,7 +253,7 @@ void NetworkManager::idleRefresh()
         // https://bugs.launchpad.net/ubuntu/+source/network-manager/+bug/1444162
         connectionType = activeConfigs.first().bearerType();
         bearerTypeName = activeConfigs.first().bearerTypeName();
-        foreach (const QNetworkConfiguration &conf, activeConfigs) {
+        for (const QNetworkConfiguration &conf : activeConfigs) {
             if (conf.bearerType() != QNetworkConfiguration::BearerUnknown
                     && (conf.bearerType() < connectionType || connectionType == QNetworkConfiguration::BearerUnknown)) {
                 connectionType = conf.bearerType();
@@ -214,6 +270,47 @@ void NetworkManager::idleRefresh()
         emit statusChanged(m_isOnline, m_connectionType);
     }
 }
+#else
+void NetworkManager::idleRefresh()
+{
+    FUNCTION_CALL_TRACE(lcButeoTrace);
+    bool isOnline = false;
+    Sync::InternetConnectionType connectionType = Sync::INTERNET_CONNECTION_UNKNOWN;
+    QString bearerTypeName = "Unknown";
+    if (QNetworkInformation::loadDefaultBackend()) {
+        auto networkInfo = QNetworkInformation::instance();
+        isOnline = (networkInfo->reachability() != QNetworkInformation::Reachability::Disconnected &&
+                   networkInfo->reachability() != QNetworkInformation::Reachability::Unknown);
+        if (isOnline) {
+            auto medium = networkInfo->transportMedium();
+            connectionType = convertNetworkConnectionType(medium);
+            switch (medium) {
+            case QNetworkInformation::TransportMedium::Ethernet:
+                bearerTypeName = "Ethernet";
+                break;
+            case QNetworkInformation::TransportMedium::WiFi:
+                bearerTypeName = "WiFi";
+                break;
+            case QNetworkInformation::TransportMedium::Cellular:
+                bearerTypeName = "Cellular";
+                break;
+            case QNetworkInformation::TransportMedium::Bluetooth:
+                bearerTypeName = "Bluetooth";
+                break;
+            default:
+                bearerTypeName = "Unknown";
+                break;
+            }
+        }
+    }
+    qCInfo(lcButeoCore) << "New network state:" << isOnline << " New type: " << bearerTypeName << "(" << connectionType << ")";
+    if (isOnline != m_isOnline || connectionType != m_connectionType) {
+        m_isOnline = isOnline;
+        m_connectionType = connectionType;
+        emit statusChanged(m_isOnline, m_connectionType);
+    }
+}
+#endif
 
 void NetworkManager::disconnectSession()
 {
@@ -221,6 +318,7 @@ void NetworkManager::disconnectSession()
     if (m_refCount > 0) {
         m_refCount--;
     }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (m_networkSession && 0 == m_refCount) {
         if (m_sessionTimer->isActive())
             m_sessionTimer->stop();
@@ -229,8 +327,16 @@ void NetworkManager::disconnectSession()
         delete m_networkSession;
         m_networkSession = nullptr;
     }
-}
+#else
 
+    if (0 == m_refCount) {
+        m_isSessionActive = false;
+        if (m_sessionTimer->isActive())
+            m_sessionTimer->stop();
+    }
+#endif
+}
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void NetworkManager::slotSessionState(QNetworkSession::State status)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -276,7 +382,9 @@ void NetworkManager::slotSessionState(QNetworkSession::State status)
         break;
     }
 }
+#endif
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void NetworkManager::slotSessionError(QNetworkSession::SessionError error)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -316,4 +424,5 @@ void NetworkManager::slotSessionError(QNetworkSession::SessionError error)
         break;
     }
 }
+#endif
 

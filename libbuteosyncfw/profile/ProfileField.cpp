@@ -186,14 +186,13 @@ QDomElement ProfileField::toXml(QDomDocument &aDoc) const
         // No need to specify true/false options, field parser will add
         // them automatically.
     } else if (!d_ptr->iOptions.isEmpty()) {
-        foreach (QString optionStr, d_ptr->iOptions) {
+        for(QString optionStr : d_ptr->iOptions) {
             QDomElement e = aDoc.createElement(TAG_OPTION);
             QDomText t = aDoc.createTextNode(optionStr);
             e.appendChild(t);
             root.appendChild(e);
         }
     }
-
     return root;
 }
 

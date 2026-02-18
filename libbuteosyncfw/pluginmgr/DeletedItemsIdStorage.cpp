@@ -25,6 +25,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QVariant>
+#include <QTimeZone>
 
 using namespace Buteo;
 
@@ -94,7 +95,11 @@ bool DeletedItemsIdStorage::getSnapshot(QList<QString> &aItems, QList<QDateTime>
     while (query.next()) {
         aItems.append(query.value(0).toString());
         QDateTime t = query.value(1).toDateTime();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         t.setTimeSpec(Qt::UTC);
+#else
+        t.setTimeZone(QTimeZone::UTC);
+#endif
         aCreationTimes.append(t.toLocalTime());
     }
 
