@@ -27,6 +27,10 @@
 #include <QStringList>
 #include <QMap>
 #include <QMutex>
+#include <QtCore/QtGlobal>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRecursiveMutex>
+#endif
 
 namespace Buteo {
 
@@ -117,7 +121,11 @@ private:
     };
 
     QMap<QString, StorageMapItem> iStorageMap;
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     mutable QMutex iMutex;
+    #else
+    mutable QRecursiveMutex iMutex;
+    #endif
 };
 
 }

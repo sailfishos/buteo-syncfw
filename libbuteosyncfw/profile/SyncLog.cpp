@@ -80,7 +80,7 @@ SyncLogPrivate::SyncLogPrivate()
 SyncLogPrivate::SyncLogPrivate(const SyncLogPrivate &aSource)
     :   iProfileName(aSource.iProfileName), iLastSuccessfulResults(0)
 {
-    foreach (const SyncResults *results, aSource.iResults) {
+    for(const SyncResults *results : aSource.iResults) {
         iResults.append(new SyncResults(*results));
     }
     if (aSource.iLastSuccessfulResults)
@@ -157,7 +157,7 @@ QDomElement SyncLog::toXml(QDomDocument &aDoc) const
         root.appendChild(d_ptr->iLastSuccessfulResults->toXml(aDoc));
     }
 
-    foreach (const SyncResults *results, d_ptr->iResults)
+    for(const SyncResults *results : d_ptr->iResults)
         root.appendChild(results->toXml(aDoc));
 
     return root;

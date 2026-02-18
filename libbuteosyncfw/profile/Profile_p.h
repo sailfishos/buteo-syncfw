@@ -88,18 +88,17 @@ Buteo::ProfilePrivate::ProfilePrivate(const ProfilePrivate &aSource)
         iMerged(aSource.iMerged),
         iLocalKeys(aSource.iLocalKeys),
         iMergedKeys(aSource.iMergedKeys)
-{
-    foreach (const ProfileField *localField, aSource.iLocalFields) {
-        iLocalFields.append(new ProfileField(*localField));
+        {
+        for(const ProfileField *localField : aSource.iLocalFields) {
+            iLocalFields.append(new ProfileField(*localField));
+        }
+        for(const ProfileField *mergedField : aSource.iMergedFields) {
+            iMergedFields.append(new ProfileField(*mergedField));
+        }
+        for(Profile *p : aSource.iSubProfiles) {
+            iSubProfiles.append(p->clone());
+        }
     }
-    foreach (const ProfileField *mergedField, aSource.iMergedFields) {
-        iMergedFields.append(new ProfileField(*mergedField));
-    }
-
-    foreach (Profile *p, aSource.iSubProfiles) {
-        iSubProfiles.append(p->clone());
-    }
-}
 
 Buteo::ProfilePrivate::~ProfilePrivate()
 {

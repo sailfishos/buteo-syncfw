@@ -23,6 +23,7 @@
 
 #include "ProfileManager.h"
 
+#include <QtCore/qglobal.h>
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
@@ -34,6 +35,12 @@
 
 #include "LogMacros.h"
 #include "BtHelper.h"
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    #include <utility>
+    #define AS_CONST(container) std::as_const(container)
+#else
+    #define AS_CONST(container) qAsConst(container)
+#endif
 
 // implement here in lack of better place. not sure should this even be included in the api
 const QString Sync::syncConfigDir()
@@ -191,7 +198,7 @@ bool ProfileManagerPrivate::matchProfile(const Profile &aProfile,
             aProfile.subProfileNames(aCriteria.iSubProfileType);
         if (!subProfileNames.isEmpty()) {
             matched = false;
-            foreach (const QString &subProfileName, subProfileNames) {
+            for(const QString &subProfileName : AS_CONST(subProfileNames)) {
                 testProfile = aProfile.subProfile(subProfileName,
                                                   aCriteria.iSubProfileType);
                 if (testProfile != 0 && matchKey(*testProfile, aCriteria)) {
@@ -353,26 +360,21 @@ QStringList ProfileManager::profileNames(const QString &aType)
     {
         QDir dir(d_ptr->iConfigPath + QDir::separator() + aType);
         QFileInfoList fileInfoList = dir.entryInfoList(QStringList(nameFilter),
-                                                       QDir::Files | QDir::NoSymLinks);
-        foreach (const QFileInfo &fileInfo, fileInfoList) {
+                                                         QDir::Files | QDir::NoSymLinks);
+        for (const QFileInfo &fileInfo : AS_CONST(fileInfoList)) {
             names.append(fileInfo.completeBaseName());
         }
     }
-
-    // Search for all profile files from the system config directory
-    {
+        {
         QDir dir(d_ptr->iSystemConfigPath + QDir::separator() + aType);
-        QFileInfoList fileInfoList = dir.entryInfoList(QStringList(nameFilter),
-                                                       QDir::Files | QDir::NoSymLinks);
-        foreach (const QFileInfo &fileInfo, fileInfoList) {
-            // Add only if the list does not yet contain the name.
+        QFileInfoList fileInfoList = dir.entryInfoList(QStringList(nameFilter),QDir::Files | QDir::NoSymLinks);
+        for (const QFileInfo &fileInfo : AS_CONST(fileInfoList)) {
             QString profileName = fileInfo.completeBaseName();
             if (!names.contains(profileName)) {
                 names.append(profileName);
             }
         }
     }
-
     return names;
 }
 
@@ -383,7 +385,7 @@ QList<SyncProfile *> ProfileManager::allSyncProfiles()
     QList<SyncProfile *> profiles;
 
     QStringList names = profileNames(Profile::TYPE_SYNC);
-    foreach (const QString &name, names) {
+    for (const QString &name : AS_CONST(names)) {
         SyncProfile *p = syncProfile(name);
         if (p != 0) {
             profiles.append(p);
@@ -393,13 +395,13 @@ QList<SyncProfile *> ProfileManager::allSyncProfiles()
     return profiles;
 }
 
-QList<SyncProfile *> ProfileManager::allVisibleSyncProfiles()
-{
+    QList<SyncProfile *> ProfileManager::allVisibleSyncProfiles()
+    {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QList<SyncProfile *> profiles = allSyncProfiles();
     QList<SyncProfile *> visibleProfiles;
-    foreach (SyncProfile *p, profiles) {
+    for (SyncProfile *p : AS_CONST(profiles)) {
         if (!p->isHidden()) {
             visibleProfiles.append(p);
         } else {
@@ -420,11 +422,9 @@ QList<SyncProfile *> ProfileManager::getSyncProfilesByData(
     QList<SyncProfile *> allProfiles = allSyncProfiles();
     QList<SyncProfile *> matchingProfiles;
 
-    foreach (SyncProfile *profile, allProfiles) {
+    for (SyncProfile *profile : AS_CONST(allProfiles)) {
         Profile *testProfile = profile;
         if (!aSubProfileName.isEmpty()) {
-            // Sub-profile name was given, request a sub-profile with a
-            // matching name and type.
             testProfile = profile->subProfile(aSubProfileName, aSubProfileType);
         } else if (!aSubProfileType.isEmpty()) {
             // Sub-profile name was empty, but type was given. Get the first
@@ -471,12 +471,12 @@ QList<SyncProfile *> ProfileManager::getSyncProfilesByData(
     QList<SyncProfile *> allProfiles = allSyncProfiles();
     QList<SyncProfile *> matchingProfiles;
 
-    foreach (SyncProfile *profile, allProfiles) {
+    for(SyncProfile *profile : AS_CONST(allProfiles)) {
         bool matched = true;
-        if (profile == 0)
+        if(profile == 0)
             continue;
 
-        foreach (const SearchCriteria &criteria, aCriteria) {
+        for (const SearchCriteria &criteria : aCriteria) {
             if (!d_ptr->matchProfile(*profile, criteria)) {
                 matched = false;
                 break;
@@ -645,6 +645,7 @@ Profile *ProfileManager::profileFromXml(const QString &aProfileAsXml)
     Profile *profile = nullptr;
     if (!aProfileAsXml.isEmpty()) {
         QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QString error;
         if (doc.setContent(aProfileAsXml, true, &error)) {
             ProfileFactory pf;
@@ -652,6 +653,15 @@ Profile *ProfileManager::profileFromXml(const QString &aProfileAsXml)
         } else {
             qCWarning(lcButeoCore) << "Cannot parse profile: " + error;
         }
+#else
+        QDomDocument::ParseResult result = doc.setContent(aProfileAsXml);
+        if (result) {
+            ProfileFactory pf;
+            profile = pf.createProfile(doc.documentElement());
+        } else {
+            qCWarning(lcButeoCore) << "Cannot parse profile: " + result.errorMessage;
+        }
+#endif
     }
     return profile;
 }
@@ -720,9 +730,8 @@ SyncProfile *ProfileManager::createTempSyncProfile (const QString &destAddress, 
     tProfile->setEnabled(true);
     tProfile->setBoolKey("hidden", false);
     QStringList subprofileNames = tProfile->subProfileNames();
-    Q_FOREACH (const QString &spn, subprofileNames) {
+    for (const QString &spn : AS_CONST(subprofileNames)) {
         if (spn == QLatin1String("bt")) {
-            // this is the bluetooth profile.  Set some Bluetooth-specific keys here.
             Profile *btSubprofile = tProfile->subProfile(spn);
             btSubprofile->setKey(KEY_BT_ADDRESS, destAddress);
             btSubprofile->setKey(KEY_BT_NAME, profileDisplayName);
@@ -845,7 +854,7 @@ void ProfileManager::expand(Profile &aProfile)
     QList<Profile *> subProfiles = aProfile.allSubProfiles();
     int subCount = subProfiles.size();
     while (subCount > prevSubCount) {
-        foreach (Profile *sub, subProfiles) {
+        for (Profile *sub : AS_CONST(subProfiles)) {
             if (!sub->isLoaded()) {
                 Profile *loadedProfile = profile(sub->name(), sub->type());
                 if (loadedProfile != 0) {
@@ -855,9 +864,9 @@ void ProfileManager::expand(Profile &aProfile)
                 } else {
                     // No separate profile file for the sub-profile.
                     qCDebug(lcButeoCore) << "Referenced sub-profile not found:" <<
-                               sub->name();
+                            sub->name();
                     qCDebug(lcButeoCore) << "Referenced from:" << aProfile.name() <<
-                               aProfile.type();
+                            aProfile.type();
                 }
                 sub->setLoaded(true);
             }
@@ -984,12 +993,22 @@ bool ProfileManager::setSyncSchedule(QString aProfileId, QString aScheduleAsXml)
     if (profile) {
         profile->setSyncType(SyncProfile::SYNC_SCHEDULED);
         QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (doc.setContent(aScheduleAsXml, true)) {
             SyncSchedule schedule(doc.documentElement());
             profile->setSyncSchedule(schedule);
             updateProfile(*profile);
             status = true;
         }
+#else
+        QDomDocument::ParseResult result = doc.setContent(aScheduleAsXml);
+        if (result) {
+            SyncSchedule schedule(doc.documentElement());
+            profile->setSyncSchedule(schedule);
+            updateProfile(*profile);
+            status = true;
+        }
+#endif
         delete profile;
         profile = nullptr;
     } else {
@@ -1006,7 +1025,12 @@ bool ProfileManagerPrivate::parseFile(const QString &aPath, QDomDocument &aDoc)
         QFile file(aPath);
 
         if (file.open(QIODevice::ReadOnly)) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             parsingOk = aDoc.setContent(&file);
+#else
+            auto result = aDoc.setContent(&file);
+            parsingOk = bool(result);
+#endif
             file.close();
 
             if (!parsingOk) {

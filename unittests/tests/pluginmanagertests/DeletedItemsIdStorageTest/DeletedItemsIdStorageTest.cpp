@@ -25,6 +25,7 @@
 
 #include <QList>
 #include <QDateTime>
+#include <QtCore/QtGlobal>
 
 using namespace Buteo;
 
@@ -73,14 +74,23 @@ void DeletedItemsIdStorageTest::testItemIdStoring()
 {
     iDeletedItems->init(DBFILE);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QDateTime creationTime = QDateTime::fromTime_t(100000);
     QDateTime deletionTime = QDateTime::fromTime_t(20000000);
+#else
+    QDateTime creationTime = QDateTime::fromSecsSinceEpoch(100000);
+    QDateTime deletionTime = QDateTime::fromSecsSinceEpoch(20000000);
+#endif
 
     QString itemId = "foo1";
 
     iDeletedItems->addDeletedItem(itemId, creationTime, deletionTime);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QDateTime fetchTime = QDateTime::fromTime_t(5000000);
+#else
+    QDateTime fetchTime = QDateTime::fromSecsSinceEpoch(5000000);
+#endif
     QList<QString> itemIdList;
     bool success = iDeletedItems->getDeletedItems(itemIdList, fetchTime);
 

@@ -1,0 +1,4 @@
+add_subdirectory(ClientPluginTest)
+add_subdirectory(DeletedItemsIdStorageTest)
+add_subdirectory(ServerPluginTest)
+add_subdirectory(StoragePluginTest)

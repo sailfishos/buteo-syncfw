@@ -20,11 +20,11 @@
 * 02110-1301 USA
 */
 
+#include <QtCore/qglobal.h>
 #include <QDomDocument>
 #include "OOPClientPlugin.h"
 #include "LogMacros.h"
-
-#include <QRegExp>
+#include <QRegularExpression>
 
 using namespace Buteo;
 
@@ -39,7 +39,8 @@ OOPClientPlugin::OOPClientPlugin(const QString &aPluginName,
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
     QString profileName = aProfile.name();
-    int numericIdx = profileName.indexOf(QRegExp("[0123456789]"));
+    QRegularExpression regex("[0123456789]");
+    int numericIdx = profileName.indexOf(regex);
     QString servicePath = numericIdx == 0
                           ? QString(QLatin1String("%1%2%3"))
                           .arg(DBUS_SERVICE_NAME_PREFIX)
@@ -166,6 +167,7 @@ SyncResults OOPClientPlugin::getSyncResults() const
 
     QString resultAsXml = reply.value();
     QDomDocument doc;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (doc.setContent(resultAsXml, true)) {
         SyncResults syncResult(doc.documentElement());
         return syncResult;
@@ -174,6 +176,17 @@ SyncResults OOPClientPlugin::getSyncResults() const
         return SyncResults(QDateTime::currentDateTime(),
                            SyncResults::SYNC_RESULT_INVALID, SyncResults::NO_ERROR);
     }
+#else
+    QDomDocument::ParseResult result = doc.setContent(resultAsXml);
+    if (result) {
+        SyncResults syncResult(doc.documentElement());
+        return syncResult;
+    } else {
+        qCCritical(lcButeoCore) << "Invalid sync results returned from plugin" ;
+        return SyncResults(QDateTime::currentDateTime(),
+                           SyncResults::SYNC_RESULT_INVALID, SyncResults::NO_ERROR);
+    }
+#endif
 }
 
 void OOPClientPlugin::connectivityStateChanged(Sync::ConnectivityType aType, bool aState)

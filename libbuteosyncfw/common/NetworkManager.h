@@ -23,11 +23,14 @@
 #ifndef NETWORKMANAGER_H_
 #define NETWORKMANAGER_H_
 
-#include <QNetworkSession>
 #include <QTimer>
 #include "SyncCommonDefs.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QNetworkSession>
 class QNetworkConfigurationManager;
+class QNetworkSession;
+#endif
 
 namespace Buteo {
 
@@ -103,8 +106,13 @@ private:
     static bool m_isSessionActive;
     static int m_refCount; // Reference counter for number of open connections
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QNetworkConfigurationManager *m_networkConfigManager;
     QNetworkSession *m_networkSession;
+#else
+    void *m_networkConfigManager = nullptr;
+    void *m_networkSession = nullptr;
+#endif
     bool m_isOnline;
     bool m_errorEmitted;
     QTimer *m_sessionTimer;
@@ -112,8 +120,10 @@ private:
     QTimer  m_idleRefreshTimer;
 
 private slots:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     void slotSessionState(QNetworkSession::State status);
     void slotSessionError(QNetworkSession::SessionError error);
+#endif
     void sessionConnectionTimeout();
     void slotConfigurationChanged();
     void idleRefresh();

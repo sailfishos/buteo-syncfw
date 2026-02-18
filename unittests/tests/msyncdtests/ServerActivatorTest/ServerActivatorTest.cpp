@@ -26,6 +26,7 @@
 #include "ServerActivatorTest.h"
 #include <SyncCommonDefs.h>
 #include <QtTest/QtTest>
+#include <QtCore/qglobal.h>
 #include <QSignalSpy>
 #include "Profile.h"
 
@@ -121,7 +122,11 @@ void ServerActivatorTest :: testConnectivityStateChanged()
         " </profile> ";
     QDomDocument doc;
 
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(SERVER_XML, false));
+    #else
+    QVERIFY(doc.setContent(SERVER_XML));
+    #endif
     Profile sampleServerProfile(doc.documentElement());
     sampleServerProfile.setName("sampleProfile");
     const QString PROFILE_PATH("syncprofiletests/testprofiles/user");
@@ -173,21 +178,33 @@ void ServerActivatorTest :: testTransportsFromProfile()
 
     // test for USB transport
     QDomDocument doc;
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(USB_XML, false));
+    #else
+    QVERIFY(doc.setContent(USB_XML));
+    #endif
     Profile usbServerProfile(doc.documentElement());
     typeReceived = iServerActivator->transportsFromProfile(&usbServerProfile);
     QCOMPARE(typeReceived.count(), 1);
     QCOMPARE(typeReceived.takeFirst(), Sync::CONNECTIVITY_USB);
 
     // test for BT transport
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(BT_XML, false));
+    #else
+    QVERIFY(doc.setContent(BT_XML));
+    #endif
     Profile btServerProfile(doc.documentElement());
     typeReceived = iServerActivator->transportsFromProfile(&btServerProfile);
     QCOMPARE(typeReceived.count(), 1);
     QCOMPARE(typeReceived.takeFirst(), Sync::CONNECTIVITY_BT);
 
     // test for internet transport
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVERIFY(doc.setContent(INTERNET_XML, false));
+    #else
+    QVERIFY(doc.setContent(INTERNET_XML));
+    #endif
     Profile internetServerProfile(doc.documentElement());
     typeReceived = iServerActivator->transportsFromProfile(&internetServerProfile);
     QCOMPARE(typeReceived.count(), 1);

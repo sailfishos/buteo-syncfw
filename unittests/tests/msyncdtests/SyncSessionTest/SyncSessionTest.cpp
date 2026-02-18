@@ -126,7 +126,7 @@ void SyncSessionTest :: testProfile()
 
     QString profileName = iSyncSession->profileName();
 
-    QVERIFY(profileName != 0);
+    QVERIFY(!profileName.isEmpty());
     QCOMPARE(iSyncSession->profileName(), iSyncSession->iProfile->name());
 
 }

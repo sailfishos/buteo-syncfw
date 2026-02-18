@@ -466,9 +466,14 @@ QProcess *PluginManager::startOOPPlugin(const QString &aPluginName,
         iLoadedDlls.append(info);
         iDllLock.unlock();
 
-        qCDebug(lcButeoCore) << "Process " << process->program() << " started with pid " << process->pid() ;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        qint64 processId = process->pid();
+#else
+        qint64 processId = process->processId();
+#endif
+        qCDebug(lcButeoCore) << "Process " << process->program() << " started with pid " << processId ;
         if (!pluginHasRegistered) {
-            qCDebug(lcButeoCore) << "Process " << process->program() << " with pid " << process->pid() <<
+            qCDebug(lcButeoCore) << "Process " << process->program() << " with pid " << processId <<
                        "was unable to register DBus service: " << clientPluginDBusServiceName << "|" << serverPluginDBusServiceName ;
         }
         connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),

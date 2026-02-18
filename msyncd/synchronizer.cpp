@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of buteo-syncfw package
  *
  * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
@@ -23,6 +23,7 @@
  *
  */
 #include <gio/gio.h>
+#include <QtCore/qglobal.h>
 #include "synchronizer.h"
 #include "SyncDBusAdaptor.h"
 #include "SyncSession.h"
@@ -48,6 +49,8 @@
 #include <qmcepowersavemode.h>
 #endif
 #include <QtDebug>
+#include <QRegularExpression>
+#include <QtCore/QtGlobal>
 #include <fcntl.h>
 #include <termios.h>
 
@@ -362,12 +365,22 @@ bool Synchronizer::saveSyncResults(QString aProfileId, QString aSyncResults)
 {
     QDomDocument doc;
     bool status = false;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (doc.setContent(aSyncResults, true)) {
         Buteo::SyncResults results(doc.documentElement());
         status = iProfileManager.saveSyncResults(aProfileId, results);
     } else {
         qCCritical(lcButeoMsyncd) << "Invalid Profile Xml Received from msyncd";
     }
+#else
+    QDomDocument::ParseResult result = doc.setContent(aSyncResults);
+    if (result) {
+        Buteo::SyncResults results(doc.documentElement());
+        status = iProfileManager.saveSyncResults(aProfileId, results);
+    } else {
+        qCCritical(lcButeoMsyncd) << "Invalid Profile Xml Received from msyncd";
+    }
+#endif
 
     return status;
 }
@@ -577,7 +590,11 @@ bool Synchronizer::startSyncNow(SyncSession *aSession)
             QStringList list;
             list.append("launching");
             QList<QVariant> argumentList;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             argumentList << qVariantFromValue(list);
+            #else
+            argumentList << QVariant::fromValue(list);
+            #endif
             iSyncUIInterface->asyncCallWithArgumentList(QLatin1String("launch"), argumentList);
         }
 
@@ -917,7 +934,7 @@ bool Synchronizer::updateProfile(QString aProfileAsXml)
                 if (!address.isNull()) {
                     if (profile->key(Buteo::KEY_UUID).isEmpty()) {
                         QString uuid = QUuid::createUuid().toString();
-                        uuid = uuid.remove(QRegExp("[{}]"));
+                        uuid = uuid.remove(QRegularExpression("[{}]"));
                         profile->setKey(Buteo::KEY_UUID, uuid);
                     }
                     if (profile->key(Buteo::KEY_REMOTE_NAME).isEmpty()) {
@@ -1277,10 +1294,10 @@ void Synchronizer::onNewSession(const QString &aDestination)
 
         if (aDestination.contains("USB")) {
             syncProfiles = iProfileManager.getSyncProfilesByData(
-                               QString::null, QString::null, KEY_DISPLAY_NAME, PC_SYNC);
+                               QString(), QString(), KEY_DISPLAY_NAME, PC_SYNC);
         } else {
             syncProfiles = iProfileManager.getSyncProfilesByData(
-                               QString::null, Profile::TYPE_SYNC, KEY_BT_ADDRESS, aDestination);
+                               QString(), Profile::TYPE_SYNC, KEY_BT_ADDRESS, aDestination);
         }
         if (syncProfiles.isEmpty()) {
             qCDebug(lcButeoMsyncd) << "No sync profiles found with a matching destination address";
@@ -1322,7 +1339,11 @@ void Synchronizer::onNewSession(const QString &aDestination)
             QStringList list;
             list.append("launching");
             QList<QVariant> argumentList;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             argumentList << qVariantFromValue(list);
+            #else
+            argumentList << QVariant::fromValue(list);
+            #endif
             iSyncUIInterface->asyncCallWithArgumentList(QLatin1String("launch"), argumentList);
         }
 
@@ -1874,7 +1895,7 @@ Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
     QList<SyncProfile *> profiles;
     if ("USB" == aAddress) {
         profiles = iProfileManager.getSyncProfilesByData(
-                       QString::null, QString::null, KEY_DISPLAY_NAME, PC_SYNC);
+                       QString(), QString(), KEY_DISPLAY_NAME, PC_SYNC);
     } else {
         profiles = iProfileManager.getSyncProfilesByData("",
                                                          Buteo::Profile::TYPE_SYNC,
@@ -1893,7 +1914,11 @@ QString Synchronizer::getValue(const QString &aAddress, const QString &aKey)
     QString value;
     if (Buteo::KEY_UUID == aKey) {
         iUUID = QUuid::createUuid().toString();
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         iUUID = iUUID.remove(QRegExp("[{}]"));
+    #else
+        iUUID = iUUID.remove(QRegularExpression("[{}]"));
+    #endif
         value = iUUID;
     }
 
