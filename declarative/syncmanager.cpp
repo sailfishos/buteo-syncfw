@@ -106,7 +106,7 @@ void SyncManager::requestRunningSyncList()
                 } else {
                     bool syncInProgress = synchronizing();
                     mSyncingProfiles.clear();
-                    for (const QString profileId : reply.value()) {
+                    for (const QString &profileId : reply.value()) {
                         mSyncingProfiles.insert(profileId);
                     }
                     if (syncInProgress != synchronizing()) {
@@ -191,7 +191,8 @@ void SyncManager::setProfilesFromXml(const QStringList &profiles)
 {
     bool changed = !mProfiles.isEmpty();
     mProfiles.clear();
-    for (const QString profileAsXml : profiles) {
+
+    for (const QString &profileAsXml : profiles) {
         Profile *profile = ProfileManager::profileFromXml(profileAsXml);
         if (profile && addProfile(*profile)) {
             changed = true;
