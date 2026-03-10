@@ -67,7 +67,7 @@ void ServerActivatorTest::cleanupTestCase()
     delete iTransportTracker;
 }
 
-void ServerActivatorTest :: testRef()
+void ServerActivatorTest::testRef()
 {
     // dummy server name which fails
     const QString SERVERNAME = "dummy";
@@ -98,7 +98,7 @@ void ServerActivatorTest :: testRef()
 }
 
 
-void ServerActivatorTest :: testEnabledServers()
+void ServerActivatorTest::testEnabledServers()
 {
     // test enableServers() without adding server name. expected result is empty stringlist
     QStringList serverData = iServerActivator->enabledServers();
@@ -111,7 +111,7 @@ void ServerActivatorTest :: testEnabledServers()
     QVERIFY(serverData.count() && serverData.contains("sampleServerProfile2"));
 }
 
-void ServerActivatorTest :: testConnectivityStateChanged()
+void ServerActivatorTest::testConnectivityStateChanged()
 {
     // adding a server profile and use USB transport medium
 
@@ -148,7 +148,7 @@ void ServerActivatorTest :: testConnectivityStateChanged()
     QCOMPARE(disabledSpy.count(), 1);
 }
 
-void ServerActivatorTest :: testTransportsFromProfile()
+void ServerActivatorTest::testTransportsFromProfile()
 {
     Profile profileToSetKey("profile", Profile::TYPE_SERVER);
     profileToSetKey.setKey("profilekey", "keyval");

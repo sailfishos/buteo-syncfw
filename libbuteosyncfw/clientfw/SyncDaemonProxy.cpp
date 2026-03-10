@@ -47,4 +47,3 @@ SyncDaemonProxy::SyncDaemonProxy(const QString &service, const QString &path, co
 SyncDaemonProxy::~SyncDaemonProxy()
 {
 }
-

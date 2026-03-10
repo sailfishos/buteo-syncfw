@@ -38,7 +38,6 @@ class Profile;
 class PluginCbInterface
 {
 public:
-
     virtual ~PluginCbInterface() {}
 
     /*! \brief Tries to reserve the given storage to the caller.

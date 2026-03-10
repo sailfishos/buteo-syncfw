@@ -40,8 +40,8 @@ class ClientPlugin;
 class ClientThread : public QThread
 {
     Q_OBJECT
-public:
 
+public:
     /*! \brief Constructor
      *
      */
@@ -99,7 +99,7 @@ protected:
     virtual void run();
 
 private:
-    ClientPlugin   *iClientPlugin;
+    ClientPlugin *iClientPlugin;
 
     SyncResults iSyncResults;
 

@@ -32,8 +32,7 @@ PluginCbImpl::PluginCbImpl()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    imsyncIface = new SyncDaemonProxy("com.meego.msyncd",
-                                      "/synchronizer",
+    imsyncIface = new SyncDaemonProxy("com.meego.msyncd", "/synchronizer",
                                       QDBusConnection::sessionBus());
 }
 
@@ -41,7 +40,7 @@ PluginCbImpl::~PluginCbImpl()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     delete imsyncIface;
-    imsyncIface = 0;
+    imsyncIface = nullptr;
 }
 
 bool PluginCbImpl::requestStorage(const QString &aStorageName,

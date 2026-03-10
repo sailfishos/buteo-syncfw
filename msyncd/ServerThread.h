@@ -25,6 +25,7 @@
 
 #include <QThread>
 #include <QMutex>
+
 #include <SyncResults.h>
 
 namespace Buteo {

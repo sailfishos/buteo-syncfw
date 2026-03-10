@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     QStringList args = app.arguments();
 
     if (args.length() < 4) {
-        qCCritical(lcButeoPlugin) << "Plugin name, profile name and plugin path not obtained from cmdline" ;
+        qCCritical(lcButeoPlugin) << "Plugin name, profile name and plugin path not obtained from cmdline";
     }
 
     const QString pluginName = args.value(1);
@@ -62,9 +62,10 @@ int main(int argc, char **argv)
                               ? QLatin1String(DBUS_SERVICE_NAME_PREFIX) + QStringLiteral("profile-") + profileName
                               : QLatin1String(DBUS_SERVICE_NAME_PREFIX) + profileName;
 
-    int retn;
-    qCDebug(lcButeoPlugin) << "attempting to register dbus service:" << servicePath ;
+    qCDebug(lcButeoPlugin) << "attempting to register dbus service:" << servicePath;
     QDBusConnection connection = QDBusConnection::sessionBus();
+    int retn;
+
     if (connection.registerObject(DBUS_SERVICE_OBJ_PATH, serviceObj)) {
         if (connection.registerService(servicePath)) {
             qCDebug(lcButeoPlugin) << "Plugin " << pluginName << " with profile "

@@ -37,10 +37,6 @@ class BtHelper : public QObject
 {
     Q_OBJECT
 
-private:
-    QDBusConnection m_SystemBus;
-    QString m_devicePath;
-
 public:
     /*! \brief Constructor.
       * \param deviceAddress Bluetooth address of remote device
@@ -55,6 +51,10 @@ public:
     /*! \brief To find remote device BT properties.
       */
     QVariantMap getDeviceProperties();
+
+private:
+    QDBusConnection m_SystemBus;
+    QString m_devicePath;
 };
 
 #endif // BTHELPER_H

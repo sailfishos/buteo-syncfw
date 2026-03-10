@@ -455,4 +455,3 @@ void SyncSession::onNetworkSessionError()
     // Update the session with connection error
     emit finished(profileName(), Sync::SYNC_ERROR, QString(), SyncResults::CONNECTION_ERROR);
 }
-

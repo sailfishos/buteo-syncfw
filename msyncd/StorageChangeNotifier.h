@@ -9,8 +9,7 @@ namespace Buteo {
 class StorageChangeNotifierPlugin;
 class PluginManager;
 
-/*! \brief Notifies about changes in storages
- * that it's asked to monitor
+/*! \brief Notifies about changes in storages that it's asked to monitor
  */
 class StorageChangeNotifier : public QObject
 {

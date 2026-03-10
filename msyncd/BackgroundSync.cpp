@@ -23,14 +23,16 @@
 
 #include "LogMacros.h"
 #include "BackgroundSync.h"
+
 #include <QStringList>
+
 #include <keepalive/backgroundactivity.h>
 
 // 24 hours
 const int MAX_FREQUENCY = 1440;
 
 BackgroundSync::BackgroundSync(QObject *aParent)
-    :  QObject(aParent)
+    : QObject(aParent)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }
@@ -101,8 +103,8 @@ bool BackgroundSync::set(const QString &aProfName, int seconds)
                 newAct.frequency = frequency;
                 newAct.backgroundActivity->setWakeupFrequency(newAct.frequency);
                 newAct.backgroundActivity->wait();
-                qCDebug(lcButeoMsyncd) << "BackgroundSync::set() Rescheduling for" << aProfName << "with frequency" <<
-                          (seconds / 60) << "minutes, waiting.";
+                qCDebug(lcButeoMsyncd) << "BackgroundSync::set() Rescheduling for" << aProfName
+                                       << "with frequency" << (seconds / 60) << "minutes, waiting.";
                 return true;
             } else {
                 newAct.backgroundActivity->wait();
@@ -116,17 +118,19 @@ bool BackgroundSync::set(const QString &aProfName, int seconds)
     newAct.backgroundActivity = new BackgroundActivity(this);
     newAct.id = newAct.backgroundActivity->id();
     connect(newAct.backgroundActivity, SIGNAL(running()), this, SLOT(onBackgroundSyncStarted()));
+
     if (seconds / 60 >  MAX_FREQUENCY) {
         newAct.frequency = BackgroundActivity::Range; // 0
         newAct.backgroundActivity->wait(seconds);
-        qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName << "without a valid frequency, waiting for" << seconds <<
-                  "seconds.";
+        qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName
+                               << "without a valid frequency, waiting for"
+                               << seconds << "seconds.";
     } else {
         newAct.frequency = frequencyFromSeconds(seconds);
         newAct.backgroundActivity->setWakeupFrequency(newAct.frequency);
         newAct.backgroundActivity->wait();
-        qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName << "with frequency " <<
-                  (seconds / 60) << "minutes, waiting.";
+        qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName
+                               << "with frequency " << (seconds / 60) << "minutes, waiting.";
     }
     return true;
 }
@@ -253,12 +257,14 @@ bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitc
             newSwitch.backgroundActivity->stop();
             newSwitch.nextSwitch = aSwitchTime;
             newSwitch.backgroundActivity->wait(switchSecs);
-            qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Rescheduling switch for" << aProfName << "at" << aSwitchTime.toString() << "(" <<
-                      switchSecs << "secs ) waiting.";
+            qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Rescheduling switch for" << aProfName
+                                   << "at" << aSwitchTime.toString() << "("
+                                   << switchSecs << "secs ) waiting.";
         } else {
             newSwitch.backgroundActivity->wait(switchSecs);
-            qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Profile" << aProfName << "already with the same switch timer, at" <<
-                      aSwitchTime.toString() << "(" << switchSecs << "secs ) waiting.";
+            qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Profile" << aProfName
+                                   << "already with the same switch timer, at"
+                                   << aSwitchTime.toString() << "(" << switchSecs << "secs ) waiting.";
         }
     } else {
         BActivitySwitchStruct &newSwitch = iScheduledSwitch[aProfName];
@@ -267,8 +273,8 @@ bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitc
         connect(newSwitch.backgroundActivity, SIGNAL(running()), this, SLOT(onBackgroundSwitchStarted()));
         newSwitch.nextSwitch = aSwitchTime;
         newSwitch.backgroundActivity->wait(switchSecs);
-        qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Set switch for profile name =" << aProfName << "at" << aSwitchTime.toString() <<
-                  "(" << switchSecs << "secs ) waiting.";
+        qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Set switch for profile name =" << aProfName
+                               << "at" << aSwitchTime.toString() << "(" << switchSecs << "secs ) waiting.";
     }
     return true;
 }

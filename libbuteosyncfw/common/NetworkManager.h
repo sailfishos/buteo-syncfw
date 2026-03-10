@@ -25,6 +25,7 @@
 
 #include <QNetworkSession>
 #include <QTimer>
+
 #include "SyncCommonDefs.h"
 
 class QNetworkConfigurationManager;
@@ -47,7 +48,7 @@ public:
      *
      * @param parent Parent object
      */
-    NetworkManager(QObject *parent = 0);
+    NetworkManager(QObject *parent = nullptr);
 
     /*! \brief Destructor
      *
@@ -121,4 +122,3 @@ private slots:
 }
 
 #endif//NETWORKMANAGER_H_
-

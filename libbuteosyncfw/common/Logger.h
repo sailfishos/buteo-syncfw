@@ -69,4 +69,3 @@ Q_DECLARE_LOGGING_CATEGORY(lcButeoPlugin)
 Q_DECLARE_LOGGING_CATEGORY(lcButeoTrace)
 
 #endif // LOGGER_H
-

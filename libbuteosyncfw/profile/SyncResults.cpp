@@ -22,10 +22,9 @@
  */
 #include "SyncResults.h"
 #include "LogMacros.h"
-#include <QDomDocument>
-
 #include "ProfileEngineDefs.h"
 
+#include <QDomDocument>
 
 namespace Buteo {
 
@@ -55,42 +54,40 @@ public:
     bool iScheduled;
 };
 
-
 SyncResultsPrivate::SyncResultsPrivate()
-    :   iTime(QDateTime::currentDateTime()),
-        iMajorCode(SyncResults::SYNC_RESULT_SUCCESS),
-        iMinorCode(SyncResults::NO_ERROR),
-        iScheduled(false)
+    : iTime(QDateTime::currentDateTime())
+    , iMajorCode(SyncResults::SYNC_RESULT_SUCCESS)
+    , iMinorCode(SyncResults::NO_ERROR)
+    , iScheduled(false)
 {
 }
 
 SyncResultsPrivate::SyncResultsPrivate(const SyncResultsPrivate &aSource)
-    :   iTargetResults(aSource.iTargetResults),
-        iTime(aSource.iTime),
-        iMajorCode(aSource.iMajorCode),
-        iMinorCode(aSource.iMinorCode),
-        iTargetId(aSource.iTargetId),
-        iScheduled(aSource.iScheduled)
+    : iTargetResults(aSource.iTargetResults)
+    , iTime(aSource.iTime)
+    , iMajorCode(aSource.iMajorCode)
+    , iMinorCode(aSource.iMinorCode)
+    , iTargetId(aSource.iTargetId)
+    , iScheduled(aSource.iScheduled)
 {
 }
-
 
 }
 
 using namespace Buteo;
 
 SyncResults::SyncResults()
-    :   d_ptr(new SyncResultsPrivate())
+    : d_ptr(new SyncResultsPrivate())
 {
 }
 
 SyncResults::SyncResults(const SyncResults &aSource)
-    :   d_ptr(new SyncResultsPrivate(*aSource.d_ptr))
+    : d_ptr(new SyncResultsPrivate(*aSource.d_ptr))
 {
 }
 
 SyncResults::SyncResults(QDateTime aTime, SyncResults::MajorCode aMajorCode, SyncResults::MinorCode aMinorCode)
-    :   d_ptr(new SyncResultsPrivate())
+    : d_ptr(new SyncResultsPrivate())
 {
     d_ptr->iTime = aTime;
     d_ptr->iMajorCode = aMajorCode;
@@ -98,7 +95,7 @@ SyncResults::SyncResults(QDateTime aTime, SyncResults::MajorCode aMajorCode, Syn
 }
 
 SyncResults::SyncResults(const QDomElement &aRoot)
-    :   d_ptr(new SyncResultsPrivate())
+    : d_ptr(new SyncResultsPrivate())
 {
     d_ptr->iTime = QDateTime::fromString(aRoot.attribute(ATTR_TIME), Qt::ISODate);
     d_ptr->iMajorCode = static_cast<SyncResults::MajorCode>(aRoot.attribute(ATTR_MAJOR_CODE).toInt());
@@ -131,8 +128,7 @@ QDomElement SyncResults::toXml(QDomDocument &aDoc) const
     root.setAttribute(ATTR_TIME, d_ptr->iTime.toString(Qt::ISODate));
     root.setAttribute(ATTR_MAJOR_CODE, QString::number(d_ptr->iMajorCode));
     root.setAttribute(ATTR_MINOR_CODE, QString::number(d_ptr->iMinorCode));
-    root.setAttribute(KEY_SYNC_SCHEDULED, d_ptr->iScheduled ? BOOLEAN_TRUE :
-                      BOOLEAN_FALSE);
+    root.setAttribute(KEY_SYNC_SCHEDULED, d_ptr->iScheduled ? BOOLEAN_TRUE : BOOLEAN_FALSE);
 
     foreach (TargetResults tr, d_ptr->iTargetResults) {
         root.appendChild(tr.toXml(aDoc));
@@ -144,16 +140,15 @@ QDomElement SyncResults::toXml(QDomDocument &aDoc) const
 QString SyncResults::toString() const
 {
     QDomDocument doc;
-    QDomProcessingInstruction xmlHeading =
-        doc.createProcessingInstruction("xml",
-                                        "version=\"1.0\" encoding=\"UTF-8\"");
+    QDomProcessingInstruction xmlHeading
+        = doc.createProcessingInstruction("xml",
+                                          "version=\"1.0\" encoding=\"UTF-8\"");
     doc.appendChild(xmlHeading);
     QDomElement root = toXml(doc);
     doc.appendChild(root);
 
     return doc.toString(PROFILE_INDENT);
 }
-
 
 QList<TargetResults> SyncResults::targetResults() const
 {

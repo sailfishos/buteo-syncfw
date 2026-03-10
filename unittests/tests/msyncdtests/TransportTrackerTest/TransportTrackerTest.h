@@ -26,7 +26,6 @@
 
 #include "TransportTracker.h"
 
-
 namespace Buteo {
 
 class TransportTrackerTest: public QObject

@@ -37,10 +37,10 @@
 
 using namespace Buteo;
 
-bool SyncSessionTest  :: isValuePassedTrue;
-int SyncSessionPluginRunnerTest :: testValue;
+bool SyncSessionTest::isValuePassedTrue;
+int SyncSessionPluginRunnerTest::testValue;
 
-void SyncSessionTest :: init()
+void SyncSessionTest::init()
 {
     iNullPluginRunner = 0;
 
@@ -64,19 +64,19 @@ void SyncSessionTest :: init()
 
 }
 
-void SyncSessionTest :: cleanup()
+void SyncSessionTest::cleanup()
 {
     // release the allocated memory
 
     // profile name will be deallocated in SyncSession. So, not deallocating
-    delete iSyncSession ;
+    delete iSyncSession;
     iSyncSession = nullptr;
 
     delete iSyncSessionPluginRunnerTest;
 }
 
 
-void SyncSessionTest :: testPluginRunner()
+void SyncSessionTest::testPluginRunner()
 {
 
     /* testing setPluginRunner() & pluginRunner() */
@@ -114,7 +114,7 @@ void SyncSessionTest :: testPluginRunner()
 }
 
 
-void SyncSessionTest :: testProfile()
+void SyncSessionTest::testProfile()
 {
     /* testing profile() and profileName()   */
 
@@ -131,7 +131,7 @@ void SyncSessionTest :: testProfile()
 
 }
 
-void SyncSessionTest :: testStartAbortStop()
+void SyncSessionTest::testStartAbortStop()
 {
     bool isStarted;
 
@@ -177,7 +177,7 @@ void SyncSessionTest :: testStartAbortStop()
 
 }
 
-void SyncSessionTest :: testResults()
+void SyncSessionTest::testResults()
 {
     SyncResults results1;
 
@@ -198,7 +198,7 @@ void SyncSessionTest :: testResults()
 
 }
 
-void SyncSessionTest :: testScheduled()
+void SyncSessionTest::testScheduled()
 {
     /* testing both setScheduled() & isScheduled() */
 
@@ -213,11 +213,11 @@ void SyncSessionTest :: testScheduled()
     QCOMPARE(iSyncSession->isScheduled(), givenScheduledData);
 }
 
-void SyncSessionTest :: testStorages()
+void SyncSessionTest::testStorages()
 {
     // TODO: need to check before and after calling reserveStorage()
     // testing reserveStorages()
-    StorageBooker *myTestStorageBooker = new StorageBooker ;
+    StorageBooker *myTestStorageBooker = new StorageBooker;
     QString oneStorage;
 
     foreach (QString storage, iSyncProfile->storageBackendNames()) {
@@ -245,7 +245,7 @@ void SyncSessionTest :: testStorages()
     }
 }
 
-void SyncSessionTest :: testOnSuccess()
+void SyncSessionTest::testOnSuccess()
 {
     const QString PROFILE = "sampleProfile";
     const QString MESSAGE  = "testMessage";
@@ -271,7 +271,7 @@ void SyncSessionTest :: testOnSuccess()
 
 }
 
-void SyncSessionTest :: testOnError()
+void SyncSessionTest::testOnError()
 {
     const QString MESSAGE = "testMessage";
     SyncResults::MinorCode errorCode = SyncResults::PLUGIN_ERROR;
@@ -289,7 +289,7 @@ void SyncSessionTest :: testOnError()
 
 }
 
-void SyncSessionTest ::  testOnTransferProgress()
+void SyncSessionTest:: testOnTransferProgress()
 {
     // registering metatypes that are not known
     qRegisterMetaType<Sync::TransferDatabase>("Sync::TransferDatabase");
@@ -306,7 +306,7 @@ void SyncSessionTest ::  testOnTransferProgress()
     QCOMPARE(sampleSpy.count(), 1);
 }
 
-void SyncSessionTest :: testOnDone()
+void SyncSessionTest::testOnDone()
 {
     // registering unknown metatype
     qRegisterMetaType<Sync::SyncStatus>("Sync::SyncStatus");
@@ -332,14 +332,14 @@ void SyncSessionTest :: testOnDone()
 // ############################################
 
 
-SyncSessionPluginRunnerTest :: SyncSessionPluginRunnerTest(const QString &aPluginName,
+SyncSessionPluginRunnerTest::SyncSessionPluginRunnerTest(const QString &aPluginName,
                                                            PluginManager *aPluginMgr, PluginCbInterface *aPluginCbIf)
     : PluginRunner(PLUGIN_CLIENT, aPluginName, aPluginMgr, aPluginCbIf)
 {
 
 }
 
-bool SyncSessionPluginRunnerTest :: init()
+bool SyncSessionPluginRunnerTest::init()
 {
     /* Checking whether control is coming to PluginRuneer derived class or not */
 
@@ -349,7 +349,7 @@ bool SyncSessionPluginRunnerTest :: init()
         return false;
 }
 
-bool SyncSessionPluginRunnerTest :: start()
+bool SyncSessionPluginRunnerTest::start()
 {
     /* Checking whether control is coming to PluginRuneer derived class or not */
 
@@ -360,21 +360,21 @@ bool SyncSessionPluginRunnerTest :: start()
 
 }
 
-void SyncSessionPluginRunnerTest ::stop ()
+void SyncSessionPluginRunnerTest::stop ()
 {
     // check the value after returning to the calling function
 
     testValue = 3;
 }
 
-void SyncSessionPluginRunnerTest :: abort(Sync::SyncStatus /*aStatus*/)
+void SyncSessionPluginRunnerTest::abort(Sync::SyncStatus /*aStatus*/)
 {
     // check the value after returning to the calling function
 
     testValue = 2;
 }
 
-SyncResults SyncSessionPluginRunnerTest :: syncResults()
+SyncResults SyncSessionPluginRunnerTest::syncResults()
 {
     SyncResults results;
     results.setScheduled(SyncSessionTest::isValuePassedTrue);
@@ -383,14 +383,14 @@ SyncResults SyncSessionPluginRunnerTest :: syncResults()
 
 }
 
-SyncPluginBase *SyncSessionPluginRunnerTest :: plugin()
+SyncPluginBase *SyncSessionPluginRunnerTest::plugin()
 {
     // This is not being used by SyncSession. returning nullptr to supress compile warning
 
     return (SyncPluginBase *)0;
 }
 
-bool SyncSessionPluginRunnerTest :: cleanUp()
+bool SyncSessionPluginRunnerTest::cleanUp()
 {
     // check the value after returning to the calling function
     return true;

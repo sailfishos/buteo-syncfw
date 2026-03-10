@@ -73,21 +73,19 @@ public:
 }
 
 
-
-
 Buteo::ProfilePrivate::ProfilePrivate()
-    :   iLoaded(false),
-        iMerged(false)
+    : iLoaded(false)
+    , iMerged(false)
 {
 }
 
 Buteo::ProfilePrivate::ProfilePrivate(const ProfilePrivate &aSource)
-    :   iName(aSource.iName),
-        iType(aSource.iType),
-        iLoaded(aSource.iLoaded),
-        iMerged(aSource.iMerged),
-        iLocalKeys(aSource.iLocalKeys),
-        iMergedKeys(aSource.iMergedKeys)
+    : iName(aSource.iName)
+    , iType(aSource.iType)
+    , iLoaded(aSource.iLoaded)
+    , iMerged(aSource.iMerged)
+    , iLocalKeys(aSource.iLocalKeys)
+    , iMergedKeys(aSource.iMergedKeys)
 {
     foreach (const ProfileField *localField, aSource.iLocalFields) {
         iLocalFields.append(new ProfileField(*localField));

@@ -25,8 +25,9 @@
 #define SYNCSIGHANDLER_H
 
 #include <QSocketNotifier>
+
 /*! \brief   About this class.
- *     We can't call Qt functions from Unix signal handlers.We can only call async-signal-safe functions from signal handlers.
+ *     We can't call Qt functions from Unix signal handlers. We can only call async-signal-safe functions from signal handlers.
  *          So this provides a way to use Unix signal handlers with Qt. The strategy is to have our Unix signal handler will eventually
  *          cause a Qt signal to be emitted, and then we simply return from our Unix signal handler.
  *          Back in our Qt program, that Qt signal gets emitted and then received by our Qt slot function, where we are safely doing Qt stuff
@@ -84,6 +85,5 @@ private:
     friend class SyncSigHandlerTest;
 #endif
 };
-
 
 #endif // SYNCSIGHANDLER_H

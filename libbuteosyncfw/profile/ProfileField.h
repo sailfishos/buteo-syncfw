@@ -48,7 +48,6 @@ class ProfileFieldPrivate;
 class ProfileField
 {
 public:
-
     //! Field should be always visible in UI.
     static const QString VISIBLE_ALWAYS;
 

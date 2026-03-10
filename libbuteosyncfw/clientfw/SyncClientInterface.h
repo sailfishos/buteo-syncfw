@@ -325,7 +325,7 @@ signals:
      *  same sync session.
      * \param aMessage A message describing the status change in detail. This
      *  can for example be shown to the user or written to a log
-         * \param aStatusDetails
+     * \param aStatusDetails
      *  When aStatus is ERROR, this parameter contains a specific error code.
      *  When aStatus is PROGRESS, this parameter contains more details about the progress
      *  \see SyncCommonDefs::SyncProgressDetails
@@ -354,6 +354,6 @@ private:
     SyncClientInterfacePrivate *d_ptr;
 };
 
-};
+}
 
 #endif

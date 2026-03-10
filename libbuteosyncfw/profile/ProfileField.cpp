@@ -23,6 +23,7 @@
 
 #include "ProfileField.h"
 #include "ProfileEngineDefs.h"
+
 #include <QDomDocument>
 
 namespace Buteo {
@@ -76,31 +77,30 @@ public:
 using namespace Buteo;
 
 ProfileFieldPrivate::ProfileFieldPrivate()
-    :   iReadOnly(false)
+    : iReadOnly(false)
 {
 }
 
 ProfileFieldPrivate::ProfileFieldPrivate(const ProfileFieldPrivate &aSource)
-    :   iName(aSource.iName),
-        iType(aSource.iType),
-        iDefaultValue(aSource.iDefaultValue),
-        iOptions(aSource.iOptions),
-        iLabel(aSource.iLabel),
-        iVisible(aSource.iVisible),
-        iReadOnly(aSource.iReadOnly)
+    : iName(aSource.iName)
+    , iType(aSource.iType)
+    , iDefaultValue(aSource.iDefaultValue)
+    , iOptions(aSource.iOptions)
+    , iLabel(aSource.iLabel)
+    , iVisible(aSource.iVisible)
+    , iReadOnly(aSource.iReadOnly)
 {
 }
 
 ProfileField::ProfileField(const QDomElement &aRoot)
-    :   d_ptr(new ProfileFieldPrivate())
+    : d_ptr(new ProfileFieldPrivate())
 {
     d_ptr->iName = aRoot.attribute(ATTR_NAME);
     d_ptr->iType = aRoot.attribute(ATTR_TYPE);
     d_ptr->iDefaultValue = aRoot.attribute(ATTR_DEFAULT);
     d_ptr->iLabel = aRoot.attribute(ATTR_LABEL);
     d_ptr->iVisible = aRoot.attribute(ATTR_VISIBLE);
-    d_ptr->iReadOnly = (aRoot.attribute(ATTR_READONLY).compare(
-                            BOOLEAN_TRUE, Qt::CaseInsensitive) == 0);
+    d_ptr->iReadOnly = (aRoot.attribute(ATTR_READONLY).compare(BOOLEAN_TRUE, Qt::CaseInsensitive) == 0);
 
     // Parse options.
     QDomElement option = aRoot.firstChildElement(TAG_OPTION);
@@ -123,14 +123,14 @@ ProfileField::ProfileField(const QDomElement &aRoot)
 }
 
 ProfileField::ProfileField(const ProfileField &aSource)
-    :   d_ptr(new ProfileFieldPrivate(*aSource.d_ptr))
+    : d_ptr(new ProfileFieldPrivate(*aSource.d_ptr))
 {
 }
 
 ProfileField::~ProfileField()
 {
     delete d_ptr;
-    d_ptr = 0;
+    d_ptr = nullptr;
 }
 
 QString ProfileField::name() const
@@ -162,12 +162,7 @@ bool ProfileField::validate(const QString &aValue) const
 {
     // Value is valid if it exists in the list of options,
     // or if options have not been defined.
-    if (!aValue.isEmpty() &&
-            (d_ptr->iOptions.contains(aValue) || d_ptr->iOptions.empty())) {
-        return true;
-    } else {
-        return false;
-    }
+    return (!aValue.isEmpty() && (d_ptr->iOptions.contains(aValue) || d_ptr->iOptions.empty()));
 }
 
 QDomElement ProfileField::toXml(QDomDocument &aDoc) const

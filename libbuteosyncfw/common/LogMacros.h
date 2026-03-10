@@ -21,7 +21,6 @@
  *
  */
 
-
 #ifndef LOGMACROS_H
 #define LOGMACROS_H
 
@@ -38,4 +37,3 @@
             : nullptr)
 
 #endif // LOGMACROS_H
-

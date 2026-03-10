@@ -12,8 +12,7 @@ class StorageChangeNotifier;
 class PluginManager;
 class SyncOnChangeScheduler;
 
-/*! \brief this class initiates a sync if there are changes
- * in storage(s) it's asked to monitor
+/*! \brief this class initiates a sync if there are changes in storage(s) it's asked to monitor
  */
 class SyncOnChange : public QObject
 {

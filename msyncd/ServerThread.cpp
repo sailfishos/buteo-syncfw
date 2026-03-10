@@ -30,7 +30,7 @@ using namespace Buteo;
 
 
 ServerThread::ServerThread()
-    : iServerPlugin(0)
+    : iServerPlugin(nullptr)
     , iRunning(false)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -46,7 +46,7 @@ QString ServerThread::getProfileName() const
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString profileName;
-    if (iServerPlugin != 0) {
+    if (iServerPlugin) {
         profileName = iServerPlugin->getProfileName();
     }
 
@@ -60,13 +60,13 @@ ServerPlugin *ServerThread::getPlugin() const
     return iServerPlugin;
 }
 
-
 bool ServerThread::startThread(ServerPlugin *aServerPlugin)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aServerPlugin == 0)
+    if (aServerPlugin == nullptr) {
         return false;
+    }
 
     {
         QMutexLocker locker(&iMutex);

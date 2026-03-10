@@ -58,7 +58,7 @@ ServerActivator::ServerActivator(ProfileManager &aProfileManager,
             }
 
             delete serverProfile;
-            serverProfile = 0;
+            serverProfile = nullptr;
         } else {
             qCWarning(lcButeoMsyncd) << "Failed to load server profile:" << serverProfileName;
         }
@@ -69,6 +69,7 @@ ServerActivator::ServerActivator(ProfileManager &aProfileManager,
     transports.append(Sync::CONNECTIVITY_BT);
     transports.append(Sync::CONNECTIVITY_USB);
     transports.append(Sync::CONNECTIVITY_INTERNET);
+
     foreach (Sync::ConnectivityType transport, transports) {
         bool transportEnabled = iTransportTracker.isConnectivityAvailable(transport);
         foreach (QString serverName, iServers.keys()) {

@@ -20,6 +20,7 @@
  * 02110-1301 USA
  *
  */
+
 #include "StoragePlugin.h"
 
 using namespace Buteo;

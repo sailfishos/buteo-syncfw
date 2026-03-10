@@ -36,8 +36,8 @@ using namespace Buteo;
 static const QString SYNC_DBUS_OBJECT = "/synchronizer";
 static const QString SYNC_DBUS_SERVICE = "com.meego.msyncd";
 
-SyncClientInterfacePrivate::SyncClientInterfacePrivate(SyncClientInterface *aParent) :
-    iParent(aParent)
+SyncClientInterfacePrivate::SyncClientInterfacePrivate(SyncClientInterface *aParent)
+    : iParent(aParent)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     iServiceWatcher.addWatchedService(SYNC_DBUS_SERVICE);

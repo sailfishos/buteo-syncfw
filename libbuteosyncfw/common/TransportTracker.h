@@ -41,7 +41,6 @@ namespace Buteo {
 class USBModedProxy;
 class NetworkManager;
 
-
 /*! \brief Class for tracking transport states
  *
  * USB state is tracked with HAL, BT with Context Framework and Internet states with Buteo::NetworkManager.
@@ -51,7 +50,6 @@ class TransportTracker : public QObject
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * @param aParent Parent object
@@ -69,7 +67,6 @@ public:
     bool isConnectivityAvailable(Sync::ConnectivityType aType) const;
 
 signals:
-
     /*! \brief Signal emitted when a connectivity state changes
      *
      * @param aType Connectivity type whose state has changed
@@ -104,7 +101,6 @@ private slots:
     void onInternetStateChanged(bool aConnected, Sync::InternetConnectionType aType);
 
 private:
-
     QMap<Sync::ConnectivityType, bool> iTransportStates;
 
     USBModedProxy *iUSBProxy;

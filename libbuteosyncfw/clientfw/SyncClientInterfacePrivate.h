@@ -234,9 +234,7 @@ private:
     QDBusServiceWatcher iServiceWatcher;
 
     Buteo::SyncClientInterface *iParent;
-
 };
-
 
 };
 

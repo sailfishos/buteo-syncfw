@@ -31,7 +31,7 @@
 
 using namespace Buteo;
 
-void TransportTrackerTest :: initTestCase()
+void TransportTrackerTest::initTestCase()
 {
     // instantiating TransportTrackerTest
     iTransportTracker = new TransportTracker(this);
@@ -48,14 +48,13 @@ void TransportTrackerTest :: initTestCase()
     */
 }
 
-void TransportTrackerTest :: cleanupTestCase()
+void TransportTrackerTest::cleanupTestCase()
 {
     // deallocate the memory
     delete iTransportTracker;
-
 }
 
-void TransportTrackerTest :: testConnectivityAvailable()
+void TransportTrackerTest::testConnectivityAvailable()
 {
     // set the connectivity status for each type and compare it with the value returned
 
@@ -94,7 +93,7 @@ void TransportTrackerTest :: testConnectivityAvailable()
 
 }
 
-void TransportTrackerTest :: testStateChanged()
+void TransportTrackerTest::testStateChanged()
 {
     qRegisterMetaType<Sync::ConnectivityType>("Sync::ConnectivityType");
     QSignalSpy connectivityStateSpy(iTransportTracker, SIGNAL(connectivityStateChanged(Sync::ConnectivityType, bool)));
@@ -139,7 +138,5 @@ void TransportTrackerTest :: testStateChanged()
     QCOMPARE(networkStateSpy.first().at(0).value<bool>(), !internetCurrentState);
     networkStateSpy.clear();
 }
-
-
 
 QTEST_MAIN(Buteo::TransportTrackerTest)

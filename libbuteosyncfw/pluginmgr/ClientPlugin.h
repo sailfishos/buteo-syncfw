@@ -39,7 +39,6 @@ class ClientPlugin : public SyncPluginBase
     Q_OBJECT
 
 public:
-
     /*! \brief Constructor
      *
      * @param aPluginName Name of this client plugin

@@ -286,7 +286,6 @@ public:
     bool isSyncScheduled(const QDateTime &aActualDateTime, const QDateTime &aPreviousSyncTime = QDateTime()) const;
 
 private:
-
     SyncSchedulePrivate *d_ptr;
 
 #ifdef SYNCFW_UNIT_TESTS

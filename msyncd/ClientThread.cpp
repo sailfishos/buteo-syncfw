@@ -28,11 +28,11 @@
 using namespace Buteo;
 
 ClientThread::ClientThread()
-    : iClientPlugin(0),
-      iIdentity(nullptr),
-      iService(nullptr),
-      iSession(nullptr),
-      iRunning(false)
+    : iClientPlugin(nullptr)
+    , iIdentity(nullptr)
+    , iService(nullptr)
+    , iSession(nullptr)
+    , iRunning(false)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }
@@ -51,7 +51,7 @@ QString ClientThread::getProfileName() const
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QString profileName;
-    if (iClientPlugin != 0) {
+    if (iClientPlugin) {
         profileName = iClientPlugin->getProfileName();
     }
 
@@ -69,8 +69,9 @@ bool ClientThread::startThread(ClientPlugin *aClientPlugin)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aClientPlugin == 0)
+    if (aClientPlugin == nullptr) {
         return false;
+    }
 
     {
         QMutexLocker locker(&iMutex);
@@ -82,7 +83,7 @@ bool ClientThread::startThread(ClientPlugin *aClientPlugin)
     }
 
     iClientPlugin = aClientPlugin;
-    if (iClientPlugin == 0) {
+    if (iClientPlugin == nullptr) {
         qCCritical(lcButeoMsyncd) << "Client plugin is NULL";
         return false;
     }
@@ -90,6 +91,7 @@ bool ClientThread::startThread(ClientPlugin *aClientPlugin)
     SyncProfile &profile = iClientPlugin->profile();
     const QString prefix("sso-provider=");
     QString username = profile.key("Username");
+
     if (username.startsWith(prefix)) {
         // Look up real username/password in SSO first,
         // before starting sync. This is better done
@@ -145,7 +147,6 @@ void ClientThread::run()
         QMutexLocker locker(&iMutex);
         iRunning = false;
     }
-
 }
 
 SyncResults ClientThread::getSyncResults()
@@ -165,12 +166,12 @@ void ClientThread::identities(const QList<SignOn::IdentityInfo> &identityList)
         if (info.caption() == iProvider) {
             iIdentity = SignOn::Identity::existingIdentity(info.id(), this);
             // Setup an authentication session using the "password" method
-            iSession =
-                iIdentity->createSession(QLatin1String("password"));
+            iSession = iIdentity->createSession(QLatin1String("password"));
             connect(iSession, SIGNAL(response(const SignOn::SessionData &)),
                     this, SLOT(identityResponse(const SignOn::SessionData &)));
             connect(iSession, SIGNAL(error(SignOn::Error)),
                     this, SLOT(identityError(SignOn::Error)));
+
             // Get the password!
             iSession->process(SignOn::SessionData(), QLatin1String("password"));
             return;
@@ -200,4 +201,3 @@ void ClientThread::identityError(SignOn::Error err)
 
     emit initError(getProfileName(), err.message(), SyncResults::AUTHENTICATION_FAILURE);
 }
-
