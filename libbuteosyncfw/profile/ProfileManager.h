@@ -66,6 +66,7 @@ public:
 
         //! \brief Copy constructor.
         SearchCriteria(const SearchCriteria &aSource);
+        SearchCriteria &operator=(const SearchCriteria &other);
 
         //! Search criteria type.
         Type iType;

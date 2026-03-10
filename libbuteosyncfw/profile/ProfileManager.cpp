@@ -267,6 +267,21 @@ ProfileManager::SearchCriteria::SearchCriteria(const SearchCriteria &aSource)
 {
 }
 
+ProfileManager::SearchCriteria &ProfileManager::SearchCriteria::operator=(const ProfileManager::SearchCriteria &other)
+{
+    if (&other == this) {
+        return *this;
+    }
+
+    iType = other.iType;
+    iSubProfileName = other.iSubProfileName;
+    iSubProfileType = other.iSubProfileType;
+    iKey = other.iKey;
+    iValue = other.iValue;
+
+    return *this;
+}
+
 ProfileManager::ProfileManager()
     : d_ptr(new ProfileManagerPrivate)
 {
