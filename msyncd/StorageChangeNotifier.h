@@ -65,10 +65,9 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     /*! emit this signal if a storage changed
-     *
      * @param storageName name of the storage that changed
      */
-    void storageChange(QString aStorageName);
+    void storageChange(QString storageName);
 
 private:
     QHash<QString, StorageChangeNotifierPlugin *> iNotifierMap;

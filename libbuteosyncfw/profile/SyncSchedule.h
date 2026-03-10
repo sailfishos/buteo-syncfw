@@ -149,7 +149,7 @@ public:
 
     /*! \brief Sets scheduled config time.
     *
-    * \param QDateTime Sync time.
+    * \param aDateTime Sync time.
     */
     void setScheduleConfiguredTime(const QDateTime &aDateTime);
 
