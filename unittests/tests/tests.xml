@@ -2,7 +2,7 @@
 <testdefinition version="0.1">
   <suite name="buteo-syncfw" domain="synchronization">
 
-    <set name="msyncd" description="buteo-syncfw msyncd tests" feature="sync framework">
+    <set name="msyncd" description="buteo-syncfw msyncd tests" feature="Buteo sync framework">
       <pre_steps>
         <step>systemctl --user stop msyncd</step>
       </pre_steps>
