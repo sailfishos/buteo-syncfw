@@ -43,7 +43,7 @@ void StorageChangeNotifier::loadNotifiers(PluginManager *aPluginManager,
     }
 }
 
-bool StorageChangeNotifier::startListen(QStringList &aFailedStorages)
+bool StorageChangeNotifier::startListen(QStringList *failedStorages)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool success = true;
@@ -60,7 +60,9 @@ bool StorageChangeNotifier::startListen(QStringList &aFailedStorages)
                              this, SLOT(storageChanged()));
             plugin->enable();
         } else {
-            aFailedStorages << storageNameItr.key();
+            if (failedStorages) {
+                *failedStorages << storageNameItr.key();
+            }
             success = false;
         }
     }

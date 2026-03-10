@@ -201,7 +201,7 @@ bool Synchronizer::initialize()
         aSOCStorageMap["hcontacts"] = SOCProfiles;
         QStringList aFailedStorages;
         bool isSOCEnabled = iSyncOnChange.enable(aSOCStorageMap, &iSyncOnChangeScheduler,
-                                                 &iPluginManager, aFailedStorages);
+                                                 &iPluginManager, &aFailedStorages);
         if (!isSOCEnabled) {
             foreach (const QString &aStorageName, aFailedStorages) {
                 qCCritical(lcButeoMsyncd) << "Sync on change couldn't be enabled for storage" << aStorageName;
@@ -231,7 +231,8 @@ void Synchronizer::enableSOCSlot(const QString &aProfileName)
             SOCProfiles.append(profile);
             aSOCStorageMap["hcontacts"] = SOCProfiles;
             QStringList aFailedStorages;
-            if (iSyncOnChange.enable(aSOCStorageMap, &iSyncOnChangeScheduler, &iPluginManager, aFailedStorages)) {
+
+            if (iSyncOnChange.enable(aSOCStorageMap, &iSyncOnChangeScheduler, &iPluginManager, &aFailedStorages)) {
                 QObject::connect(&iSyncOnChangeScheduler, SIGNAL(syncNow(const QString &)),
                                  this, SLOT(startScheduledSync(const QString &)),
                                  Qt::QueuedConnection);

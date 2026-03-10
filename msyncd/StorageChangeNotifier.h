@@ -34,11 +34,11 @@ public:
 
     /*! Call this to start monitoring changes in storages
      *
-     * @param list of storage names which can't be monitored
+     * @param failedStorages of storage names which can't be monitored
      * @return true if we can monitor all storages requested for
      * false otherwise
      */
-    bool startListen(QStringList &aFailedStorages);
+    bool startListen(QStringList *failedStorages);
 
     /*! \brief call this to ignore taking action on
      * storage changes. Whether there was a change can
