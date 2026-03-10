@@ -47,9 +47,12 @@
 #include <qmcebatterystatus.h>
 #include <qmcepowersavemode.h>
 #endif
-#include <QtDebug>
+
 #include <fcntl.h>
 #include <termios.h>
+
+#include <QRegularExpression>
+#include <QtDebug>
 
 using namespace Buteo;
 
@@ -917,7 +920,7 @@ bool Synchronizer::updateProfile(QString aProfileAsXml)
                 if (!address.isNull()) {
                     if (profile->key(Buteo::KEY_UUID).isEmpty()) {
                         QString uuid = QUuid::createUuid().toString();
-                        uuid = uuid.remove(QRegExp("[{}]"));
+                        uuid = uuid.remove(QRegularExpression("[{}]"));
                         profile->setKey(Buteo::KEY_UUID, uuid);
                     }
                     if (profile->key(Buteo::KEY_REMOTE_NAME).isEmpty()) {
@@ -1893,7 +1896,7 @@ QString Synchronizer::getValue(const QString &aAddress, const QString &aKey)
     QString value;
     if (Buteo::KEY_UUID == aKey) {
         iUUID = QUuid::createUuid().toString();
-        iUUID = iUUID.remove(QRegExp("[{}]"));
+        iUUID = iUUID.remove(QRegularExpression("[{}]"));
         value = iUUID;
     }
 

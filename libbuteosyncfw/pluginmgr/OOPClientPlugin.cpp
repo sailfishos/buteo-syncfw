@@ -24,7 +24,7 @@
 #include "OOPClientPlugin.h"
 #include "LogMacros.h"
 
-#include <QRegExp>
+#include <QRegularExpression>
 
 using namespace Buteo;
 
@@ -39,15 +39,10 @@ OOPClientPlugin::OOPClientPlugin(const QString &aPluginName,
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
     QString profileName = aProfile.name();
-    int numericIdx = profileName.indexOf(QRegExp("[0123456789]"));
+    int numericIdx = profileName.indexOf(QRegularExpression("[0123456789]"));
     QString servicePath = numericIdx == 0
-                          ? QString(QLatin1String("%1%2%3"))
-                          .arg(DBUS_SERVICE_NAME_PREFIX)
-                          .arg("profile-")
-                          .arg(profileName)
-                          : QString(QLatin1String("%1%2"))
-                          .arg(DBUS_SERVICE_NAME_PREFIX)
-                          .arg(profileName);
+                              ? QLatin1String(DBUS_SERVICE_NAME_PREFIX) + QStringLiteral("profile-") + profileName
+                              : QLatin1String(DBUS_SERVICE_NAME_PREFIX) + profileName;
 
     // Initialise dbus for client
     iOopPluginIface = new ButeoPluginIface(servicePath,
