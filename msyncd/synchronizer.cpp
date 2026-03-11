@@ -22,7 +22,9 @@
  * 02110-1301 USA
  *
  */
+
 #include <gio/gio.h>
+
 #include "synchronizer.h"
 #include "SyncDBusAdaptor.h"
 #include "SyncSession.h"
@@ -47,9 +49,12 @@
 #include <qmcebatterystatus.h>
 #include <qmcepowersavemode.h>
 #endif
-#include <QtDebug>
+
 #include <fcntl.h>
 #include <termios.h>
+
+#include <QRegularExpression>
+#include <QtDebug>
 
 using namespace Buteo;
 
@@ -63,13 +68,11 @@ class Buteo::BatteryInfo
 public:
     bool isLowPower()
     {
-        return (iBatteryStatus.valid() &&
-                iBatteryStatus.status() <= QMceBatteryStatus::Low);
+        return (iBatteryStatus.valid() && iBatteryStatus.status() <= QMceBatteryStatus::Low);
     }
     bool inPowerSaveMode()
     {
-        return (iPowerSaveMode.valid() &&
-                iPowerSaveMode.active());
+        return (iPowerSaveMode.valid() && iPowerSaveMode.active());
     }
 private:
     QMcePowerSaveMode iPowerSaveMode;
@@ -88,12 +91,12 @@ public:
 };
 
 Synchronizer::Synchronizer(QCoreApplication *aApplication)
-    : iNetworkManager(0)
-    , iSyncScheduler(0)
-    , iSyncBackup(0)
-    , iTransportTracker(0)
-    , iServerActivator(0)
-    , iAccounts(0)
+    : iNetworkManager(nullptr)
+    , iSyncScheduler(nullptr)
+    , iSyncBackup(nullptr)
+    , iTransportTracker(nullptr)
+    , iServerActivator(nullptr)
+    , iAccounts(nullptr)
     , iClosing(false)
     , iSOCEnabled(false)
     , iSyncUIInterface(nullptr)
@@ -198,7 +201,7 @@ bool Synchronizer::initialize()
         aSOCStorageMap["hcontacts"] = SOCProfiles;
         QStringList aFailedStorages;
         bool isSOCEnabled = iSyncOnChange.enable(aSOCStorageMap, &iSyncOnChangeScheduler,
-                                                 &iPluginManager, aFailedStorages);
+                                                 &iPluginManager, &aFailedStorages);
         if (!isSOCEnabled) {
             foreach (const QString &aStorageName, aFailedStorages) {
                 qCCritical(lcButeoMsyncd) << "Sync on change couldn't be enabled for storage" << aStorageName;
@@ -228,7 +231,8 @@ void Synchronizer::enableSOCSlot(const QString &aProfileName)
             SOCProfiles.append(profile);
             aSOCStorageMap["hcontacts"] = SOCProfiles;
             QStringList aFailedStorages;
-            if (iSyncOnChange.enable(aSOCStorageMap, &iSyncOnChangeScheduler, &iPluginManager, aFailedStorages)) {
+
+            if (iSyncOnChange.enable(aSOCStorageMap, &iSyncOnChangeScheduler, &iPluginManager, &aFailedStorages)) {
                 QObject::connect(&iSyncOnChangeScheduler, SIGNAL(syncNow(const QString &)),
                                  this, SLOT(startScheduledSync(const QString &)),
                                  Qt::QueuedConnection);
@@ -258,7 +262,7 @@ void Synchronizer::close()
 
     QList<SyncSession *> sessions = iActiveSessions.values();
     foreach (SyncSession *session, sessions) {
-        if (session != 0) {
+        if (session) {
             session->stop();
         }
     }
@@ -268,10 +272,10 @@ void Synchronizer::close()
     stopServers();
 
     delete iSyncScheduler;
-    iSyncScheduler = 0;
+    iSyncScheduler = nullptr;
 
     delete iSyncBackup;
-    iSyncBackup = 0;
+    iSyncBackup = nullptr;
 
     // Unregister from D-Bus.
     QDBusConnection dbus = QDBusConnection::sessionBus();
@@ -317,16 +321,16 @@ bool Synchronizer::startScheduledSync(QString aProfileName)
                                                   Buteo::SyncResults::ABORTED);
             }
         } else {
-            qCDebug(lcButeoMsyncd) << "Scheduled sync of" << aProfileName << "accepted with current connection type" <<
-                      iNetworkManager->connectionType();
+            qCDebug(lcButeoMsyncd) << "Scheduled sync of" << aProfileName << "accepted with current connection type"
+                                   << iNetworkManager->connectionType();
             startSync(aProfileName, true);
         }
     } else {
         qCInfo(lcButeoMsyncd) << "Wait for internet connection:" << aProfileName;
         if (iNetworkManager->isOnline()) {
             // see acceptScheduledSync() for the determination of whether the connection type is allowed for sync operations.
-            qCInfo(lcButeoMsyncd) << "Connection" << iNetworkManager->connectionType() <<
-                     "is of disallowed type. The sync will be postponed until an allowed connection is available.";
+            qCInfo(lcButeoMsyncd) << "Connection" << iNetworkManager->connectionType()
+                                  << "is of disallowed type. The sync will be postponed until an allowed connection is available.";
         } else {
             qCInfo(lcButeoMsyncd) << "Device offline. Wait for internet connection.";
         }
@@ -757,7 +761,7 @@ void Synchronizer::cleanupSession(SyncSession *aSession, Sync::SyncStatus aStatu
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aSession != 0) {
+    if (aSession) {
         QString profileName = aSession->profileName();
         if (!profileName.isEmpty()) {
             qCDebug(lcButeoMsyncd) << "Clean up session for profile" << profileName;
@@ -778,7 +782,7 @@ void Synchronizer::cleanupSession(SyncSession *aSession, Sync::SyncStatus aStatu
         aSession->setProfileCreated(false);
         aSession->releaseStorages();
         aSession->deleteLater();
-        aSession = 0;
+        aSession = nullptr;
     }
 }
 
@@ -811,9 +815,9 @@ bool Synchronizer::cleanupProfile(const QString &aProfileId)
     bool status = false;
 
     if (!aProfileId.isEmpty() && profile)  {
-
-        bool client = true ;
+        bool client = true;
         Profile *subProfile = profile->clientProfile(); // client or server
+
         if (!subProfile) {
             qCWarning(lcButeoMsyncd) << "Could not find client sub-profile";
             subProfile = profile->serverProfile ();
@@ -888,6 +892,7 @@ bool Synchronizer::removeProfile(QString aProfileId)
     } else {
         status = cleanupProfile(aProfileId);
     }
+
     return status;
 }
 
@@ -917,7 +922,7 @@ bool Synchronizer::updateProfile(QString aProfileAsXml)
                 if (!address.isNull()) {
                     if (profile->key(Buteo::KEY_UUID).isEmpty()) {
                         QString uuid = QUuid::createUuid().toString();
-                        uuid = uuid.remove(QRegExp("[{}]"));
+                        uuid = uuid.remove(QRegularExpression("[{}]"));
                         profile->setKey(Buteo::KEY_UUID, uuid);
                     }
                     if (profile->key(Buteo::KEY_REMOTE_NAME).isEmpty()) {
@@ -1175,7 +1180,8 @@ void Synchronizer::startServer(const QString &aProfileName)
     if (!serverProfile || !serverProfile->isValid()) {
         qCWarning(lcButeoMsyncd) << "Profile not found or not valid:"  << aProfileName;
         delete serverProfile;
-        serverProfile = 0;
+        serverProfile = nullptr;
+
         return;
     }
 
@@ -1186,16 +1192,15 @@ void Synchronizer::startServer(const QString &aProfileName)
     connect(iTransportTracker, SIGNAL(connectivityStateChanged(Sync::ConnectivityType, bool)),
             pluginRunner, SIGNAL(connectivityStateChanged(Sync::ConnectivityType, bool)));
 
-
     connect(pluginRunner, SIGNAL(done()), this, SLOT(onServerDone()));
-
     connect(pluginRunner, SIGNAL(newSession(const QString &)),
             this, SLOT(onNewSession(const QString &)));
 
     if (!pluginRunner->init() || !pluginRunner->start()) {
         qCCritical(lcButeoMsyncd) << "Failed to start plug-in";
         delete pluginRunner;
-        pluginRunner = 0;
+        pluginRunner = nullptr;
+
         return;
     }
 
@@ -1226,7 +1231,7 @@ void Synchronizer::stopServer(const QString &aProfileName)
             // Delete plug-in runner immediately.
             delete pluginRunner;
         }
-        pluginRunner = 0;
+        pluginRunner = nullptr;
     } else {
         qCWarning(lcButeoMsyncd) << "Server not found";
     }
@@ -1236,18 +1241,19 @@ void Synchronizer::onServerDone()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    ServerPluginRunner *pluginRunner =
-        qobject_cast<ServerPluginRunner *>(QObject::sender());
+    ServerPluginRunner *pluginRunner = qobject_cast<ServerPluginRunner *>(QObject::sender());
     QString serverName = "unknown";
-    if (pluginRunner != 0) {
+
+    if (pluginRunner) {
         serverName = pluginRunner->pluginName();
     }
+
     qCDebug(lcButeoMsyncd) << "Server stopped:" << serverName;
     if (iServers.values().contains(pluginRunner)) {
         qCDebug(lcButeoMsyncd) << "Deleting server";
         iServers.remove(iServers.key(pluginRunner));
         pluginRunner->deleteLater();
-        pluginRunner = 0;
+        pluginRunner = nullptr;
     }
 }
 
@@ -1269,10 +1275,10 @@ void Synchronizer::onNewSession(const QString &aDestination)
 
     qCDebug(lcButeoMsyncd) << "New session from" << aDestination;
     bool createNewProfile = false;
-    ServerPluginRunner *pluginRunner =
-        qobject_cast<ServerPluginRunner *>(QObject::sender());
-    if (pluginRunner != 0) {
-        SyncProfile *profile = 0;
+    ServerPluginRunner *pluginRunner = qobject_cast<ServerPluginRunner *>(QObject::sender());
+
+    if (pluginRunner) {
+        SyncProfile *profile = nullptr;
         QList<SyncProfile *> syncProfiles;
 
         if (aDestination.contains("USB")) {
@@ -1381,23 +1387,21 @@ void Synchronizer::slotProfileChanged(QString aProfileName, int aChangeType, QSt
     // on change, to avoid thrash during backup/restore and races if the client wishes
     // to trigger manually.  Temporary until we can improve Buteo's SyncOnChange handler.
     switch (aChangeType) {
-    case ProfileManager::PROFILE_ADDED: {
+    case ProfileManager::PROFILE_ADDED:
         iProfileChangeTriggerQueue.append(qMakePair(aProfileName, ProfileManager::PROFILE_ADDED));
         iProfileChangeTriggerTimer.start(30000); // 30 seconds.
-    }
-    break;
-
+        break;
     case ProfileManager::PROFILE_REMOVED:
         iSyncOnChangeScheduler.removeProfile(aProfileName);
         iWaitingOnlineSyncs.removeAll(aProfileName);
         for (int i = iProfileChangeTriggerQueue.size() - 1; i >= 0; --i) {
             if (iProfileChangeTriggerQueue[i].first == aProfileName) {
-                qCDebug(lcButeoMsyncd) << "Removing queued profile change sync due to profile removal:" << aProfileName;
+                qCDebug(lcButeoMsyncd) << "Removing queued profile change sync due to profile removal:"
+                                       << aProfileName;
                 iProfileChangeTriggerQueue.removeAt(i);
             }
         }
         break;
-
     case ProfileManager::PROFILE_MODIFIED: {
         bool alreadyQueued = false;
         for (int i = 0; i < iProfileChangeTriggerQueue.size(); ++i) {
@@ -1410,8 +1414,8 @@ void Synchronizer::slotProfileChanged(QString aProfileName, int aChangeType, QSt
             iProfileChangeTriggerQueue.append(qMakePair(aProfileName, ProfileManager::PROFILE_MODIFIED));
         }
         iProfileChangeTriggerTimer.start(30000); // 30 seconds.
+        break;
     }
-    break;
     }
 
     emit signalProfileChanged(aProfileName, aChangeType, aProfileAsXml);
@@ -1447,7 +1451,7 @@ void Synchronizer::reschedule(const QString &aProfileName)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iSyncScheduler == 0)
+    if (iSyncScheduler == nullptr)
         return;
 
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
@@ -1470,6 +1474,7 @@ void Synchronizer::slotSyncStatus(QString aProfileName, int aStatus, QString aMe
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
+
     if (profile) {
         QString accountId = profile->key(KEY_ACCOUNT_ID);
         if (!accountId.isNull()) {
@@ -1507,7 +1512,7 @@ void Synchronizer::removeScheduledSync(const QString &aProfileName)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iSyncScheduler == 0)
+    if (iSyncScheduler == nullptr)
         return;
 
     SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
@@ -1535,7 +1540,6 @@ bool Synchronizer::isBackupRestoreInProgress()
     }
 
     return retVal;
-
 }
 
 void Synchronizer::backupRestoreStarts()
@@ -1559,7 +1563,7 @@ void Synchronizer::backupRestoreStarts()
     }
 
     delete iSyncScheduler;
-    iSyncScheduler = 0;
+    iSyncScheduler = nullptr;
 
     // Request all external syncs to stop, relying on reportExternalSyncStatus() to
     // act appropriately because (getBackUpRestoreState() == true)
@@ -1619,6 +1623,7 @@ void Synchronizer::start(unsigned int aAccountId)
     FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Start sync requested for account" << aAccountId;
     QList<SyncProfile *> profileList = iAccounts->getProfilesByAccountId(aAccountId);
+
     foreach (SyncProfile *profile, profileList) {
         startSync(profile->name());
         delete profile;
@@ -1630,6 +1635,7 @@ void Synchronizer::stop(unsigned int aAccountId)
     FUNCTION_CALL_TRACE(lcButeoTrace);
     qCDebug(lcButeoMsyncd) << "Stop sync requested for account" << aAccountId;
     QList<SyncProfile *> profileList = iAccounts->getProfilesByAccountId(aAccountId);
+
     foreach (SyncProfile *profile, profileList) {
         abortSync(profile->name());
         delete profile;
@@ -1644,6 +1650,7 @@ int Synchronizer::status(unsigned int aAccountId, int &aFailedReason, qlonglong 
     QDateTime prevSyncTime; // Initialize to invalid
     QDateTime nextSyncTime;
     QList<SyncProfile *> profileList = iAccounts->getProfilesByAccountId(aAccountId);
+
     foreach (SyncProfile *profile, profileList) {
         // First check if sync is going on for any profile corresponding to this
         // account ID
@@ -1692,6 +1699,7 @@ QList<unsigned int> Synchronizer::syncingAccounts()
     QList<unsigned int> syncingAccountsList;
     // Check active sessions
     QList<SyncSession *> activeSessions = iActiveSessions.values();
+
     foreach (SyncSession *session, activeSessions) {
         if (session->profile()) {
             SyncProfile *profile = session->profile();
@@ -1732,7 +1740,6 @@ QString Synchronizer::getLastSyncResult(const QString &aProfileId)
             }
             delete profile;
         } else {
-
             qCDebug(lcButeoMsyncd) << "No profile found with aProfileId" << aProfileId;
         }
     }
@@ -1771,7 +1778,6 @@ QString Synchronizer::syncProfile(const QString &aProfileId)
             delete profile;
             profile = nullptr;
         } else {
-
             qCDebug(lcButeoMsyncd) << "No profile found with aProfileId" << aProfileId;
         }
     }
@@ -1838,7 +1844,8 @@ void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionTy
     qCDebug(lcButeoMsyncd) << "Network state changed: OnLine:" << aState << " connection type:" <<  type;
 
     if (aState) {
-        qCDebug(lcButeoMsyncd) << "Restart sync for profiles that need network, checking profiles:" << iWaitingOnlineSyncs;
+        qCDebug(lcButeoMsyncd) << "Restart sync for profiles that need network, checking profiles:"
+                               << iWaitingOnlineSyncs;
         QStringList profiles(iWaitingOnlineSyncs);
         foreach (QString profileName, profiles) {
             SyncProfile *profile = iProfileManager.syncProfile(profileName);
@@ -1870,8 +1877,8 @@ void Synchronizer::onNetworkStateChanged(bool aState, Sync::InternetConnectionTy
 Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-    Profile *profile = 0;
     QList<SyncProfile *> profiles;
+
     if ("USB" == aAddress) {
         profiles = iProfileManager.getSyncProfilesByData(
                        QString::null, QString::null, KEY_DISPLAY_NAME, PC_SYNC);
@@ -1881,6 +1888,8 @@ Profile *Synchronizer::getSyncProfileByRemoteAddress(const QString &aAddress)
                                                          Buteo::KEY_BT_ADDRESS,
                                                          aAddress);
     }
+
+    Profile *profile = nullptr;
     if (!profiles.isEmpty()) {
         profile = profiles.first();
     }
@@ -1893,7 +1902,7 @@ QString Synchronizer::getValue(const QString &aAddress, const QString &aKey)
     QString value;
     if (Buteo::KEY_UUID == aKey) {
         iUUID = QUuid::createUuid().toString();
-        iUUID = iUUID.remove(QRegExp("[{}]"));
+        iUUID = iUUID.remove(QRegularExpression("[{}]"));
         value = iUUID;
     }
 
@@ -1932,18 +1941,21 @@ void Synchronizer::reportExternalSyncStatus(const SyncProfile *aProfile, bool fo
         // All external syncs are stopped while a backup or restore is running
         if (getBackUpRestoreState()) {
             if (iExternalSyncProfileStatus.value(profileName) || force) {
-                qCDebug(lcButeoMsyncd) << "Sync externally status suspended during backup for profile:" << profileName;
+                qCDebug(lcButeoMsyncd) << "Sync externally status suspended during backup for profile:"
+                                       << profileName;
                 iExternalSyncProfileStatus.insert(profileName, false);
                 emit syncedExternallyStatus(accountId, clientProfile, false);
             }
             // Account in set to sync externally, buteo will let external process handle the syncs in this case
         } else if (aProfile->syncExternallyEnabled()) {
             if (!iExternalSyncProfileStatus.value(profileName)) {
-                qCDebug(lcButeoMsyncd) << "Sync externally status changed from false to true for profile:" << profileName;
+                qCDebug(lcButeoMsyncd) << "Sync externally status changed from false to true for profile:"
+                                       << profileName;
                 iExternalSyncProfileStatus.insert(profileName, true);
                 emit syncedExternallyStatus(accountId, clientProfile, true);
             } else if (force) {
-                qCDebug(lcButeoMsyncd) << "Account is in set to sync externally for profile:" << profileName;
+                qCDebug(lcButeoMsyncd) << "Account is in set to sync externally for profile:"
+                                       << profileName;
                 emit syncedExternallyStatus(accountId, clientProfile, true);
             }
             // Account set to sync externally in rush mode
@@ -1951,20 +1963,25 @@ void Synchronizer::reportExternalSyncStatus(const SyncProfile *aProfile, bool fo
             // Check if we are currently inside rush
             bool isSyncExternally = aProfile->inExternalSyncRushPeriod();
             if (iExternalSyncProfileStatus.contains(profileName)) {
-                qCDebug(lcButeoMsyncd) << "We already have this profile, lets check the status for profile:" << profileName;
+                qCDebug(lcButeoMsyncd) << "We already have this profile, lets check the status for profile:"
+                                       << profileName;
                 bool prevSyncExtState = iExternalSyncProfileStatus.value(profileName);
+
                 if (prevSyncExtState != isSyncExternally) {
                     iExternalSyncProfileStatus.insert(profileName, isSyncExternally);
-                    qCDebug(lcButeoMsyncd) << "Sync externally status changed to " << isSyncExternally << "for profile:" << profileName;
+                    qCDebug(lcButeoMsyncd) << "Sync externally status changed to " << isSyncExternally
+                                           << "for profile:" << profileName;
                     emit syncedExternallyStatus(accountId, clientProfile, isSyncExternally);
                 } else if (force) {
-                    qCDebug(lcButeoMsyncd) << "Sync externally status did not change, current state is: " << prevSyncExtState << "for profile:" <<
+                    qCDebug(lcButeoMsyncd) << "Sync externally status did not change, current state is: "
+                                           << prevSyncExtState << "for profile:" <<
                               profileName;
                     emit syncedExternallyStatus(accountId, clientProfile, prevSyncExtState);
                 }
             } else {
                 iExternalSyncProfileStatus.insert(profileName, isSyncExternally);
-                qCDebug(lcButeoMsyncd) << "Inserting sync externally status:" << isSyncExternally << "for profile:" << profileName;
+                qCDebug(lcButeoMsyncd) << "Inserting sync externally status:" << isSyncExternally
+                                       << "for profile:" << profileName;
                 emit syncedExternallyStatus(accountId, clientProfile, isSyncExternally);
             }
         } else {
@@ -2033,6 +2050,7 @@ void Synchronizer::isSyncedExternally(unsigned int aAccountId, const QString aCl
     qCDebug(lcButeoMsyncd) << "Received isSyncedExternally request for account:" << aAccountId;
     bool profileFound = false;
     QList<SyncProfile *> syncProfiles = iAccounts->getProfilesByAccountId(aAccountId);
+
     if (!syncProfiles.isEmpty()) {
         foreach (SyncProfile *profile, syncProfiles) {
             if (profile->clientProfile()->name() == aClientProfileName) {
@@ -2042,8 +2060,10 @@ void Synchronizer::isSyncedExternally(unsigned int aAccountId, const QString aCl
             }
         }
     }
+
     if (!profileFound) {
-        qCDebug(lcButeoMsyncd) << "We don't have a profile for account:" << aAccountId << "emitting sync external status false";
+        qCDebug(lcButeoMsyncd) << "We don't have a profile for account:" << aAccountId
+                               << "emitting sync external status false";
         emit syncedExternallyStatus(aAccountId, QString(), false);
     }
     qDeleteAll(syncProfiles);

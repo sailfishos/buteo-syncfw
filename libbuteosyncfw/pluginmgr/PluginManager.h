@@ -130,11 +130,9 @@ public:
     void destroyServer(ServerPlugin *aPlugin);
 
 protected slots:
-
     void onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
-
     class DllInfo
     {
     public:

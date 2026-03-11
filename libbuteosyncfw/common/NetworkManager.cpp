@@ -20,6 +20,7 @@
  * 02110-1301 USA
  *
  */
+
 #include <QNetworkSession>
 #include <QNetworkConfiguration>
 #include <QNetworkConfigurationManager>
@@ -119,9 +120,10 @@ NetworkManager::~NetworkManager()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     delete m_networkSession;
-    m_networkSession = 0;
+    m_networkSession = nullptr;
+
     delete m_networkConfigManager;
-    m_networkConfigManager = 0;
+    m_networkConfigManager = nullptr;
 }
 
 bool NetworkManager::isOnline()
@@ -177,7 +179,7 @@ void NetworkManager::sessionConnectionTimeout()
 void NetworkManager::slotConfigurationChanged()
 {
     // wait for 3 secs before update connection status
-    // this avoid problems with connections that take a while to be stabilished
+    // this avoid problems with connections that take a while to be stabilized
     m_idleRefreshTimer.start(3000);
 }
 
@@ -207,7 +209,9 @@ void NetworkManager::idleRefresh()
     }
 
     const Sync::InternetConnectionType convertedConnectionType = convertNetworkConnectionType(connectionType);
-    qCInfo(lcButeoCore) << "New network state:" << isOnline << " New type: " << bearerTypeName << "(" << convertedConnectionType << ")";
+    qCInfo(lcButeoCore) << "Current network state:" << isOnline << " type:" << bearerTypeName
+                        << "(" << convertedConnectionType << ")";
+
     if (isOnline != m_isOnline || convertedConnectionType != m_connectionType) {
         m_isOnline = isOnline;
         m_connectionType = convertedConnectionType;
@@ -250,8 +254,8 @@ void NetworkManager::slotSessionState(QNetworkSession::State status)
         break;
     case QNetworkSession::Connected:
         qCWarning(lcButeoCore) << "QNetworkSession::Connected";
-        if (m_networkSession->isOpen() &&
-                m_networkSession->state() == QNetworkSession::Connected) {
+        if (m_networkSession->isOpen()
+            && m_networkSession->state() == QNetworkSession::Connected) {
             m_isSessionActive = true;
             emit connectionSuccess();
         } else {
@@ -316,4 +320,3 @@ void NetworkManager::slotSessionError(QNetworkSession::SessionError error)
         break;
     }
 }
-

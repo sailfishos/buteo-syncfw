@@ -13,7 +13,7 @@ mkdir -p "${TMP_DIR}"
 
 # Copy test data into tmp dir (read/write enabled location)
 mkdir -p "${TMP_DIR}/syncprofiletests"
-cp -a "${TESTS_DIR}/syncprofiletests/testprofiles" "${TMP_DIR}/syncprofiletests/"
+cp -R "${TESTS_DIR}/syncprofiletests/testprofiles" "${TMP_DIR}/syncprofiletests/"
 
 # Test data are searched with paths relative to CWD
 cd "${TMP_DIR}"

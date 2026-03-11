@@ -35,8 +35,8 @@ ServerPluginRunner::ServerPluginRunner(const QString &aPluginName,
                                        ServerActivator *aServerActivator, QObject *aParent)
     : PluginRunner(PLUGIN_SERVER, aPluginName, aPluginMgr, aPluginCbIf, aParent)
     , iProfile(aProfile)
-    , iPlugin(0)
-    , iThread(0)
+    , iPlugin(nullptr)
+    , iThread(nullptr)
     , iServerActivator(aServerActivator)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
@@ -49,16 +49,16 @@ ServerPluginRunner::~ServerPluginRunner()
     stop();
     disconnect();
 
-    if (iPlugin != 0 && iPluginMgr != 0) {
+    if (iPlugin && iPluginMgr) {
         iPluginMgr->destroyServer(iPlugin);
-        iPlugin = 0;
+        iPlugin = nullptr;
     }
 
     delete iThread;
-    iThread = 0;
+    iThread = nullptr;
 
     delete iProfile;
-    iProfile = 0;
+    iProfile = nullptr;
 }
 
 bool ServerPluginRunner::init()
@@ -68,13 +68,13 @@ bool ServerPluginRunner::init()
     if (iInitialized)
         return true;
 
-    if (iPluginMgr == 0 || iPluginCbIf == 0 || iProfile == 0) {
+    if (iPluginMgr == nullptr || iPluginCbIf == nullptr || iProfile == nullptr) {
         qCWarning(lcButeoMsyncd) << "Invalid members, failed to initialize";
         return false;
     }
 
     iPlugin = iPluginMgr->createServer(iPluginName, *iProfile, iPluginCbIf);
-    if (iPlugin == 0) {
+    if (iPlugin == nullptr) {
         qCWarning(lcButeoMsyncd) << "Failed to create server plug-in:" << iPluginName;
         return false;
     }
@@ -122,9 +122,10 @@ bool ServerPluginRunner::start()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool rv = false;
-    if (iInitialized && iThread != 0) {
+    if (iInitialized && iThread) {
         rv = iThread->startThread(iPlugin);
-        qCDebug(lcButeoMsyncd) << "ServerPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv;
+        qCDebug(lcButeoMsyncd) << "ServerPluginRunner started thread for plugin:" << iPlugin->getProfileName()
+                               << ", returning:" << rv;
     }
 
     return rv;
@@ -137,7 +138,7 @@ void ServerPluginRunner::stop()
     // Disconnect all signals from this object to the plug-in.
     disconnect(this, 0, iPlugin, 0);
 
-    if (iThread != 0) {
+    if (iThread) {
         iThread->stopThread();
         iThread->wait();
     }
@@ -147,7 +148,7 @@ void ServerPluginRunner::abort(Sync::SyncStatus aStatus)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iPlugin != 0) {
+    if (iPlugin) {
         iPlugin->abortSync(aStatus);
     }
 }
@@ -156,7 +157,7 @@ void ServerPluginRunner::suspend()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iPlugin != 0) {
+    if (iPlugin) {
         iPlugin->suspend();
     }
 }
@@ -165,7 +166,7 @@ void ServerPluginRunner::resume()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iPlugin != 0) {
+    if (iPlugin) {
         iPlugin->resume();
     }
 }
@@ -181,7 +182,7 @@ SyncResults ServerPluginRunner::syncResults()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iPlugin != 0) {
+    if (iPlugin) {
         return iPlugin->getSyncResults();
     } else {
         return SyncResults();
@@ -192,8 +193,8 @@ bool ServerPluginRunner::cleanUp()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    bool retval = false ;
-    if (iPlugin != 0) {
+    bool retval = false;
+    if (iPlugin) {
         retval = iPlugin->cleanUp();
     }
     return retval;
@@ -203,7 +204,7 @@ void ServerPluginRunner::onNewSession(const QString &aDestination)
 {
     // Add reference to the server plug-in, so that the plug-in
     // will not be stopped when there is a session running.
-    if (iServerActivator != 0) {
+    if (iServerActivator) {
         iServerActivator->addRef(plugin()->getProfileName());
     }
 

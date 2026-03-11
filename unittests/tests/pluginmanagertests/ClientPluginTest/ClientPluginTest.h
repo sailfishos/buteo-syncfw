@@ -42,22 +42,22 @@ public:
     }
 
     virtual void releaseStorage(const QString &/*aStorageName*/,
-                                const SyncPluginBase */*aCaller*/) { }
-
+                                const SyncPluginBase */*aCaller*/)
+    {}
 
     virtual StoragePlugin *createStorage(const QString &/*aPluginName*/)
     {
-        return NULL;
+        return nullptr;
     }
 
     virtual void destroyStorage(StoragePlugin */*aStorage*/) { }
 
     virtual QString getDeviceIMEI()
     {
-        return QString( "000000000000000" );
+        return QString("000000000000000");
     }
 
-    virtual bool isConnectivityAvailable( Sync::ConnectivityType /*aType*/ )
+    virtual bool isConnectivityAvailable(Sync::ConnectivityType /*aType*/)
     {
         return false;
     }
@@ -65,7 +65,7 @@ public:
     virtual Profile *getSyncProfileByRemoteAddress(const QString &aAddress)
     {
         Q_UNUSED(aAddress);
-        return 0;
+        return nullptr;
     }
 
     virtual QString getValue(const QString &aAddress, const QString &aKey)
@@ -76,11 +76,7 @@ public:
     }
 
 private slots:
-
     void testCreateDestroy();
-
-private:
-
 };
 
 }

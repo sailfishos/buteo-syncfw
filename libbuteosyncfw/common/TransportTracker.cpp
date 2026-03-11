@@ -35,11 +35,11 @@
 
 using namespace Buteo;
 
-TransportTracker::TransportTracker(QObject *aParent) :
-    QObject(aParent),
-    iUSBProxy(0),
-    iInternet(0),
-    iSystemBus(QDBusConnection::systemBus())
+TransportTracker::TransportTracker(QObject *aParent)
+    : QObject(aParent)
+    , iUSBProxy(nullptr)
+    , iInternet(nullptr)
+    , iSystemBus(QDBusConnection::systemBus())
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
@@ -200,7 +200,7 @@ void TransportTracker::onBtInterfacesRemoved(const QDBusObjectPath &path, const 
             if (path.path() != iDefaultBtAdapter)
                 continue;
 
-            qCDebug(lcButeoCore) << "DBus adapter path: " << iDefaultBtAdapter ;
+            qCDebug(lcButeoCore) << "DBus adapter path: " << iDefaultBtAdapter;
 
             if (!iSystemBus.disconnect(BT::BLUEZ_DEST,
                     iDefaultBtAdapter,
@@ -260,7 +260,7 @@ bool TransportTracker::btConnectivityStatus()
 
     QDBusReply<ObjectsMap> reply = manager.call(BT::GETMANAGEDOBJECTS);
     if (!reply.isValid()) {
-        qCWarning(lcButeoCore) << "Failed to connect BT ObjectManager: " << reply.error().message() ;
+        qCWarning(lcButeoCore) << "Failed to connect BT ObjectManager: " << reply.error().message();
         return false;
     }
 

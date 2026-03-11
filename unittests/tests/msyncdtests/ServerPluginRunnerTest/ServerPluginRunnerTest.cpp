@@ -40,7 +40,7 @@ void ServerPluginRunnerTest::initTestCase()
 
     iServerActivator = new ServerActivator(*iProfileManager, *iTransportTracker);
 
-    iPluginManager = new PluginManager(TEST_PLUGIN_PATH) ;
+    iPluginManager = new PluginManager(TEST_PLUGIN_PATH);
 
     // TODO: need to update with valid PluginCbInterface pointer
     iServerPluginRunner = new ServerPluginRunner("hdummy", iProfile, iPluginManager,

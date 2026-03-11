@@ -20,13 +20,14 @@
  * 02110-1301 USA
  *
  */
+
 #include "SyncLog.h"
 #include "LogMacros.h"
+
 #include <QDomDocument>
 #include <QtAlgorithms>
 
 #include "ProfileEngineDefs.h"
-
 
 namespace Buteo {
 
@@ -51,7 +52,6 @@ class SyncLogPrivate
 {
 public:
     SyncLogPrivate();
-
     SyncLogPrivate(const SyncLogPrivate &aSource);
 
     ~SyncLogPrivate();
@@ -73,12 +73,13 @@ public:
 using namespace Buteo;
 
 SyncLogPrivate::SyncLogPrivate()
-    :   iLastSuccessfulResults(0)
+    : iLastSuccessfulResults(0)
 {
 }
 
 SyncLogPrivate::SyncLogPrivate(const SyncLogPrivate &aSource)
-    :   iProfileName(aSource.iProfileName), iLastSuccessfulResults(0)
+    : iProfileName(aSource.iProfileName)
+    , iLastSuccessfulResults(0)
 {
     foreach (const SyncResults *results, aSource.iResults) {
         iResults.append(new SyncResults(*results));
@@ -104,19 +105,18 @@ void SyncLogPrivate::updateLastSuccessfulResults(const SyncResults &aResults)
 }
 
 SyncLog::SyncLog(const QString &aProfileName)
-    :   d_ptr(new SyncLogPrivate())
+    : d_ptr(new SyncLogPrivate())
 {
     d_ptr->iProfileName = aProfileName;
 }
 
 SyncLog::SyncLog(const QDomElement &aRoot)
-    :   d_ptr(new SyncLogPrivate())
+    : d_ptr(new SyncLogPrivate())
 {
     d_ptr->iProfileName = aRoot.attribute(ATTR_NAME);
 
     QDomElement results = aRoot.firstChildElement(TAG_SYNC_RESULTS);
-    for (; !results.isNull();
-            results = results.nextSiblingElement(TAG_SYNC_RESULTS)) {
+    for (; !results.isNull(); results = results.nextSiblingElement(TAG_SYNC_RESULTS)) {
         addResults(SyncResults(results));
     }
 
@@ -125,14 +125,14 @@ SyncLog::SyncLog(const QDomElement &aRoot)
 }
 
 SyncLog::SyncLog(const SyncLog &aSource)
-    :   d_ptr(new SyncLogPrivate(*aSource.d_ptr))
+    : d_ptr(new SyncLogPrivate(*aSource.d_ptr))
 {
 }
 
 SyncLog::~SyncLog()
 {
     delete d_ptr;
-    d_ptr = 0;
+    d_ptr = nullptr;
 }
 
 void SyncLog::setProfileName(const QString &aProfileName)
@@ -167,7 +167,7 @@ const SyncResults *SyncLog::lastResults() const
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     if (d_ptr->iResults.isEmpty()) {
-        return 0;
+        return nullptr;
     } else {
         return d_ptr->iResults.last();
     }
@@ -186,8 +186,7 @@ const SyncResults *SyncLog::lastSuccessfulResults() const
 void SyncLog::addResults(const SyncResults &aResults)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-    // To prevent the log growing too much, the maximum number of entries in
-    //the log is defined
+    // To prevent the log growing too much, the maximum number of entries in the log is defined
     const int MAXLOGENTRIES = 5;
 
     if (d_ptr->iResults.size() >= MAXLOGENTRIES) {

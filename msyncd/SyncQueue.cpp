@@ -136,4 +136,3 @@ const QList<SyncSession *> &SyncQueue::getQueuedSyncSessions() const
     FUNCTION_CALL_TRACE(lcButeoTrace);
     return iItems;
 }
-

@@ -80,17 +80,13 @@ public:
 
 private slots:
     // Slots for catching plug-in signals.
-
     void onTransferProgress(const QString &aProfileName,
                             Sync::TransferDatabase aDatabase, Sync::TransferType aType,
                             const QString &aMimeType, int aCommittedItems);
 
     void onError(const QString &aProfileName, const QString &aMessage, SyncResults::MinorCode aErrorCode);
-
     void onSuccess(const QString &aProfileName, const QString &aMessage);
-
     void onStorageAccquired(const QString &aMimeType);
-
     void onSyncProgressDetail(const QString &aProfileName, int aProgressDetail);
 
     // Slot for observing thread exit

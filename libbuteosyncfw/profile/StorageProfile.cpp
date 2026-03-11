@@ -20,10 +20,9 @@
  * 02110-1301 USA
  *
  */
+
 #include "StorageProfile.h"
 #include "ProfileEngineDefs.h"
-
-
 
 namespace Buteo {
 // Private implementation class for StorageProfile. Currently not needed, but
@@ -38,7 +37,6 @@ public:
 
 }
 
-
 using namespace Buteo;
 
 StorageProfilePrivate::StorageProfilePrivate()
@@ -51,27 +49,27 @@ StorageProfilePrivate::StorageProfilePrivate(
 }
 
 StorageProfile::StorageProfile(const QString &aName)
-    :   Profile(aName, Profile::TYPE_STORAGE),
-        d_ptr(new StorageProfilePrivate())
+    : Profile(aName, Profile::TYPE_STORAGE)
+    , d_ptr(new StorageProfilePrivate())
 {
 }
 
 StorageProfile::StorageProfile(const QDomElement &aRoot)
-    :   Profile(aRoot),
-        d_ptr(new StorageProfilePrivate())
+    : Profile(aRoot)
+    , d_ptr(new StorageProfilePrivate())
 {
 }
 
 StorageProfile::StorageProfile(const StorageProfile &aSource)
-    :   Profile(aSource),
-        d_ptr(new StorageProfilePrivate(*aSource.d_ptr))
+    : Profile(aSource)
+    , d_ptr(new StorageProfilePrivate(*aSource.d_ptr))
 {
 }
 
 StorageProfile::~StorageProfile()
 {
     delete d_ptr;
-    d_ptr = 0;
+    d_ptr = nullptr;
 }
 
 StorageProfile *StorageProfile::clone() const

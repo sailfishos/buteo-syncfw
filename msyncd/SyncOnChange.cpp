@@ -31,7 +31,7 @@ SyncOnChange::~SyncOnChange()
 bool SyncOnChange::enable(const QHash<QString, QList<SyncProfile *> > &aSOCStorageMap,
                           SyncOnChangeScheduler *aSOCScheduler,
                           PluginManager *aPluginManager,
-                          QStringList &aFailedStorages)
+                          QStringList *aFailedStorages)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
     bool enabled = false;
@@ -42,11 +42,12 @@ bool SyncOnChange::enable(const QHash<QString, QList<SyncProfile *> > &aSOCStora
     storages = getSOCStorageNames();
     iStorageChangeNotifier->loadNotifiers(aPluginManager, storages);
     enabled = iStorageChangeNotifier->startListen(aFailedStorages);
-    for (QStringList::const_iterator failedStorageItr = aFailedStorages.constBegin();
-            failedStorageItr != aFailedStorages.constEnd(); ++failedStorageItr) {
+
+    for (QStringList::const_iterator failedStorageItr = aFailedStorages->constBegin();
+            failedStorageItr != aFailedStorages->constEnd(); ++failedStorageItr) {
         cleanup(*failedStorageItr);
     }
-    if (storages.count() > aFailedStorages.count()) {
+    if (storages.count() > aFailedStorages->count()) {
         QObject::connect(iStorageChangeNotifier, SIGNAL(storageChange(QString)),
                          this, SLOT(sync(QString)));
     }
@@ -58,8 +59,9 @@ void SyncOnChange::enable()
     FUNCTION_CALL_TRACE(lcButeoTrace);
     if (iStorageChangeNotifier) {
         QStringList aFailedStorages;
-        bool enabled = iStorageChangeNotifier->startListen(aFailedStorages);
+        bool enabled = iStorageChangeNotifier->startListen(&aFailedStorages);
         Q_UNUSED(enabled);
+
         for (QStringList::const_iterator failedStorageItr = aFailedStorages.constBegin();
                 failedStorageItr != aFailedStorages.constEnd(); ++failedStorageItr) {
             cleanup(*failedStorageItr);

@@ -43,7 +43,6 @@ QSharedPointer<SyncClientInterface> SyncClientInterface::sharedInstance()
 SyncClientInterface::SyncClientInterface():
     d_ptr(new SyncClientInterfacePrivate(this))
 {
-
 }
 
 SyncClientInterface::~SyncClientInterface()
@@ -134,7 +133,8 @@ QStringList SyncClientInterface::syncProfilesByKey(const QString &aKey, const QS
     return d_ptr->syncProfilesByKey(aKey, aValue);
 }
 
-QDBusPendingCallWatcher* SyncClientInterface::requestSyncProfilesByKey(const QString &aKey, const QString &aValue, QObject *aParent) const
+QDBusPendingCallWatcher* SyncClientInterface::requestSyncProfilesByKey(const QString &aKey, const QString &aValue,
+                                                                       QObject *aParent) const
 {
     return d_ptr->requestSyncProfilesByKey(aKey, aValue, aParent);
 }

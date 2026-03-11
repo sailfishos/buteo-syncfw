@@ -9,8 +9,7 @@ namespace Buteo {
 class StorageChangeNotifierPlugin;
 class PluginManager;
 
-/*! \brief Notifies about changes in storages
- * that it's asked to monitor
+/*! \brief Notifies about changes in storages that it's asked to monitor
  */
 class StorageChangeNotifier : public QObject
 {
@@ -35,11 +34,11 @@ public:
 
     /*! Call this to start monitoring changes in storages
      *
-     * @param list of storage names which can't be monitored
+     * @param failedStorages of storage names which can't be monitored
      * @return true if we can monitor all storages requested for
      * false otherwise
      */
-    bool startListen(QStringList &aFailedStorages);
+    bool startListen(QStringList *failedStorages);
 
     /*! \brief call this to ignore taking action on
      * storage changes. Whether there was a change can
@@ -66,10 +65,9 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     /*! emit this signal if a storage changed
-     *
      * @param storageName name of the storage that changed
      */
-    void storageChange(QString aStorageName);
+    void storageChange(QString storageName);
 
 private:
     QHash<QString, StorageChangeNotifierPlugin *> iNotifierMap;

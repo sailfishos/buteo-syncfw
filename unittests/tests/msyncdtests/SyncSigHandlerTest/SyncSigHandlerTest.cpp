@@ -30,20 +30,19 @@
 
 using namespace Buteo;
 
-void SyncSigHandlerTest :: init()
+void SyncSigHandlerTest::init()
 {
     // initiate sighandler
     iSigHandler = new SyncSigHandler();
 }
 
-void SyncSigHandlerTest :: cleanup()
+void SyncSigHandlerTest::cleanup()
 {
-    delete iSigHandler ;
+    delete iSigHandler;
     iSigHandler = nullptr;
 }
 
-
-void SyncSigHandlerTest :: testSigTerm()
+void SyncSigHandlerTest::testSigTerm()
 {
     //kill("TERM", 'pidof msyncd');
     qDebug() << "Check there should not be any core dump in /home/user/Mydocs/core-dumps";

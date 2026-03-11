@@ -82,7 +82,6 @@ bool killProcess(const QString &exePath, const QStringList &args)
     return false;
 }
 
-
 }
 
 using namespace Buteo;
@@ -125,7 +124,7 @@ StorageChangeNotifierPlugin *PluginManager::createStorageChangeNotifier(const QS
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iStorageChangeNotifierMaps.contains(aStorageName)) {
-        qCCritical(lcButeoCore) << "Library for the storage change notifier" << aStorageName << "does not exist" ;
+        qCCritical(lcButeoCore) << "Library for the storage change notifier" << aStorageName << "does not exist";
         return nullptr;
     }
 
@@ -156,13 +155,13 @@ void PluginManager::destroyStorageChangeNotifier(StorageChangeNotifierPlugin *aP
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aPlugin == 0)
+    if (aPlugin == nullptr)
         return;
 
     QString storageName = aPlugin->name();
 
     if (!iStorageChangeNotifierMaps.contains(storageName)) {
-        qCCritical(lcButeoCore) << "Library for the storage change notifier" << storageName << "does not exist" ;
+        qCCritical(lcButeoCore) << "Library for the storage change notifier" << storageName << "does not exist";
         return;
     }
 
@@ -174,14 +173,13 @@ StoragePlugin *PluginManager::createStorage(const QString &aPluginName)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (!iStorageMaps.contains(aPluginName)) {
-        qCCritical(lcButeoCore) << "Library for the storage" << aPluginName << "does not exist" ;
+        qCCritical(lcButeoCore) << "Library for the storage" << aPluginName << "does not exist";
         return nullptr;
     }
 
     QString libraryName = iStorageMaps.value(aPluginName);
 
-    if (StoragePlugin * plugin
-            = qobject_cast<StoragePlugin *>(acquireLoadedPlugin(libraryName))) {
+    if (StoragePlugin *plugin = qobject_cast<StoragePlugin *>(acquireLoadedPlugin(libraryName))) {
         return plugin;
     }
 
@@ -205,13 +203,13 @@ void PluginManager::destroyStorage(StoragePlugin *aPlugin)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aPlugin == 0)
+    if (aPlugin == nullptr)
         return;
 
     QString pluginName = aPlugin->getPluginName();
 
     if (!iStorageMaps.contains(pluginName)) {
-        qCCritical(lcButeoCore) << "Library for the storage" << pluginName << "does not exist" ;
+        qCCritical(lcButeoCore) << "Library for the storage" << pluginName << "does not exist";
         return;
     }
 
@@ -224,23 +222,20 @@ ClientPlugin *PluginManager::createClient(const QString &aPluginName,
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (!iClientMaps.contains(aPluginName) &&
-            !iOopClientMaps.contains(aPluginName)) {
-        qCCritical(lcButeoCore) << "Library for the client" << aPluginName << "does not exist" ;
+    if (!iClientMaps.contains(aPluginName) && !iOopClientMaps.contains(aPluginName)) {
+        qCCritical(lcButeoCore) << "Library for the client" << aPluginName << "does not exist";
         return nullptr;
     }
 
     if (iClientMaps.contains(aPluginName)) {
         QString libraryName = iClientMaps.value(aPluginName);
 
-        if (ClientPlugin * plugin
-                = qobject_cast<ClientPlugin *>(acquireLoadedPlugin(libraryName))) {
+        if (ClientPlugin *plugin = qobject_cast<ClientPlugin *>(acquireLoadedPlugin(libraryName))) {
             return plugin;
         }
 
         QPluginLoader *pluginLoader = new QPluginLoader(libraryName, this);
-        if (SyncPluginLoader * syncPluginLoader
-                = qobject_cast<SyncPluginLoader *>(pluginLoader->instance())) {
+        if (SyncPluginLoader * syncPluginLoader = qobject_cast<SyncPluginLoader *>(pluginLoader->instance())) {
             ClientPlugin *plugin = syncPluginLoader->createClientPlugin(aPluginName, aProfile, aCbInterface);
             if (plugin) {
                 addLoadedPlugin(libraryName, pluginLoader, plugin);
@@ -259,7 +254,7 @@ ClientPlugin *PluginManager::createClient(const QString &aPluginName,
         QProcess *process = startOOPPlugin(aPluginName, aProfile.name(), libraryName);
 
         if (process == nullptr) {
-            qCCritical(lcButeoCore) << "Could not start process" ;
+            qCCritical(lcButeoCore) << "Could not start process";
             return nullptr;
         }
 
@@ -274,14 +269,13 @@ void PluginManager::destroyClient(ClientPlugin *aPlugin)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aPlugin == 0)
+    if (aPlugin == nullptr)
         return;
 
     QString pluginName = aPlugin->getPluginName();
 
-    if (!iClientMaps.contains(pluginName) &&
-            !iOopClientMaps.contains(pluginName)) {
-        qCCritical(lcButeoCore) << "Library for the client plugin" << pluginName << "does not exist" ;
+    if (!iClientMaps.contains(pluginName) && !iOopClientMaps.contains(pluginName)) {
+        qCCritical(lcButeoCore) << "Library for the client plugin" << pluginName << "does not exist";
         return;
     }
 
@@ -303,9 +297,8 @@ ServerPlugin *PluginManager::createServer(const QString &aPluginName,
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (!iServerMaps.contains(aPluginName) &&
-            !iOoPServerMaps.contains(aPluginName)) {
-        qCCritical(lcButeoCore) << "Library for the server" << aPluginName << "does not exist" ;
+    if (!iServerMaps.contains(aPluginName) && !iOoPServerMaps.contains(aPluginName)) {
+        qCCritical(lcButeoCore) << "Library for the server" << aPluginName << "does not exist";
         return nullptr;
     }
 
@@ -313,8 +306,7 @@ ServerPlugin *PluginManager::createServer(const QString &aPluginName,
         // Load the plugin library
         QString libraryName = iServerMaps.value(aPluginName);
 
-        if (ServerPlugin * plugin
-                = qobject_cast<ServerPlugin *>(acquireLoadedPlugin(libraryName))) {
+        if (ServerPlugin *plugin = qobject_cast<ServerPlugin *>(acquireLoadedPlugin(libraryName))) {
             return plugin;
         }
 
@@ -339,7 +331,7 @@ ServerPlugin *PluginManager::createServer(const QString &aPluginName,
         QProcess *process = startOOPPlugin(aPluginName, aProfile.name(), libraryName);
 
         if (process == nullptr) {
-            qCCritical(lcButeoCore) << "Could not start server plugin process" ;
+            qCCritical(lcButeoCore) << "Could not start server plugin process";
             return nullptr;
         }
 
@@ -356,14 +348,13 @@ void PluginManager::destroyServer(ServerPlugin *aPlugin)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (aPlugin == 0)
+    if (aPlugin == nullptr)
         return;
 
     QString pluginName = aPlugin->getPluginName();
 
-    if (!iServerMaps.contains(pluginName) &&
-            !iOoPServerMaps.contains(pluginName)) {
-        qCCritical(lcButeoCore) << "Library for the server plugin" << pluginName << "does not exist" ;
+    if (!iServerMaps.contains(pluginName) && !iOoPServerMaps.contains(pluginName)) {
+        qCCritical(lcButeoCore) << "Library for the server plugin" << pluginName << "does not exist";
         return;
     }
 
@@ -385,10 +376,9 @@ void PluginManager::loadPluginMaps(const QString &pluginDirPath, const QString &
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QDir pluginDirectory(pluginDirPath);
-
     QStringList entries = pluginDirectory.entryList(QDir::Files);
-
     QStringList::const_iterator listIterator = entries.constBegin();
+
     while (listIterator != entries.constEnd()) {
         QString file = (*listIterator);
 
@@ -466,18 +456,19 @@ QProcess *PluginManager::startOOPPlugin(const QString &aPluginName,
         iLoadedDlls.append(info);
         iDllLock.unlock();
 
-        qCDebug(lcButeoCore) << "Process " << process->program() << " started with pid " << process->pid() ;
+        qCDebug(lcButeoCore) << "Process " << process->program() << " started with pid " << process->pid();
         if (!pluginHasRegistered) {
-            qCDebug(lcButeoCore) << "Process " << process->program() << " with pid " << process->pid() <<
-                       "was unable to register DBus service: " << clientPluginDBusServiceName << "|" << serverPluginDBusServiceName ;
+            qCDebug(lcButeoCore) << "Process " << process->program() << " with pid " << process->pid()
+                                 << "was unable to register DBus service: " << clientPluginDBusServiceName
+                                 << "|" << serverPluginDBusServiceName;
         }
         connect(process, SIGNAL(finished(int, QProcess::ExitStatus)),
                 this, SLOT(onProcessFinished(int, QProcess::ExitStatus)));
         return process;
 
     } else {
-        qCCritical(lcButeoCore) << "Unable to start process plugin " << aPluginFilePath <<
-                     ". Error " << process->error();
+        qCCritical(lcButeoCore) << "Unable to start process plugin " << aPluginFilePath
+                                << ". Error " << process->error();
         delete process;
         return nullptr;
     }
@@ -488,7 +479,6 @@ void PluginManager::stopOOPPlugin(const QString &aPath)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QProcess *process = nullptr;
-
     iDllLock.lockForWrite();
 
     for (int i = 0; i < iLoadedDlls.size(); ++i) {
@@ -515,7 +505,7 @@ void PluginManager::onProcessFinished(int exitCode, QProcess::ExitStatus)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QProcess *process = (QProcess *)sender();
-    qCDebug(lcButeoCore) << "Process " << process->program() << " finished with exit code" << exitCode ;
+    qCDebug(lcButeoCore) << "Process " << process->program() << " finished with exit code" << exitCode;
 
     iDllLock.lockForWrite();
 

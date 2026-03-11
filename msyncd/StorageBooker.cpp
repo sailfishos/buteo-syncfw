@@ -128,9 +128,8 @@ bool StorageBooker::isStorageAvailable(const QString &aStorageName,
 
     QMutexLocker locker(&iMutex);
 
-    return (!iStorageMap.contains(aStorageName) ||
-            (!aClientId.isEmpty() &&
-             (aClientId == iStorageMap[aStorageName].iClientId)));
+    return (!iStorageMap.contains(aStorageName)
+            || (!aClientId.isEmpty() && (aClientId == iStorageMap[aStorageName].iClientId)));
 
 }
 

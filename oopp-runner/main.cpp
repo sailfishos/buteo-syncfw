@@ -19,9 +19,11 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 * 02110-1301 USA
 */
+
 #include <QCoreApplication>
 #include <QDBusConnection>
-#include <QRegExp>
+#include <QRegularExpression>
+
 #include "PluginServiceObj.h"
 #include "ButeoPluginIfaceAdaptor.h"
 #include "Logger.h"
@@ -41,7 +43,7 @@ int main(int argc, char **argv)
     QStringList args = app.arguments();
 
     if (args.length() < 4) {
-        qCCritical(lcButeoPlugin) << "Plugin name, profile name and plugin path not obtained from cmdline" ;
+        qCCritical(lcButeoPlugin) << "Plugin name, profile name and plugin path not obtained from cmdline";
     }
 
     const QString pluginName = args.value(1);
@@ -54,19 +56,16 @@ int main(int argc, char **argv)
 
     // randomly-generated profile names cannot be registered
     // as dbus service paths due to being purely numeric.
-    int numericIdx = profileName.indexOf(QRegExp("[0123456789]"));
-    QString servicePath = numericIdx == 0
-                          ? QString(QLatin1String("%1%2%3"))
-                          .arg(DBUS_SERVICE_NAME_PREFIX)
-                          .arg("profile-")
-                          .arg(profileName)
-                          : QString(QLatin1String("%1%2"))
-                          .arg(DBUS_SERVICE_NAME_PREFIX)
-                          .arg(profileName);
+    int numericIdx = profileName.indexOf(QRegularExpression("[0123456789]"));
 
-    int retn;
-    qCDebug(lcButeoPlugin) << "attempting to register dbus service:" << servicePath ;
+    QString servicePath = numericIdx == 0
+                              ? QLatin1String(DBUS_SERVICE_NAME_PREFIX) + QStringLiteral("profile-") + profileName
+                              : QLatin1String(DBUS_SERVICE_NAME_PREFIX) + profileName;
+
+    qCDebug(lcButeoPlugin) << "attempting to register dbus service:" << servicePath;
     QDBusConnection connection = QDBusConnection::sessionBus();
+    int retn;
+
     if (connection.registerObject(DBUS_SERVICE_OBJ_PATH, serviceObj)) {
         if (connection.registerService(servicePath)) {
             qCDebug(lcButeoPlugin) << "Plugin " << pluginName << " with profile "

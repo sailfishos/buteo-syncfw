@@ -35,7 +35,8 @@ namespace Buteo {
 class TargetResultsPrivate;
 
 //! \brief Container for number of items added, deleted and modified.
-struct ItemCounts {
+struct ItemCounts
+{
     Q_GADGET
     Q_PROPERTY(unsigned added MEMBER added)
     Q_PROPERTY(unsigned deleted MEMBER deleted)
@@ -52,11 +53,14 @@ public:
     unsigned modified;
 
     //! Default Constructor
-    ItemCounts() : added(0), deleted(0), modified(0) { };
+    ItemCounts()
+        : added(0), deleted(0), modified(0)
+    {}
 
     //! Constructor with 3 parameters
     ItemCounts(unsigned aAdded, unsigned aDeleted, unsigned aModified)
-        : added(aAdded), deleted(aDeleted), modified(aModified) {}
+        : added(aAdded), deleted(aDeleted), modified(aModified)
+    {}
 };
 
 /*! \brief Sync results for one target.
@@ -224,16 +228,24 @@ public:
     Q_INVOKABLE QString remoteMessage(const QString &aUid) const;
 
 private:
-
     QStringList localAdditions() const { return localDetails(ITEM_ADDED, ITEM_OPERATION_SUCCEEDED); }
     QStringList localDeletions() const { return localDetails(ITEM_DELETED, ITEM_OPERATION_SUCCEEDED); }
     QStringList localModifications() const { return localDetails(ITEM_MODIFIED, ITEM_OPERATION_SUCCEEDED); }
-    QStringList localFailures() const { return localDetails(ITEM_ADDED, ITEM_OPERATION_FAILED) + localDetails(ITEM_MODIFIED, ITEM_OPERATION_FAILED) + localDetails(ITEM_DELETED, ITEM_OPERATION_FAILED); }
+    QStringList localFailures() const {
+        return localDetails(ITEM_ADDED, ITEM_OPERATION_FAILED)
+               + localDetails(ITEM_MODIFIED, ITEM_OPERATION_FAILED)
+               + localDetails(ITEM_DELETED, ITEM_OPERATION_FAILED);
+    }
 
     QStringList remoteAdditions() const { return remoteDetails(ITEM_ADDED, ITEM_OPERATION_SUCCEEDED); }
     QStringList remoteDeletions() const { return remoteDetails(ITEM_DELETED, ITEM_OPERATION_SUCCEEDED); }
     QStringList remoteModifications() const { return remoteDetails(ITEM_MODIFIED, ITEM_OPERATION_SUCCEEDED); }
-    QStringList remoteFailures() const { return remoteDetails(ITEM_ADDED, ITEM_OPERATION_FAILED) + remoteDetails(ITEM_MODIFIED, ITEM_OPERATION_FAILED) + remoteDetails(ITEM_DELETED, ITEM_OPERATION_FAILED); }
+    QStringList remoteFailures() const
+    {
+        return remoteDetails(ITEM_ADDED, ITEM_OPERATION_FAILED)
+               + remoteDetails(ITEM_MODIFIED, ITEM_OPERATION_FAILED)
+               + remoteDetails(ITEM_DELETED, ITEM_OPERATION_FAILED);
+    }
 
     TargetResultsPrivate *d_ptr;
 };

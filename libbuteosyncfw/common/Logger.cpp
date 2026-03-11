@@ -72,4 +72,3 @@ Q_LOGGING_CATEGORY(lcButeoCore, "buteo.core", QtWarningMsg)
 Q_LOGGING_CATEGORY(lcButeoMsyncd, "buteo.msyncd", QtWarningMsg)
 Q_LOGGING_CATEGORY(lcButeoPlugin, "buteo.plugin", QtWarningMsg)
 Q_LOGGING_CATEGORY(lcButeoTrace, "buteo.trace", QtWarningMsg)
-

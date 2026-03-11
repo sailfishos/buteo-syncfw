@@ -28,7 +28,6 @@
 
 namespace Buteo {
 
-
 class ServerActivator;
 class ServerPlugin;
 class ServerThread;
@@ -110,7 +109,6 @@ private:
 #ifdef SYNCFW_UNIT_TESTS
     friend class ServerPluginRunnerTest;
 #endif
-
 };
 
 }

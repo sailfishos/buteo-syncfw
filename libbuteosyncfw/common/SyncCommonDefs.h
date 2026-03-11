@@ -100,8 +100,9 @@ enum InternetConnectionType {
 // special intervals to be handled without additional SyncSchedule attributes.
 enum ExtendedSyncInterval : unsigned int {
     // Sync is scheduled one month after the last successful sync.
-    SYNC_INTERVAL_MONTHLY = 365 * 24 * 60 * 2,   // Start the named interval values at an unlikely minute-based interval ((365 * 24 * 60 * 2) = 1051200 minutes = 2 years)
-
+    // Start the named interval values at an unlikely minute-based interval
+    // ((365 * 24 * 60 * 2) = 1051200 minutes = 2 years)
+    SYNC_INTERVAL_MONTHLY = 365 * 24 * 60 * 2,
     // Sync is scheduled on the first day of each month.
     SYNC_INTERVAL_FIRST_DAY_OF_MONTH,
 
@@ -111,10 +112,9 @@ enum ExtendedSyncInterval : unsigned int {
 
 } // namespace Sync
 
-Q_DECLARE_METATYPE( Sync::SyncStatus );
-Q_DECLARE_METATYPE( Sync::TransferDatabase );
-Q_DECLARE_METATYPE( Sync::TransferType );
-Q_DECLARE_METATYPE( Sync::ConnectivityType );
-
+Q_DECLARE_METATYPE(Sync::SyncStatus);
+Q_DECLARE_METATYPE(Sync::TransferDatabase);
+Q_DECLARE_METATYPE(Sync::TransferType);
+Q_DECLARE_METATYPE(Sync::ConnectivityType);
 
 #endif // SYNCCOMMONDEFS_H

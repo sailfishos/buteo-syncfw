@@ -20,14 +20,17 @@
  * 02110-1301 USA
  *
  */
+
 #include "TargetResults.h"
 #include "ProfileEngineDefs.h"
 #include "LogMacros.h"
+
 #include <QDomDocument>
 
 namespace Buteo {
 
-struct ItemDetails {
+struct ItemDetails
+{
     QString uid;
     TargetResults::ItemOperationStatus status;
     QString message;
@@ -57,7 +60,7 @@ struct ItemDetails {
             item.appendChild(aDoc.createCDATASection(message));
         }
         return item;
-    };
+    }
 
     static QList<ItemDetails> fromXml(const QDomElement &aRoot, const QString &aTag)
     {
@@ -71,7 +74,7 @@ struct ItemDetails {
             item = item.nextSiblingElement(aTag);
         };
         return out;
-    };
+    }
 
     static QList<QString> filterStatus(const QList<ItemDetails> &aList,
                                        TargetResults::ItemOperationStatus aStatus)
@@ -128,31 +131,31 @@ TargetResultsPrivate::TargetResultsPrivate()
 }
 
 TargetResultsPrivate::TargetResultsPrivate(const TargetResultsPrivate &aSource)
-    :   iTargetName(aSource.iTargetName),
-        iLocalItems(aSource.iLocalItems),
-        iLocalAdditions(aSource.iLocalAdditions),
-        iLocalDeletions(aSource.iLocalDeletions),
-        iLocalModifications(aSource.iLocalModifications),
-        iRemoteItems(aSource.iRemoteItems),
-        iRemoteAdditions(aSource.iRemoteAdditions),
-        iRemoteDeletions(aSource.iRemoteDeletions),
-        iRemoteModifications(aSource.iRemoteModifications)
+    : iTargetName(aSource.iTargetName)
+    , iLocalItems(aSource.iLocalItems)
+    , iLocalAdditions(aSource.iLocalAdditions)
+    , iLocalDeletions(aSource.iLocalDeletions)
+    , iLocalModifications(aSource.iLocalModifications)
+    , iRemoteItems(aSource.iRemoteItems)
+    , iRemoteAdditions(aSource.iRemoteAdditions)
+    , iRemoteDeletions(aSource.iRemoteDeletions)
+    , iRemoteModifications(aSource.iRemoteModifications)
 {
 }
 
 TargetResults::TargetResults()
-    :   d_ptr(new TargetResultsPrivate())
+    : d_ptr(new TargetResultsPrivate())
 {
 }
 
 TargetResults::TargetResults(const TargetResults &aSource)
-    :   d_ptr(new TargetResultsPrivate(*aSource.d_ptr))
+    : d_ptr(new TargetResultsPrivate(*aSource.d_ptr))
 {
 }
 
 TargetResults::TargetResults(const QString &aTargetName,
                              ItemCounts aLocalItems, ItemCounts aRemoteItems)
-    :   d_ptr(new TargetResultsPrivate())
+    : d_ptr(new TargetResultsPrivate())
 {
     d_ptr->iTargetName = aTargetName;
     d_ptr->iLocalItems = aLocalItems;
@@ -160,7 +163,7 @@ TargetResults::TargetResults(const QString &aTargetName,
 }
 
 TargetResults::TargetResults(const QDomElement &aRoot)
-    :   d_ptr(new TargetResultsPrivate())
+    : d_ptr(new TargetResultsPrivate())
 {
     d_ptr->iTargetName = aRoot.attribute(ATTR_NAME);
 
@@ -188,7 +191,7 @@ TargetResults::TargetResults(const QDomElement &aRoot)
 TargetResults::~TargetResults()
 {
     delete d_ptr;
-    d_ptr = 0;
+    d_ptr = nullptr;
 }
 
 TargetResults &TargetResults::operator=(const TargetResults &aRhs)

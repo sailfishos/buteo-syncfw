@@ -20,6 +20,7 @@
  * 02110-1301 USA
  *
  */
+
 #include "StorageItem.h"
 
 using namespace Buteo;
@@ -71,4 +72,3 @@ const QString &StorageItem::getVersion() const
 {
     return iVersion;
 }
-

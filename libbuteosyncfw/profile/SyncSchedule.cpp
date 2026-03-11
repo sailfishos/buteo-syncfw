@@ -81,6 +81,7 @@ SyncSchedule::SyncSchedule(const QDomElement &aRoot)
     d_ptr->iScheduleConfiguredTime = QDateTime::fromString(aRoot.attribute(ATTR_SYNC_CONFIGURE), Qt::ISODate);
 
     QDomElement rush = aRoot.firstChildElement(TAG_RUSH);
+
     if (!rush.isNull()) {
         d_ptr->iRushEnabled = (rush.attribute(ATTR_ENABLED) == BOOLEAN_TRUE);
         d_ptr->iExternalRushEnabled = (rush.attribute(ATTR_EXTERNAL_SYNC) == BOOLEAN_TRUE);
@@ -98,7 +99,7 @@ SyncSchedule::SyncSchedule(const QDomElement &aRoot)
 SyncSchedule::~SyncSchedule()
 {
     delete d_ptr;
-    d_ptr = 0;
+    d_ptr = nullptr;
 }
 
 SyncSchedule &SyncSchedule::operator=(const SyncSchedule &aRhs)
@@ -115,24 +116,15 @@ bool SyncSchedule::operator==(const SyncSchedule &aRhs) const
 {
     if (&aRhs == this)
         return true;
-    if (d_ptr->iRushDays != aRhs.d_ptr->iRushDays)
-        return false;
-    else if (d_ptr->iRushBegin != aRhs.d_ptr->iRushBegin)
-        return false;
-    else if (d_ptr->iRushEnd != aRhs.d_ptr->iRushEnd)
-        return false;
-    else if (d_ptr->iRushInterval != aRhs.d_ptr->iRushInterval)
-        return false;
-    else if (d_ptr->iInterval  != aRhs.d_ptr->iInterval)
-        return false;
-    else if (d_ptr->iEnabled  != aRhs.d_ptr->iEnabled)
-        return false;
-    else if (d_ptr->iRushEnabled  != aRhs.d_ptr->iRushEnabled)
-        return false;
-    else if (d_ptr->iExternalRushEnabled  != aRhs.d_ptr->iExternalRushEnabled)
-        return false;
 
-    return true;
+    return (d_ptr->iRushDays == aRhs.d_ptr->iRushDays)
+           && (d_ptr->iRushBegin == aRhs.d_ptr->iRushBegin)
+           && (d_ptr->iRushEnd == aRhs.d_ptr->iRushEnd)
+           && (d_ptr->iRushInterval == aRhs.d_ptr->iRushInterval)
+           && (d_ptr->iInterval == aRhs.d_ptr->iInterval)
+           && (d_ptr->iEnabled == aRhs.d_ptr->iEnabled)
+           && (d_ptr->iRushEnabled == aRhs.d_ptr->iRushEnabled)
+           && (d_ptr->iExternalRushEnabled == aRhs.d_ptr->iExternalRushEnabled);
 }
 
 QDomElement SyncSchedule::toXml(QDomDocument &aDoc) const
@@ -296,8 +288,8 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
     QDateTime scheduleConfiguredTime = d_ptr->iScheduleConfiguredTime;
     QDateTime now = QDateTime::currentDateTime();
 
-    qCDebug(lcButeoCore) << "aPrevSync" << aPrevSync.toString() << "Last Configured Time " << scheduleConfiguredTime.toString()
-              << "CurrentDateTime" << now;
+    qCDebug(lcButeoCore) << "aPrevSync" << aPrevSync.toString() << "Last Configured Time "
+                         << scheduleConfiguredTime.toString() << "CurrentDateTime" << now;
 
     if (d_ptr->iTime.isValid() && d_ptr->iDays != SyncSchedule::NoDays) {
         // The sync time is defined explicitly (for ex. every Mon, Wed, at
@@ -379,8 +371,9 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             nextSyncRush = nextSyncRush.addDays(1);
         }
         d_ptr->adjustDate(nextSyncRush, d_ptr->iRushDays);
-        qCDebug(lcButeoCore) << "Rush controlled by external process, next scheduled sync at rush " << (isRush ? "end" : "begin") <<
-                  nextSyncRush.toString();
+        qCDebug(lcButeoCore) << "Rush controlled by external process, next scheduled sync at rush "
+                             << (isRush ? "end" : "begin") << nextSyncRush.toString();
+
         // Use next sync time calculated with rush settings if necessary.
         if (nextSyncRush.isValid()) {
             // check to see if we should use it, or instead use the next non-rush sync time.
@@ -399,7 +392,8 @@ QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
             }
         }
     } else if (d_ptr->iRushEnabled && d_ptr->iRushInterval > 0 && !d_ptr->iExternalRushEnabled) {
-        qCDebug(lcButeoCore) << "Calculating next sync time with rush settings. Rush Interval is " << d_ptr->iRushInterval;
+        qCDebug(lcButeoCore) << "Calculating next sync time with rush settings. Rush Interval is "
+                             << d_ptr->iRushInterval;
         // Calculate next sync time with rush settings.
         QDateTime nextSyncRush;
         bool nextSyncRushInNextRushPeriod = false;
@@ -485,7 +479,8 @@ QDateTime SyncSchedule::nextRushSwitchTime(const QDateTime &aFromTime) const
             return QDateTime(aFromTime.date(), d_ptr->iRushEnd);
         } else {
             // If rush day and before rush end next switch is at rush begin
-            if (SyncSchedulePrivate::daysMatch(d_ptr->iRushDays, aFromTime.date().dayOfWeek()) && aFromTime.time() < d_ptr->iRushBegin) {
+            if (SyncSchedulePrivate::daysMatch(d_ptr->iRushDays, aFromTime.date().dayOfWeek())
+                && aFromTime.time() < d_ptr->iRushBegin) {
                 return QDateTime(aFromTime.date(), d_ptr->iRushBegin);
             } else {
                 // Not a rush day or the rush period has ended, attemp switch at next day rush begin,
@@ -655,6 +650,6 @@ bool SyncSchedulePrivate::adjustDate(QDateTime &aTime, SyncSchedule::Days aDays)
 
 bool SyncSchedulePrivate::isRush(const QDateTime &aTime) const
 {
-    return (daysMatch(iRushDays, aTime.date().dayOfWeek()) &&
-            aTime.time() >= iRushBegin && aTime.time() < iRushEnd);
+    return (daysMatch(iRushDays, aTime.date().dayOfWeek())
+            && aTime.time() >= iRushBegin && aTime.time() < iRushEnd);
 }

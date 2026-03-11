@@ -64,7 +64,7 @@ hcitool.
     syncml-ds-tool -b <bluetooth address> 26 --identifier "PC Suite" --sync text/x-vcard Contacts 
 \endcode
    26 is the channel number of the SyncML bluetooth profile
-   Replace <bluetooth address> with the bluetooth address of your sailfish
+   Replace &lt;bluetooth address&gt; with the bluetooth address of your sailfish
    device (something like B4:EE:D4:F6:19:E7)
 -# The above command should fetch all the contacts in the Sailfish device
 to your PC and dump the output to the screen.

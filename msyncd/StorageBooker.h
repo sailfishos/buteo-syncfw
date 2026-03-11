@@ -110,10 +110,14 @@ private:
         QString iClientId;
         unsigned iRefCount;
 
-        StorageMapItem() : iRefCount(0) { };
+        StorageMapItem()
+            : iRefCount(0)
+        {}
 
-        StorageMapItem(const QString &aClientId) :
-            iClientId(aClientId), iRefCount(1) { };
+        StorageMapItem(const QString &aClientId)
+            : iClientId(aClientId)
+            , iRefCount(1)
+        {}
     };
 
     QMap<QString, StorageMapItem> iStorageMap;

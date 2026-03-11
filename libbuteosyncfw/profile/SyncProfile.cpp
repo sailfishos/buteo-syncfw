@@ -25,10 +25,10 @@
 #include "SyncProfile.h"
 #include "ProfileEngineDefs.h"
 #include "LogMacros.h"
+
 #include <QDomDocument>
 
 namespace Buteo {
-
 
 // Private implementation class for SyncProfile.
 class SyncProfilePrivate
@@ -94,16 +94,16 @@ using namespace Buteo;
 const quint32 DEFAULT_SOC_AFTER_TIME(5 * 60);
 
 SyncProfilePrivate::SyncProfilePrivate()
-    :   iLog(0)
+    : iLog(nullptr)
 {
     iSyncRetriesInfo.init();
 }
 
 SyncProfilePrivate::SyncProfilePrivate(const SyncProfilePrivate &aSource)
-    :   iLog(0),
-        iSchedule(aSource.iSchedule)
+    : iLog(nullptr)
+    , iSchedule(aSource.iSchedule)
 {
-    if (aSource.iLog != 0) {
+    if (aSource.iLog != nullptr) {
         iLog = new SyncLog(*aSource.iLog);
     }
     iSyncRetriesInfo = aSource.iSyncRetriesInfo;
@@ -112,18 +112,18 @@ SyncProfilePrivate::SyncProfilePrivate(const SyncProfilePrivate &aSource)
 SyncProfilePrivate::~SyncProfilePrivate()
 {
     delete iLog;
-    iLog = 0;
+    iLog = nullptr;
 }
 
 SyncProfile::SyncProfile(const QString &aName)
-    :   Profile(aName, Profile::TYPE_SYNC),
-        d_ptr(new SyncProfilePrivate())
+    : Profile(aName, Profile::TYPE_SYNC)
+    , d_ptr(new SyncProfilePrivate())
 {
 }
 
 SyncProfile::SyncProfile(const QDomElement &aRoot)
-    :   Profile(aRoot),
-        d_ptr(new SyncProfilePrivate())
+    : Profile(aRoot)
+    , d_ptr(new SyncProfilePrivate())
 {
     QDomElement schedule = aRoot.firstChildElement(TAG_SCHEDULE);
     if (!schedule.isNull()) {
@@ -144,15 +144,15 @@ SyncProfile::SyncProfile(const QDomElement &aRoot)
 }
 
 SyncProfile::SyncProfile(const SyncProfile &aSource)
-    :   Profile(aSource),
-        d_ptr(new SyncProfilePrivate(*aSource.d_ptr))
+    : Profile(aSource)
+    , d_ptr(new SyncProfilePrivate(*aSource.d_ptr))
 {
 }
 
 SyncProfile::~SyncProfile()
 {
     delete d_ptr;
-    d_ptr = 0;
+    d_ptr = nullptr;
 }
 
 SyncProfile *SyncProfile::clone() const
@@ -231,7 +231,7 @@ QDateTime SyncProfile::lastSyncTime() const
 {
     QDateTime lastSync;
 
-    if (d_ptr->iLog != 0 && d_ptr->iLog->lastResults() != 0) {
+    if (d_ptr->iLog && d_ptr->iLog->lastResults() != nullptr) {
         lastSync = d_ptr->iLog->lastResults()->syncTime();
     }
 
@@ -275,10 +275,10 @@ QDateTime SyncProfile::nextRushSwitchTime(const QDateTime &aFromTime) const
 
 const SyncResults *SyncProfile::lastResults() const
 {
-    if (d_ptr->iLog != 0) {
+    if (d_ptr->iLog) {
         return d_ptr->iLog->lastResults();
     } else {
-        return 0;
+        return nullptr;
     }
 }
 
@@ -295,7 +295,7 @@ void SyncProfile::setLog(SyncLog *aLog)
 
 void SyncProfile::addResults(const SyncResults &aResults)
 {
-    if (0 == d_ptr->iLog) {
+    if (!d_ptr->iLog) {
         d_ptr->iLog = new SyncLog(name());
     }
 
@@ -415,7 +415,7 @@ const Profile *SyncProfile::clientProfile() const
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 Profile *SyncProfile::clientProfile()
@@ -427,7 +427,7 @@ Profile *SyncProfile::clientProfile()
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 const Profile *SyncProfile::serverProfile() const
@@ -439,7 +439,7 @@ const Profile *SyncProfile::serverProfile() const
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 Profile *SyncProfile::serverProfile()
@@ -451,7 +451,7 @@ Profile *SyncProfile::serverProfile()
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 QList<const Profile *> SyncProfile::storageProfiles() const
@@ -630,7 +630,7 @@ void SyncProfile::setConflictResolutionPolicy(ConflictResolutionPolicy aPolicy)
 
 bool SyncProfile::hasRetries() const
 {
-    return d_ptr->iSyncRetriesInfo.retries() ? true : false;
+    return d_ptr->iSyncRetriesInfo.retries() > 0;
 }
 
 QList<quint32> SyncProfile::retryIntervals() const
@@ -645,8 +645,8 @@ SyncProfile::CurrentSyncStatus SyncProfile::currentSyncStatus() const
     SyncProfile::CurrentSyncStatus syncStatus = SyncProfile::SYNC_NEVER_HAPPENED;
 
     if (syncResult) {
-        if ((syncResult->majorCode() == SyncResults::SYNC_RESULT_SUCCESS) &&
-                (syncResult->minorCode() == SyncResults::NO_ERROR))
+        if ((syncResult->majorCode() == SyncResults::SYNC_RESULT_SUCCESS)
+            && (syncResult->minorCode() == SyncResults::NO_ERROR))
             syncStatus = SyncProfile::SYNC_SUCCESS;
         else if (syncResult->majorCode() == SyncResults::SYNC_RESULT_FAILED)
             syncStatus = SyncProfile::SYNC_FAILED;

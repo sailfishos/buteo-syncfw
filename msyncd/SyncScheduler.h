@@ -30,14 +30,17 @@
 #include "SyncAlarmInventory.h"
 #include "IPHeartBeat.h"
 #endif
+
 #include <QObject>
 #include <QMap>
 #include <QSet>
 #include <QString>
 #include <QDateTime>
+
 #include <ctime>
 
 class QDateTime;
+
 #ifdef USE_KEEPALIVE
 class BackgroundSync;
 #elif defined(USE_IPHB)
@@ -180,6 +183,7 @@ private: // functions
 
 private: // data
     QSet<QString> iActiveBackgroundSyncProfiles;
+
 #if defined(USE_KEEPALIVE)
     /// BackgroundSync management object
     BackgroundSync *iBackgroundActivity;

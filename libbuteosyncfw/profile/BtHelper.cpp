@@ -21,6 +21,7 @@
  * 02110-1301 USA
  *
  */
+
 #include <QDebug>
 #include <LogMacros.h>
 
@@ -48,7 +49,7 @@ BtHelper::BtHelper(const QString &deviceAddress, QObject* parent)
 
     QDBusReply<ObjectsMap> reply = managerInterface.call(BT::GETMANAGEDOBJECTS);
     if (!reply.isValid()) {
-        qCWarning(lcButeoCore) << "Failed to connect to ObjectManager: " << reply.error().message() ;
+        qCWarning(lcButeoCore) << "Failed to connect to ObjectManager: " << reply.error().message();
     } else {
 
         ObjectsMap objects = reply.value();
@@ -106,7 +107,7 @@ QVariantMap BtHelper::getDeviceProperties()
     QDBusReply<QVariantMap> reply =
             deviceInterface.call(BT::GETPROPERTIES, BT::BLUEZ_DEVICE_INTERFACE);
     if (!reply.isValid()) {
-        qCWarning(lcButeoCore) << "Failed to get device properties: " << reply.error().message() ;
+        qCWarning(lcButeoCore) << "Failed to get device properties: " << reply.error().message();
         return QVariantMap();
     }
 

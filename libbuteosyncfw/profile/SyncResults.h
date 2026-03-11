@@ -35,19 +35,24 @@ class QDomElement;
 
 namespace Buteo {
 
-struct DatabaseResults {
+struct DatabaseResults
+{
+    int iLocalItemsAdded;       /*!<The number of items added to the local database*/
+    int iLocalItemsModified;    /*!<The number of items updated in the local database*/
+    int iLocalItemsDeleted;     /*!<The number of items deleted from the local database*/
 
-    int     iLocalItemsAdded;       /*!<The number of items added to the local database*/
-    int     iLocalItemsModified;    /*!<The number of items updated in the local database*/
-    int     iLocalItemsDeleted;     /*!<The number of items deleted from the local database*/
+    int iRemoteItemsAdded;      /*!<The number of items added to the remote database*/
+    int iRemoteItemsModified;   /*!<The number of items updated in the remote database*/
+    int iRemoteItemsDeleted;    /*!<The number of items deleted from the remote database*/
 
-    int     iRemoteItemsAdded;      /*!<The number of items added to the remote database*/
-    int     iRemoteItemsModified;   /*!<The number of items updated in the remote database*/
-    int     iRemoteItemsDeleted;    /*!<The number of items deleted from the remote database*/
-
-    DatabaseResults() : iLocalItemsAdded(0), iLocalItemsModified(0), iLocalItemsDeleted(0),
-        iRemoteItemsAdded(0), iRemoteItemsModified(0), iRemoteItemsDeleted(0) { }
-
+    DatabaseResults()
+        : iLocalItemsAdded(0)
+        , iLocalItemsModified(0)
+        , iLocalItemsDeleted(0)
+        , iRemoteItemsAdded(0)
+        , iRemoteItemsModified(0)
+        , iRemoteItemsDeleted(0)
+    {}
 };
 
 class SyncResultsPrivate;
@@ -69,7 +74,6 @@ class SyncResults
     Q_PROPERTY(QVariantList results READ variantTargetResults CONSTANT)
 
 public:
-
     /*! \brief enum value
      *
      * Used to set the major code in *.log.xml file for profile

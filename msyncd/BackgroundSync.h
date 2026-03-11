@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QMap>
 #include <QDateTime>
+
 #include <keepalive/backgroundactivity.h>
 
 class BackgroundActivity;

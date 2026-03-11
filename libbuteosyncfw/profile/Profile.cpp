@@ -21,17 +21,13 @@
  *
  */
 
-
-
 #include "Profile.h"
 #include "Profile_p.h"
-
-#include <QDomDocument>
-
 #include "ProfileFactory.h"
 #include "ProfileEngineDefs.h"
-
 #include "LogMacros.h"
+
+#include <QDomDocument>
 
 using namespace Buteo;
 
@@ -174,8 +170,7 @@ bool Profile::boolKey(const QString &aName, bool aDefault) const
 
 QStringList Profile::keyValues(const QString &aName) const
 {
-    return (d_ptr->iLocalKeys.values(aName) +
-            d_ptr->iMergedKeys.values(aName));
+    return (d_ptr->iLocalKeys.values(aName) + d_ptr->iMergedKeys.values(aName));
 }
 
 QStringList Profile::keyNames() const
@@ -282,8 +277,7 @@ QDomElement Profile::toXml(QDomDocument &aDoc, bool aLocalOnly) const
     }
 
     // Set local fields.
-    const ProfileField *field = 0;
-    foreach (field, d_ptr->iLocalFields) {
+    foreach (const ProfileField *field, d_ptr->iLocalFields) {
         root.appendChild(field->toXml(aDoc));
     }
 
@@ -297,15 +291,15 @@ QDomElement Profile::toXml(QDomDocument &aDoc, bool aLocalOnly) const
         }
 
         // Set merged fields.
-        foreach (field, d_ptr->iMergedFields) {
+        foreach (const ProfileField *field, d_ptr->iMergedFields) {
             root.appendChild(field->toXml(aDoc));
         }
     }
 
     // Set sub-profiles.
     foreach (Profile *p, d_ptr->iSubProfiles) {
-        if (!p->d_ptr->iMerged || !p->d_ptr->iLocalKeys.isEmpty() ||
-                !p->d_ptr->iLocalFields.isEmpty()) {
+        if (!p->d_ptr->iMerged || !p->d_ptr->iLocalKeys.isEmpty()
+            || !p->d_ptr->iLocalFields.isEmpty()) {
             root.appendChild(p->toXml(aDoc, aLocalOnly));
         }
     }
@@ -316,9 +310,8 @@ QDomElement Profile::toXml(QDomDocument &aDoc, bool aLocalOnly) const
 QString Profile::toString() const
 {
     QDomDocument doc;
-    QDomProcessingInstruction xmlHeading =
-        doc.createProcessingInstruction("xml",
-                                        "version=\"1.0\" encoding=\"UTF-8\"");
+    QDomProcessingInstruction xmlHeading = doc.createProcessingInstruction("xml",
+                                                                           "version=\"1.0\" encoding=\"UTF-8\"");
     doc.appendChild(xmlHeading);
     QDomElement root = toXml(doc, false);
     doc.appendChild(root);
@@ -330,12 +323,12 @@ bool Profile::isValid() const
 {
     // Profile name and type must be set.
     if (d_ptr->iName.isEmpty()) {
-        qCDebug(lcButeoCore) << "Error: Profile name is empty" ;
+        qCDebug(lcButeoCore) << "Error: Profile name is empty";
         return false;
     }
 
     if (d_ptr->iType.isEmpty()) {
-        qCDebug(lcButeoCore) << "Error: Profile type is empty" ;
+        qCDebug(lcButeoCore) << "Error: Profile type is empty";
         return false;
     }
 
@@ -345,8 +338,8 @@ bool Profile::isValid() const
     foreach (const ProfileField *f, fields) {
         QStringList values = keyValues(f->name());
         if (values.isEmpty()) {
-            qCDebug(lcButeoCore) << "Error: Cannot find value for field" << f->name() <<
-                       "for profile" << d_ptr->iName;
+            qCDebug(lcButeoCore) << "Error: Cannot find value for field" << f->name()
+                                 << "for profile" << d_ptr->iName;
             return false;
         }
         foreach (QString value, values) {
@@ -404,7 +397,7 @@ const Profile *Profile::subProfile(const QString &aName,
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 const Profile *Profile::subProfileByKeyValue(const QString &aKey,
@@ -414,14 +407,14 @@ const Profile *Profile::subProfileByKeyValue(const QString &aKey,
 {
     bool checkType = !aType.isEmpty();
     foreach (Profile *p, d_ptr->iSubProfiles) {
-        if ((!checkType || aType == p->type()) &&
-                (aValue.compare(p->key(aKey), Qt::CaseInsensitive) == 0) &&
-                (!aEnabledOnly || p->isEnabled())) {
+        if ((!checkType || aType == p->type())
+            && (aValue.compare(p->key(aKey), Qt::CaseInsensitive) == 0)
+            && (!aEnabledOnly || p->isEnabled())) {
             return p;
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 QList<Profile *> Profile::allSubProfiles()

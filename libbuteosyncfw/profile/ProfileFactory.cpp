@@ -20,13 +20,13 @@
  * 02110-1301 USA
  *
  */
+
 #include "ProfileFactory.h"
-
-#include <QDomDocument>
-
 #include "SyncProfile.h"
 #include "StorageProfile.h"
 #include "ProfileEngineDefs.h"
+
+#include <QDomDocument>
 
 using namespace Buteo;
 

@@ -34,8 +34,8 @@ static const char *DBUS_BACKUP_OBJECT = "/backup";
 
 SyncBackup::SyncBackup()
     : iBackupRestore(false)
-    , iReply(0)
-    , iAdaptor(0)
+    , iReply(nullptr)
+    , iAdaptor(nullptr)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
@@ -82,18 +82,18 @@ void SyncBackup::sendReply(uchar aResult)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (SYNCFW_UNIT_TESTS_RUNTIME)
-        return ;
+        return;
 
     // coverity[unreachable]  //Suppressing false positives with code annotations
     if (iReply) {
         qCDebug(lcButeoMsyncd) << "Send Reply";
-        QList<QVariant>  arguments;
+        QList<QVariant> arguments;
         QVariant vt = QVariant::fromValue((uchar)aResult);
         arguments.append(vt);
         iReply->setArguments(arguments);
         QDBusConnection::sessionBus().send(*iReply);
         delete iReply;
-        iReply = 0;
+        iReply = nullptr;
     }
 }
 

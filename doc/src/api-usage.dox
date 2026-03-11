@@ -188,13 +188,13 @@ higher frequency in rush days than in the normal days. The rush begin time and e
 time and the rush days can be specified \n
 - Method to save the sync results. This method can be used to persist the sync results
 given a profile id
-/code
+\code
 <method name="saveSyncResults">
   <arg type="b" direction="out"/>
   <arg name="aProfileId" type="s" direction="in"/>
   <arg name="aSyncResults" type="s" direction="in"/>
 </method>
-/endcode
+\endcode
 - Method to get the sync results of the last finished sync session. The sync results
 are returned as an XML string, which then has to be parsed to retrieve the results.
 One can use the SyncResults class of libbuteosycnfw to handle any of the XML data

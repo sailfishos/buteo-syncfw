@@ -35,10 +35,10 @@ static const unsigned long long MAX_PLUGIN_SYNC_TIME = 1800000; //30 mins
 ClientPluginRunner::ClientPluginRunner(const QString &aPluginName,
                                        SyncProfile *aProfile, PluginManager *aPluginMgr,
                                        PluginCbInterface *aPluginCbIf, QObject *aParent)
-    :   PluginRunner(PLUGIN_CLIENT, aPluginName, aPluginMgr, aPluginCbIf, aParent),
-        iProfile(aProfile),
-        iPlugin(0),
-        iThread(0)
+    : PluginRunner(PLUGIN_CLIENT, aPluginName, aPluginMgr, aPluginCbIf, aParent)
+    , iProfile(aProfile)
+    , iPlugin(nullptr)
+    , iThread(nullptr)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 }
@@ -50,13 +50,13 @@ ClientPluginRunner::~ClientPluginRunner()
     stop();
     disconnect();
 
-    if (iPlugin != 0 && iPluginMgr != 0) {
+    if (iPlugin && iPluginMgr) {
         iPluginMgr->destroyClient(iPlugin);
-        iPlugin = 0;
+        iPlugin = nullptr;
     }
 
     delete iThread;
-    iThread = 0;
+    iThread = nullptr;
 }
 
 bool ClientPluginRunner::init()
@@ -66,13 +66,13 @@ bool ClientPluginRunner::init()
     if (iInitialized)
         return true;
 
-    if (iPluginMgr == 0 || iPluginCbIf == 0 || iProfile == 0) {
+    if (iPluginMgr == nullptr || iPluginCbIf == nullptr || iProfile == nullptr) {
         qCWarning(lcButeoMsyncd) << "Invalid members, failed to initialize";
         return false;
     }
 
     iPlugin = iPluginMgr->createClient(iPluginName, *iProfile, iPluginCbIf);
-    if (iPlugin == 0) {
+    if (iPlugin == nullptr) {
         qCWarning(lcButeoMsyncd) << "Failed to create client plug-in:" << iPluginName;
         return false;
     }
@@ -85,8 +85,7 @@ bool ClientPluginRunner::init()
 
     // Connect signals from the plug-in.
 
-    connect(iPlugin, SIGNAL(transferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &,
-                                             int)),
+    connect(iPlugin, SIGNAL(transferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &, int)),
             this, SLOT(onTransferProgress(const QString &, Sync::TransferDatabase, Sync::TransferType, const QString &, int)));
 
     connect(iPlugin, &ClientPlugin::error, this, &ClientPluginRunner::onError);
@@ -115,11 +114,12 @@ bool ClientPluginRunner::start()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool rv = false;
-    if (iInitialized && iThread != 0) {
+    if (iInitialized && iThread) {
         // Set a timer after which the sync session should stop
         QTimer::singleShot(MAX_PLUGIN_SYNC_TIME, this, SLOT(pluginTimeout()));
         rv = iThread->startThread(iPlugin);
-        qCDebug(lcButeoMsyncd) << "ClientPluginRunner started thread for plugin:" << iPlugin->getProfileName() << ", returning:" << rv;
+        qCDebug(lcButeoMsyncd) << "ClientPluginRunner started thread for plugin:" << iPlugin->getProfileName()
+                               << ", returning:" << rv;
     }
 
     return rv;
@@ -129,7 +129,7 @@ void ClientPluginRunner::stop()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iThread != 0) {
+    if (iThread) {
         iThread->stopThread();
         iThread->wait();
     }
@@ -139,7 +139,7 @@ void ClientPluginRunner::abort(Sync::SyncStatus aStatus)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iPlugin != 0) {
+    if (iPlugin) {
         iPlugin->abortSync(aStatus);
     }
 }
@@ -155,7 +155,7 @@ SyncResults ClientPluginRunner::syncResults()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
-    if (iPlugin != 0) {
+    if (iPlugin) {
         return iPlugin->getSyncResults();
     } else {
         return SyncResults();
@@ -167,7 +167,7 @@ bool ClientPluginRunner::cleanUp()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     bool retval = false;
-    if (iPlugin != 0) {
+    if (iPlugin) {
         retval = iPlugin->cleanUp();
     }
     return retval;
@@ -198,7 +198,6 @@ void ClientPluginRunner::onSuccess(const QString &aProfileName,
 
     emit success(aProfileName, aMessage);
     stop();
-
 }
 
 void ClientPluginRunner::onStorageAccquired(const QString &aMimeType)
@@ -214,7 +213,6 @@ void ClientPluginRunner::onSyncProgressDetail(const QString &aProfileName, int a
 
     emit syncProgressDetail(aProfileName, aProgressDetail);
 }
-
 
 void ClientPluginRunner::onThreadExit()
 {

@@ -30,12 +30,12 @@
 #include <QDebug>
 #include <LogMacros.h>
 
-const QString ALARM_CONNECTION_NAME("alarms");
+static const QString ALARM_CONNECTION_NAME("alarms");
 
-const int TRIGGER_COUNT = 1;
+static const int TRIGGER_COUNT = 1;
 
 SyncAlarmInventory::SyncAlarmInventory()
-    : iTimer(0)
+    : iTimer(nullptr)
     , currentAlarm(0)
     , triggerCount(TRIGGER_COUNT)
 {
@@ -47,6 +47,7 @@ bool SyncAlarmInventory::init()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     static unsigned connectionNumber = 0;
+
     iConnectionName = ALARM_CONNECTION_NAME + QString::number(connectionNumber++);
     iDbHandle = QSqlDatabase::addDatabase("QSQLITE", iConnectionName);
 
@@ -91,7 +92,7 @@ SyncAlarmInventory::~SyncAlarmInventory()
     QSqlDatabase::removeDatabase(iConnectionName);
 
     delete iTimer;
-    iTimer = 0;
+    iTimer = nullptr;
 }
 
 int SyncAlarmInventory::addAlarm(QDateTime alarmDate)
@@ -138,7 +139,8 @@ int SyncAlarmInventory::addAlarm(QDateTime alarmDate)
             if (now < alarmTime) {
                 iTimerInterval = (now.secsTo(alarmTime) / TRIGGER_COUNT) * 1000;  // time interval in millisec
             }
-            qCDebug(lcButeoMsyncd) << "currentAlarm" << currentAlarm << "alarmTime" << alarmTime << "iTimerInterval" << iTimerInterval;
+            qCDebug(lcButeoMsyncd) << "currentAlarm" << currentAlarm << "alarmTime" << alarmTime
+                                   << "iTimerInterval" << iTimerInterval;
             triggerCount = TRIGGER_COUNT;
             iTimer->setInterval(iTimerInterval);
             iTimer->start();
@@ -156,6 +158,7 @@ bool SyncAlarmInventory::removeAlarm(int alarmId)
 
     if (alarmId <= 0)
         return false;
+
     deleteAlarmFromDb(alarmId);
     return true;
 }
@@ -242,4 +245,3 @@ int SyncAlarmInventory::addAlarmToDb(QDateTime timeStamp)
     else
         return 0;
 }
-

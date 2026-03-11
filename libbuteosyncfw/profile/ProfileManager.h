@@ -26,6 +26,7 @@
 
 #include "SyncProfile.h"
 #include "Profile.h"
+
 #include <QObject>
 #include <QList>
 #include <QHash>
@@ -65,6 +66,7 @@ public:
 
         //! \brief Copy constructor.
         SearchCriteria(const SearchCriteria &aSource);
+        SearchCriteria &operator=(const SearchCriteria &other);
 
         //! Search criteria type.
         Type iType;
@@ -169,8 +171,7 @@ public:
      * \return List of matching profiles. Caller is responsible for deleting
      *  the returned profile objects.
      */
-    QList<SyncProfile *> getSyncProfilesByData(
-        const QList<SearchCriteria> &aCriteria);
+    QList<SyncProfile *> getSyncProfilesByData(const QList<SearchCriteria> &aCriteria);
 
     /*! \brief Gets profiles based on supported storages.
      *
@@ -183,8 +184,7 @@ public:
      * \return List of matching profiles. Caller is responsible for deleting
      *  the returned profile objects.
      */
-    QList<SyncProfile *> getSyncProfilesByStorage(
-        const QString &aStorageName, bool aStorageMustBeEnabled = false);
+    QList<SyncProfile *> getSyncProfilesByStorage(const QString &aStorageName, bool aStorageMustBeEnabled = false);
 
     /*! \brief Gets profiles interested in sync on change for a storage
      *
@@ -194,8 +194,7 @@ public:
      * \return List of matching profiles. Caller is responsible for deleting
      *  the returned profile objects.
      */
-    QList<SyncProfile *> getSOCProfilesForStorage(
-        const QString &aStorageName);
+    QList<SyncProfile *> getSOCProfilesForStorage(const QString &aStorageName);
 
     /*! \brief Expands the given profile.
      *
@@ -281,7 +280,7 @@ public:
      * \param aModified Whether the profile was updated as a result of this function call,
      * and thus requires writing to disk
      */
-    void enableStorages (Profile &aProfile, QMap<QString, bool> &aStorageMap, bool *aModified = NULL);
+    void enableStorages (Profile &aProfile, QMap<QString, bool> &aStorageMap, bool *aModified = nullptr);
 
     /*! \brief Sets storage subprofiles hidden status for the given profile
     *
@@ -291,7 +290,7 @@ public:
     * \param aModified Whether the profile was updated as a result of this function call,
     * and thus requires writing to disk
     */
-    void setStoragesVisible(Profile &aProfile, QMap<QString, bool> &aStorageMap, bool *aModified = NULL);
+    void setStoragesVisible(Profile &aProfile, QMap<QString, bool> &aStorageMap, bool *aModified = nullptr);
 
     /*! \brief Sets remote target in profile
      *

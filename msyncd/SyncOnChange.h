@@ -12,8 +12,7 @@ class StorageChangeNotifier;
 class PluginManager;
 class SyncOnChangeScheduler;
 
-/*! \brief this class initiates a sync if there are changes
- * in storage(s) it's asked to monitor
+/*! \brief this class initiates a sync if there are changes in storage(s) it's asked to monitor
  */
 class SyncOnChange : public QObject
 {
@@ -38,13 +37,13 @@ public:
      * @param aSOCStorageMap map of well-known storage name
      * to list of sync profiles insterested in SOC for that
      * storage
-     * @param list of storage names for which SOC couldn't be enabled
+     * @param failedStorages of storage names for which SOC couldn't be enabled
      * @return false if SOC can't be enabled for one or more
      * storages
      */
     bool enable(const QHash<QString, QList<SyncProfile *> > &aSOCStorageMap,
                 SyncOnChangeScheduler *aSOCScheduler,
-                PluginManager *aPluginManager, QStringList &aFailedStorages);
+                PluginManager *aPluginManager, QStringList *failedStorages);
 
     /*! If the storage change notifier plug-in's have already been loaded,
      * call this to re-enable sync on change. Handy to call after a disable.

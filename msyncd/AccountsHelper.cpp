@@ -20,6 +20,7 @@
  * 02110-1301 USA
  *
  */
+
 #include "AccountsHelper.h"
 #include "LogMacros.h"
 #include "ProfileManager.h"
@@ -64,7 +65,7 @@ void AccountsHelper::createProfileForAccount(Accounts::AccountId id)
     FUNCTION_CALL_TRACE(lcButeoTrace);
     Accounts::Account *newAccount = iAccountManager->account(id);
 
-    if (0 != newAccount) {
+    if (newAccount) {
         registerAccountListener(id);
         bool profileFoundAndCreated = false;
         const Accounts::ServiceList serviceList = newAccount->services();
@@ -178,7 +179,8 @@ void AccountsHelper::setSyncSchedule(SyncProfile *syncProfile, Accounts::Account
     FUNCTION_CALL_TRACE(lcButeoTrace);
     Q_UNUSED (aCreateNew);
     Accounts::Account *account = iAccountManager->account(id);
-    if (0 != account) {
+
+    if (account) {
         //Sync schedule settings should be global
         account->selectService();
         account->beginGroup("scheduler");
@@ -192,8 +194,9 @@ void AccountsHelper::setSyncSchedule(SyncProfile *syncProfile, Accounts::Account
         qCDebug(lcButeoMsyncd) << "Start time:" << startTime << "End Time :" << endTime;
         syncSchedule.setRushTime(startTime, endTime);
 
-        SyncProfile::SyncType syncType = account->valueAsBool (Buteo::SYNC_SCHEDULE_ENABLED_KEY_BOOL) ?
-                                         SyncProfile::SYNC_SCHEDULED : SyncProfile::SYNC_MANUAL ;
+        SyncProfile::SyncType syncType = account->valueAsBool (Buteo::SYNC_SCHEDULE_ENABLED_KEY_BOOL)
+                                             ? SyncProfile::SYNC_SCHEDULED
+                                             : SyncProfile::SYNC_MANUAL;
         syncProfile->setSyncType (syncType);
         qCDebug(lcButeoMsyncd) << "Sync Type :" << syncType;
 
@@ -335,7 +338,8 @@ void AccountsHelper::registerAccountListener(Accounts::AccountId id)
     syncEnableWithAccount(account);
     QObject::connect(account, &Accounts::Account::enabledChanged,
                      [this, account] (const QString & serviceName, bool enabled) {
-        qCDebug(lcButeoMsyncd) << "Received account enabled changed signal" << serviceName << enabled << account->displayName();
+        qCDebug(lcButeoMsyncd) << "Received account enabled changed signal" << serviceName
+                               << enabled << account->displayName();
         syncEnableWithAccount(account);
     });
 

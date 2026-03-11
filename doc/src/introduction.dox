@@ -13,46 +13,46 @@ interface for fetching the objects, changed objects. The storage plugin can be
 used across multiple plugins and avoid duplication of code.
 
 
-			<table id="toc" class="toc" summary="Contents"><tr><td><div id="toctitle"><h2>Contents</h2> </div>
+<table id="toc" class="toc" summary="Contents"><tr><td><div id="toctitle"><h2>Contents</h2> </div>
 <ul>
-<li class="toclevel-1"><a href="#Introduction"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a></li>
-<li class="toclevel-1"><a href="#Requirements"><span class="tocnumber">2</span> <span class="toctext">Requirements</span></a>
+<li class="toclevel-1"><a href="#Introduction">Introduction</a></li>
+<li class="toclevel-1"><a href="#Requirements">Requirements</a></li>
 <ul>
-<li class="toclevel-2"><a href="#Functional_Requirements"><span class="tocnumber">2.1</span> <span class="toctext">Functional Requirements</span></a></li>
-<li class="toclevel-2"><a href="#Performance_Requirements"><span class="tocnumber">2.2</span> <span class="toctext">Performance Requirements</span></a></li>
-<li class="toclevel-2"><a href="#Non-Functional_Requirements"><span class="tocnumber">2.3</span> <span class="toctext">Non-Functional Requirements</span></a></li>
+<li class="toclevel-2"><a href="#Functional_Requirements">Functional Requirements</a></li>
+<li class="toclevel-2"><a href="#Performance_Requirements">Performance Requirements</a></li>
+<li class="toclevel-2"><a href="#Non-Functional_Requirements">Non-Functional Requirements</a></li>
 </ul>
 </li>
-<li class="toclevel-1"><a href="#Architecture_Details"><span class="tocnumber">3</span> <span class="toctext">Architecture Details</span></a>
+<li class="toclevel-1"><a href="#Architecture_Details">Architecture Details</a>
 <ul>
-<li class="toclevel-2"><a href="#Framework_Components"><span class="tocnumber">3.1</span> <span class="toctext">Framework Components</span></a>
+<li class="toclevel-2"><a href="#Framework_Components">Framework Components</a>
 <ul>
-<li class="toclevel-3"><a href="#Plug-in_Manager"><span class="tocnumber">3.1.1</span> <span class="toctext">Plug-in Manager</span></a></li>
-<li class="toclevel-3"><a href="#Profile_Manager"><span class="tocnumber">3.1.2</span> <span class="toctext">Profile Manager</span></a></li>
-<li class="toclevel-3"><a href="#Scheduler"><span class="tocnumber">3.1.3</span> <span class="toctext">Scheduler</span></a></li>
-<li class="toclevel-3"><a href="#Accounts_Integration"><span class="tocnumber">3.1.4</span> <span class="toctext">Accounts Integration</span></a></li>
-<li class="toclevel-3"><a href="#Synchronization_Daemon"><span class="tocnumber">3.1.5</span> <span class="toctext">Synchronization Daemon</span></a></li>
-<li class="toclevel-3"><a href="#Developer_API"><span class="tocnumber">3.1.6</span> <span class="toctext">Developer API</span></a></li>
-<li class="toclevel-3"><a href="#Hardware_Hookup"><span class="tocnumber">3.1.7</span> <span class="toctext">Hardware Hookup</span></a></li>
-<li class="toclevel-3"><a href="#Device_State_Based_Sync"><span class="tocnumber">3.1.8</span> <span class="toctext">Device State Based Sync</span></a></li>
-<li class="toclevel-3"><a href="#Change_Based_Sync"><span class="tocnumber">3.1.9</span> <span class="toctext">Change Based Sync</span></a></li>
-<li class="toclevel-3"><a href="#Handling_Deleted_item_list"><span class="tocnumber">3.1.10</span> <span class="toctext">Handling Deleted item list</span></a></li>
-<li class="toclevel-3"><a href="#Profile_Deletion"><span class="tocnumber">3.1.11</span> <span class="toctext">Profile Deletion</span></a></li>
-<li class="toclevel-3"><a href="#Framework_Client_Library"><span class="tocnumber">3.1.12</span> <span class="toctext">Framework Client Library</span></a></li>
+<li class="toclevel-3"><a href="#Plug-in_Manager">Plug-in Manager</a></li>
+<li class="toclevel-3"><a href="#Profile_Manager">Profile Manager</a></li>
+<li class="toclevel-3"><a href="#Scheduler">Scheduler</a></li>
+<li class="toclevel-3"><a href="#Accounts_Integration">Accounts Integration</a></li>
+<li class="toclevel-3"><a href="#Synchronization_Daemon">Synchronization Daemon</a></li>
+<li class="toclevel-3"><a href="#Developer_API">Developer API</a></li>
+<li class="toclevel-3"><a href="#Hardware_Hookup">Hardware Hookup</a></li>
+<li class="toclevel-3"><a href="#Device_State_Based_Sync">Device State Based Sync</a></li>
+<li class="toclevel-3"><a href="#Change_Based_Sync">Change Based Sync</a></li>
+<li class="toclevel-3"><a href="#Handling_Deleted_item_list">Handling Deleted item list</a></li>
+<li class="toclevel-3"><a href="#Profile_Deletion">Profile Deletion</a></li>
+<li class="toclevel-3"><a href="#Framework_Client_Library">Framework Client Library</a></li>
 </ul>
 </li>
-<li class="toclevel-2"><a href="#System_Context"><span class="tocnumber">3.2</span> <span class="toctext">System Context</span></a></li>
-<li class="toclevel-2"><a href="#Interfaces"><span class="tocnumber">3.3</span> <span class="toctext">Interfaces</span></a>
+<li class="toclevel-2"><a href="#System_Context">System Context</a></li>
+<li class="toclevel-2"><a href="#Interfaces">Interfaces</a>
 <ul>
-<li class="toclevel-3"><a href="#Interfaces_Used"><span class="tocnumber">3.3.1</span> <span class="toctext">Interfaces Used</span></a></li>
-<li class="toclevel-3"><a href="#Interfaces_Provided"><span class="tocnumber">3.3.2</span> <span class="toctext">Interfaces Provided</span></a></li>
+<li class="toclevel-3"><a href="#Interfaces_Used">Interfaces Used</a></li>
+<li class="toclevel-3"><a href="#Interfaces_Provided">Interfaces Provided</a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </td></tr></table>
-<a name="Introduction" id="Introduction"></a><h1> <span class="mw-headline"> Introduction </span></h1>
+<h1 id="Introduction">Introduction</h1>
 <p>Personal computing, cloud computing and mobile computing have 
 increasingly made users to store their personal data in personal 
 computers, Internet based cloud services and mobile devices. The kind of
@@ -88,7 +88,7 @@ capabilities by itself. It is only the plug-ins and the corresponding
 protocol stacks that provide the synchronization capabilities.
 </p><p>Note: The name <i><b>Buteo</b></i> is the Latin name for a Hawk (more from here: <a href="http://en.wikipedia.org/wiki/Buteo" class="external free" title="http://en.wikipedia.org/wiki/Buteo" rel="nofollow">http://en.wikipedia.org/wiki/Buteo</a>)
 </p>
-<a name="Requirements" id="Requirements"></a><h1> <span class="mw-headline"> Requirements </span></h1>
+<h1 id="Requirements">Requirements</h1>
 <p>Following diagram shows the end-user usecases for Buteo Sync solution.
 </p><p>
 \image html Buteo_Sync_Solution_-_End_User_Usecases.jpg
@@ -106,7 +106,7 @@ the framework and to provide various other features like deploy/undeploy
  synchronization plug-ins, develop storage plug-ins for already existing
  synchronization services etc.
 </p>
-<a name="Functional_Requirements" id="Functional_Requirements"></a><h2> <span class="mw-headline"> Functional Requirements </span></h2>
+<h2 id="Functional_Requirements">Functional Requirements</h2>
 <ul><li> The solution should provide a d-bus API for on device application to interact and use the framework features and properties
 </li><li> The framework should provide the end-user a means to initiate,
  abort, suspend/resume, getting status and logs of synchronization. 
@@ -148,7 +148,7 @@ Vcard format, but it should also be able to support Vcard versions 2.0,
 </li><li> Optional: should support "Push Based Sync"
 </li><li> Optional: Should support changed based synchronization
 </li></ul>
-<a name="Performance_Requirements" id="Performance_Requirements"></a><h2> <span class="mw-headline"> Performance Requirements </span></h2>
+<h2 id="Performance_Requirements">Performance Requirements</h2>
 <ul><li> There should not be a theoritical limit on the number of 
 synchronization services that the framework can support. But practically
  this could be limited by the resources available on the target device
@@ -158,7 +158,7 @@ because of which the use-time of the battery could reduce drastically.
 For this reason, the framework should optimize the usage of the network 
 through some mechanism available in the device
 </li></ul>
-<a name="Non-Functional_Requirements" id="Non-Functional_Requirements"></a><h2> <span class="mw-headline"> Non-Functional Requirements </span></h2>
+<h2 id="Non-Functional_Requirements">Non-Functional Requirements</h2>
 <ul><li> The solution should be generic in nature and should not be tied to or depend on any synchronization protocol 
 </li><li> The solution should be as much portal as possible across all Linux distributions (GNOME, KDE etc.) 
 </li><li> The framework should provide backward compatibility so as to 
@@ -170,17 +170,14 @@ interface without the need to change the core engine. The architecture
 should be extensible and scalable for any kind of data to be 
 synchronized and for any kind of protocol
 </li></ul>
-<p>Following diagram depicts some more usecases of the framework
-</p><p>\image html ButeoFW_Usecase_Diagram.jpg
-</p>
-<a name="Architecture_Details" id="Architecture_Details"></a><h1> <span class="mw-headline"> Architecture Details </span></h1>
+<h1 id="Architecture_Details">Architecture Details</h1>
 <p>The Buteo Synchronization framework architecture is created taking 
 into consideration the extensibility and scalability of the solution for
  current and future use cases. Effort is made to make use of the 
 existing components as mush as possible.
 </p>
-<a name="Framework_Components" id="Framework_Components"></a><h2> <span class="mw-headline"> Framework Components </span></h2>
-<a name="Plug-in_Manager" id="Plug-in_Manager"></a><h3> <span class="mw-headline"> Plug-in Manager </span></h3>
+<h2 id="Framework_Components">Framework Components</h2>
+<h3 id="Plug-in_Manager">Plug-in Manager</h3>
 <p>A plug-in based architecture is the logical choice to satisfy the 
 requirement of the ability to deploy/undeploy sync services in the 
 device. The plug-in manager forms the core concept of the Buteo SyncFW. 
@@ -247,7 +244,7 @@ only static information, which is read by the synchronization daemon and
  used accordingly. The configuration file could also provide extensions,
  which could specifically be used by the plug-in, but not the framework.
 </p>
-<a name="Profile_Manager" id="Profile_Manager"></a><h3> <span class="mw-headline"> Profile Manager </span></h3>
+<h3 id="Profile_Manager">Profile Manager</h3>
 <p>Profile Management is quite important both from managing the deployed
  plug-ins as well as holds the information to be displayed to the 
 end-user. From the end-user point of view, a profile is defined as 
@@ -293,7 +290,7 @@ initiate the sync. Incase of automatic sync, the framework will initiate
  sync as per the automatic sync frequency 
 </li><li> Sync frequency - the frequency at which synchronization should happen (incase of automatic sync)
 </li></ul>
-<a name="Scheduler" id="Scheduler"></a><h3> <span class="mw-headline"> Scheduler </span></h3>
+<h3 id="Scheduler">Scheduler</h3>
 <p>Another important component of Buteo SyncFW is the synchronization 
 scheduler. The Scheduler is responsible for scheduling synchronization 
 sessions and also for handling parallel synchronizations. It has a queue
@@ -318,7 +315,7 @@ the first-in-first-out order. In the above example, the two sync
 sessions are queued and are executed one-after-the-other. More details 
 on how this is achieved is explained in the low-level design.
 </p>
-<a name="Accounts_Integration" id="Accounts_Integration"></a><h3> <span class="mw-headline"> Accounts Integration </span></h3>
+<h3 id="Accounts_Integration">Accounts Integration</h3>
 <p>Accounts&amp;SSO (<a href="http://wiki.meego.com/Single_sign-on" class="external free" title="http://wiki.meego.com/Single_sign-on" rel="nofollow">http://wiki.meego.com/Single_sign-on</a>)
  is a component in MeeGo platform that provides a one-stop shop for the 
 end-users to configure online accounts. Examples of online acconts are 
@@ -341,7 +338,7 @@ plug-in with the corresponding account. The plug-in developer is also
 given the option to not use to the Accounts&amp;SSO subsystem, but 
 rather provide the credentials in the service XML.
 </p>
-<a name="Synchronization_Daemon" id="Synchronization_Daemon"></a><h3> <span class="mw-headline"> Synchronization Daemon </span></h3>
+<h3 id="Synchronization_Daemon">Synchronization Daemon</h3>
 <p>The synchronization daemon is the only always running process in the 
 sync framework. It provides the functionality of loading/unloading the 
 plug-ins, sending d-bus signals, handle profile management (like 
@@ -395,7 +392,7 @@ the sync UI Note that it might be possible that the daemon has to unload
 implementation, this should be taken into consideration and some sort of
  heuristics should be used to avoid unloading/loading of plug-ins.
 </li></ul>
-<a name="Developer_API" id="Developer_API"></a><h3> <span class="mw-headline"> Developer API </span></h3>
+<h3 id="Developer_API">Developer API</h3>
 <p>As part of the framework, the solution provides an API for 3'rd party
  developers to create plug-ins for the MeeGo platform. The framework 
 provides two kinds of APIs:
@@ -409,7 +406,7 @@ framework (the API typically includes methods to start sync, abort sync,
 client-side API is provided using which the clients can handle the 
 communication with the sync engine.
 </li></ul>
-<a name="Hardware_Hookup" id="Hardware_Hookup"></a><h3> <span class="mw-headline"> Hardware Hookup </span></h3>
+<h3 id="Hardware_Hookup">Hardware Hookup</h3>
 <p>For most of the synchronization services, it is important to initiate
  the sync on the availability of the underlying transport. For example, 
 when the device is connected to a PC via USB, when bluetooth is switched
@@ -428,7 +425,7 @@ after which they are unloaded by the daemon. There could be some server
 plugins that are always loaded as long as the underlying transport is 
 available.
 </p>
-<a name="Device_State_Based_Sync" id="Device_State_Based_Sync"></a><h3> <span class="mw-headline"> Device State Based Sync </span></h3>
+<h3 id="Device_State_Based_Sync">Device State Based Sync</h3>
 <p>The device state based sync is mainly related to handling of the 
 scenarios where sync cannot continue because of low-device-resource 
 conditions. Examples of low resource conditions are less disk space, low
@@ -441,7 +438,7 @@ initiated from the UI, most of these checks should be done in the UI
 itself to avoid round-trip checks by the engine. This is a performance 
 improvement measure
 </p>
-<a name="Change_Based_Sync" id="Change_Based_Sync"></a><h3> <span class="mw-headline"> Change Based Sync </span></h3>
+<h3 id="Change_Based_Sync">Change Based Sync</h3>
 <p>Another important feature of any sync solution is to initiate sync 
 whenever the user changes any of his/her personal data. The general term
  for this is change based sync. There could be two methodologies used to
@@ -468,7 +465,7 @@ any changes. The scheduling functionality of the sync can be used to
 periodically load this plugin. This design avoids the sync framework to 
 directly access the backend datastores.
 </p>
-<a name="Handling_Deleted_item_list" id="Handling_Deleted_item_list"></a><h3> <span class="mw-headline"> Handling Deleted item list </span></h3>
+<h3 id="Handling_Deleted_item_list">Handling Deleted item list</h3>
 <p>Most of the synchronization protocols support a feature called “fast 
 sync” [Ref: TBD] wherein the consecutive sync’s after the first sync 
 only synchronize the changes from the previous synchronization. The 
@@ -493,7 +490,7 @@ session, find the difference between the sync identifier map against the
 deleted items. Note that only the ids of the items are stored and not 
 the complete items
 </li></ul>
-<a name="Profile_Deletion" id="Profile_Deletion"></a><h3> <span class="mw-headline"> Profile Deletion </span></h3>
+<h3 id="Profile_Deletion">Profile Deletion</h3>
 <p>Apart from a profile being created whenever the user enables the 
 account or synchronizes with a target device, at some points of time, it
  could also be deleted by the user. Any profile specific data in the 
@@ -511,7 +508,7 @@ invoke this method, whenever the user performs a “delete” operation, the
 approach to handle the plug-in specific operations and shows the 
 strength of the extendability of the plug-in method.
 </p>
-<a name="Framework_Client_Library" id="Framework_Client_Library"></a><h3> <span class="mw-headline"> Framework Client Library </span></h3>
+<h3 id="Framework_Client_Library">Framework Client Library</h3>
 <p>The framework provides a d-bus API [Developer API] that the client 
 applications can use to interact with the synchronization daemon. This 
 works out as long as the just use simple d-bus API methods like 
@@ -526,17 +523,18 @@ applications can use to interact with the framework. The framework would
 message, parsing the message and then signal the UI component to fetch 
 the result. More detailed information is provided in further sections.
 </p>
-<a name="System_Context" id="System_Context"></a><h2> <span class="mw-headline"> System Context </span></h2>
+<h2 id="System_Context">System Context</h2>
 <p>Following is the system context diagram
 </p><p>\image html Buteo-SyncFW-SystemContext.jpg
 </p>
-</li><li> Accounts &amp; SSO subsystem (for accounts integration) that belongs to the “Personal Services” layer
-</li><li> Bluetooth (for Bluetooth related information) that belongs to the “Comms Services” layer
-</li><li> Qt Core (for using the Qt core API classes) (QtAPI) that belongs to the visual services
-</li><li> The d-bus messaging services (for providing the d-bus services) (FreedesktopDbus) that belongs to the “kernel” layer
-</li></ul>
-<a name="Interfaces" id="Interfaces"></a><h2> <span class="mw-headline"> Interfaces </span></h2>
-<a name="Interfaces_Used" id="Interfaces_Used"></a><h3> <span class="mw-headline"> Interfaces Used </span></h3>
+<ul>
+ <li> Accounts &amp; SSO subsystem (for accounts integration) that belongs to the “Personal Services” layer</li>
+ <li> Bluetooth (for Bluetooth related information) that belongs to the “Comms Services” layer</li>
+ <li> Qt Core (for using the Qt core API classes) (QtAPI) that belongs to the visual services</li>
+ <li> The d-bus messaging services (for providing the d-bus services) (FreedesktopDbus) that belongs to the “kernel” layer</li>
+</ul>
+<h2 id="Interfaces">Interfaces</h2>
+<h3 id="Interfaces_Used">Interfaces Used</h3>
 <table class="wikitable" cellpadding="5" cellspacing="0" border="1">
 
 <tr>
@@ -559,7 +557,7 @@ the result. More detailed information is provided in further sections.
 </td><td>d-bus
 </td><td>The BlueZ d-bus API is used to get notifications about availability of bluetooth
 </td></tr></table>
-<a name="Interfaces_Provided" id="Interfaces_Provided"></a><h3> <span class="mw-headline"> Interfaces Provided </span></h3>
+<h3 id="Interfaces_Provided">Interfaces Provided</h3>
 <table class="wikitable" cellpadding="5" cellspacing="0" border="1">
 
 <tr>
@@ -632,5 +630,4 @@ PluginServiceObj and registers it as a dbus service.
 All signals emitted by the plugin (and msyncd) are automatically relayed by Qt dbus.
 The life cycle of a process plugin is similar to that of a dll plugin.
 
-</div>
 */

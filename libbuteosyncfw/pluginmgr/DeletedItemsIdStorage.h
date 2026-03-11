@@ -34,7 +34,6 @@ namespace Buteo {
 class DeletedItemsIdStorage
 {
 public:
-
     /**
      * \brief Contructor
      */
@@ -101,7 +100,6 @@ public:
     bool getDeletedItems(QList<QString> &aItems, const QDateTime &aTime);
 
 protected:
-
     /**
      * \brief Checks whether snapshot table exists and creates it if needed
      * @return True on success, otherwise false
@@ -115,7 +113,6 @@ protected:
     bool ensureDeletedItemsExists();
 
 private:
-
     QSqlDatabase iDb;           ///< Database handle
     QString iConnectionName;    ///< Database connection ID string
 };

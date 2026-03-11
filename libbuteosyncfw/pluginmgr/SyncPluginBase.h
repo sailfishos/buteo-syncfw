@@ -116,7 +116,6 @@ public:
     virtual SyncResults getSyncResults() const;
 
 signals:
-
     /*! \brief Emitted when progress has been made in synchronization in
      * transferring items between local and remote database.
      *

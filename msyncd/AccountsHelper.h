@@ -48,7 +48,7 @@ public:
      * \param aProfileManager - reference to Profile Manager Object
      * \param aParent - Parent object
      */
-    AccountsHelper(ProfileManager &aProfileManager, QObject *aParent = NULL);
+    AccountsHelper(ProfileManager &aProfileManager, QObject *aParent = nullptr);
 
     /*! \brief Destructor
      *
