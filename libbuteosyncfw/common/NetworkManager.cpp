@@ -107,8 +107,8 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
     // check connection status on startup
     idleRefresh();
     qCInfo(lcButeoCore) << "Network status:";
-    qCInfo(lcButeoCore) << "\tOnline::" << m_isOnline;
-    qCInfo(lcButeoCore) << "\tConnection::" << m_connectionType;
+    qCInfo(lcButeoCore) << "\tOnline:" << m_isOnline;
+    qCInfo(lcButeoCore) << "\tConnection:" << m_connectionType;
 
     m_sessionTimer = new QTimer(this);
     m_sessionTimer->setSingleShot(true);

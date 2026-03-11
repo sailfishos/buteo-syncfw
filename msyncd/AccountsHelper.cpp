@@ -71,7 +71,7 @@ void AccountsHelper::createProfileForAccount(Accounts::AccountId id)
         const Accounts::ServiceList serviceList = newAccount->services();
         for (const Accounts::Service &service : serviceList) {
             // Look for a sync profile that matches the service name (template)
-            qCDebug(lcButeoMsyncd) << "Looking for sync profile::" << service.name();
+            qCDebug(lcButeoMsyncd) << "Looking for sync profile:" << service.name();
             bool serviceEnabled = newAccount->enabledServices().contains(service);
             profileFoundAndCreated =
                 addProfileForAccount(newAccount, service.name(), serviceEnabled)
@@ -157,7 +157,7 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
                 account->selectService(service);
                 serviceEnabled = account->isEnabled();
             }
-            qCDebug(lcButeoMsyncd) << "Enabled status for service ::" << profile->name() << serviceEnabled;
+            qCDebug(lcButeoMsyncd) << "Enabled status for service:" << profile->name() << serviceEnabled;
             if (profile->isEnabled() != serviceEnabled) {
                 profile->setEnabled(serviceEnabled);
                 iProfileManager.updateProfile(*profile);

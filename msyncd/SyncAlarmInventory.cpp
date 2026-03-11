@@ -67,7 +67,7 @@ bool SyncAlarmInventory::init()
     // Create the alarms table
     const QString createTableQuery("CREATE TABLE IF NOT EXISTS alarms(alarmid INTEGER PRIMARY KEY AUTOINCREMENT, synctime DATETIME)");
     QSqlQuery query(createTableQuery, iDbHandle);
-    qCDebug(lcButeoMsyncd) << "SQL Query::" << query.lastQuery();
+    qCDebug(lcButeoMsyncd) << "SQL Query:" << query.lastQuery();
     if (!query.exec()) {
         qCWarning(lcButeoMsyncd) << "Failed to execute the createTableQuery";
         return false;
@@ -120,7 +120,7 @@ int SyncAlarmInventory::addAlarm(QDateTime alarmDate)
     // Select all the alarms from the db sorted by alarm time
     QSqlQuery selectQuery(iDbHandle);
     if (selectQuery.exec("SELECT alarmid,synctime FROM alarms ORDER BY synctime ASC")) {
-        qCDebug(lcButeoMsyncd) << "SQL Query::" << selectQuery.lastQuery();
+        qCDebug(lcButeoMsyncd) << "SQL Query:" << selectQuery.lastQuery();
         if (selectQuery.first()) {
             int newAlarm = selectQuery.value(0).toInt();
             QDateTime alarmTime = selectQuery.value(1).toDateTime();
@@ -168,7 +168,7 @@ void SyncAlarmInventory::removeAllAlarms()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     QSqlQuery deleteAllQuery(QString("DELETE FROM alarms"), iDbHandle);
-    qCDebug(lcButeoMsyncd) << "SQL Query::" << deleteAllQuery.lastQuery();
+    qCDebug(lcButeoMsyncd) << "SQL Query:" << deleteAllQuery.lastQuery();
     if (!deleteAllQuery.exec()) {
         qCWarning(lcButeoMsyncd) << "Failed query to delete all alarms";
     }
@@ -196,7 +196,7 @@ void SyncAlarmInventory::timerTriggered()
         // Select all the alarms from the db sorted by alarm time
         QSqlQuery selectQuery(iDbHandle);
         if (selectQuery.exec("SELECT alarmid,synctime FROM alarms ORDER BY synctime ASC")) {
-            qCDebug(lcButeoMsyncd) << "SQL Query::" << selectQuery.lastQuery();
+            qCDebug(lcButeoMsyncd) << "SQL Query:" << selectQuery.lastQuery();
             if (selectQuery.first()) {
                 currentAlarm = selectQuery.value(0).toInt();
                 QDateTime alarmTime = selectQuery.value(1).toDateTime();
@@ -208,7 +208,7 @@ void SyncAlarmInventory::timerTriggered()
                     iTimerInterval = (now.secsTo(alarmTime) / TRIGGER_COUNT) * 1000;  // time interval in millisec
                 }
                 triggerCount = TRIGGER_COUNT;
-                qCDebug(lcButeoMsyncd) << "Starting timer with interval::" << iTimerInterval;
+                qCDebug(lcButeoMsyncd) << "Starting timer with interval:" << iTimerInterval;
                 iTimer->setInterval(iTimerInterval);
                 iTimer->start();
             }
@@ -224,7 +224,7 @@ bool SyncAlarmInventory::deleteAlarmFromDb(int alarmId)
     removeQuery.prepare("DELETE FROM alarms WHERE alarmid=:alarmid");
     removeQuery.bindValue(":alarmid", alarmId);
 
-    qCDebug(lcButeoMsyncd) << "SQL Query::" << removeQuery.lastQuery();
+    qCDebug(lcButeoMsyncd) << "SQL Query:" << removeQuery.lastQuery();
     if (!removeQuery.exec())
         return false;
     else
@@ -239,7 +239,7 @@ int SyncAlarmInventory::addAlarmToDb(QDateTime timeStamp)
     insertQuery.prepare("INSERT INTO alarms(synctime) VALUES(:synctime)");
     insertQuery.bindValue(":synctime", timeStamp);
 
-    qCDebug(lcButeoMsyncd) << "SQL Query::" << insertQuery.lastQuery();
+    qCDebug(lcButeoMsyncd) << "SQL Query:" << insertQuery.lastQuery();
     if (insertQuery.exec())
         return insertQuery.lastInsertId().toInt();
     else
