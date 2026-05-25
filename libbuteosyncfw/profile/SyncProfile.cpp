@@ -380,10 +380,8 @@ QString SyncProfile::serviceName() const
 const Profile *SyncProfile::serviceProfile() const
 {
     QList<const Profile*> subProfiles = allSubProfiles();
-    foreach (const Profile *p, subProfiles)
-    {
-        if (p->type() == TYPE_SERVICE)
-        {
+    foreach (const Profile *p, subProfiles) {
+        if (p->type() == TYPE_SERVICE) {
             return p;
         }
     }
@@ -394,10 +392,8 @@ const Profile *SyncProfile::serviceProfile() const
 Profile *SyncProfile::serviceProfile()
 {
     QList<Profile*> subProfiles = allSubProfiles();
-    foreach (Profile *p, subProfiles)
-    {
-        if (p->type() == TYPE_SERVICE)
-        {
+    foreach (Profile *p, subProfiles) {
+        if (p->type() == TYPE_SERVICE) {
             return p;
         }
     }

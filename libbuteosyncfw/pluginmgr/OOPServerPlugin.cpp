@@ -191,9 +191,9 @@ void OOPServerPlugin::onProcessFinished(int exitCode, QProcess::ExitStatus exitS
     if (!iDone) {
         if ((exitCode != 0) || (exitStatus != QProcess::NormalExit)) {
             onError(iProfile.name(),
-                    "Plugin process exited with error code " +
-                    QString::number(exitCode) + " and status " +
-                    QString::number(exitStatus),
+                    "Plugin process exited with error code "
+                        + QString::number(exitCode) + " and status "
+                        + QString::number(exitStatus),
                     SyncResults::PLUGIN_ERROR);
         } else {
             onError(iProfile.name(),

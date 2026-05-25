@@ -1083,19 +1083,13 @@ void Synchronizer::initializeScheduler()
 void Synchronizer::destroyStorage(StoragePlugin *aStorage)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-
     iPluginManager.destroyStorage(aStorage);
 }
 
 bool Synchronizer::isConnectivityAvailable(Sync::ConnectivityType aType)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-
-    if (iTransportTracker != 0) {
-        return iTransportTracker->isConnectivityAvailable(aType);
-    } else {
-        return false;
-    }
+    return iTransportTracker && iTransportTracker->isConnectivityAvailable(aType);
 }
 
 void Synchronizer::startServers(bool resume)
@@ -1223,8 +1217,8 @@ void Synchronizer::stopServer(const QString &aProfileName)
         if (!iClosing) {
             // This function may have been invoked from a signal. The plugin runner
             // will only be deleted when the server thread returns.
-            qCWarning(lcButeoMsyncd) << "The server thread for profile: " << aProfileName <<
-                        "is still running. Server will be deleted later";
+            qCWarning(lcButeoMsyncd) << "The server thread for profile: " << aProfileName
+                                     << "is still running. Server will be deleted later";
         } else {
             iServers.remove(aProfileName);
             // Synchronizer is closing, this function is not invoked by a signal.
@@ -1303,8 +1297,7 @@ void Synchronizer::onNewSession(const QString &aDestination)
 
             profile = syncProfiles.first();
             qCDebug(lcButeoMsyncd) << "Found" << syncProfiles.count() << "sync profiles with a "
-                       "matching destination address. Selecting" <<
-                       profile->name();
+                       "matching destination address. Selecting" << profile->name();
             syncProfiles.removeFirst();
             qDeleteAll(syncProfiles);
         }
@@ -1974,8 +1967,7 @@ void Synchronizer::reportExternalSyncStatus(const SyncProfile *aProfile, bool fo
                     emit syncedExternallyStatus(accountId, clientProfile, isSyncExternally);
                 } else if (force) {
                     qCDebug(lcButeoMsyncd) << "Sync externally status did not change, current state is: "
-                                           << prevSyncExtState << "for profile:" <<
-                              profileName;
+                                           << prevSyncExtState << "for profile:" << profileName;
                     emit syncedExternallyStatus(accountId, clientProfile, prevSyncExtState);
                 }
             } else {

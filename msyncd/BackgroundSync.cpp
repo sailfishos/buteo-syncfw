@@ -133,7 +133,7 @@ bool BackgroundSync::set(const QString &aProfName, int seconds, bool aExactTime)
 
     if (useWakeupRange) {
         newAct.frequency = BackgroundActivity::Range; // 0
-        const int minDelay = seconds < 0 ? 0 : seconds;
+        const int minDelay = qMax(0, seconds);
         newAct.backgroundActivity->setWakeupRange(minDelay, minDelay + EXACT_WAKEUP_RANGE_SLACK);
         newAct.backgroundActivity->wait();
         qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName

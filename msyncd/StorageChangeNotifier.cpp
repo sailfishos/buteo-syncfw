@@ -16,7 +16,7 @@ StorageChangeNotifier::StorageChangeNotifier()
 StorageChangeNotifier::~StorageChangeNotifier()
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
-    StorageChangeNotifierPlugin *plugin = 0;
+    StorageChangeNotifierPlugin *plugin = nullptr;
     for (QHash<QString, StorageChangeNotifierPlugin *>::iterator storageNameItr = iNotifierMap.begin();
             storageNameItr != iNotifierMap.end(); ++storageNameItr) {
         plugin = storageNameItr.value();

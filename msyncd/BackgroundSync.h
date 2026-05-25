@@ -79,7 +79,6 @@ public:
      *        range instead of a coarse frequency slot.
      * \return Success indicator.
      */
-
     bool set(const QString &aProfName, int seconds, bool aExactTime = false);
 
     /*! \brief Removes background sync for a profile.
@@ -110,7 +109,6 @@ public:
     bool removeSwitch(const QString &aProfName);
 
 signals:
-
     /*! \brief This signal will be emitted when a background sync timer for particular profile is triggered.
      *
      * \param aProfName Name of the profile for which background sync timer is triggered.

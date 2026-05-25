@@ -69,15 +69,15 @@ int main(int argc, char **argv)
     if (connection.registerObject(DBUS_SERVICE_OBJ_PATH, serviceObj)) {
         if (connection.registerService(servicePath)) {
             qCDebug(lcButeoPlugin) << "Plugin " << pluginName << " with profile "
-                      << profileName << " registered at dbus "
-                      << DBUS_SERVICE_NAME_PREFIX + profileName
-                      << " and path " << DBUS_SERVICE_OBJ_PATH;
+                                   << profileName << " registered at dbus "
+                                   << DBUS_SERVICE_NAME_PREFIX + profileName
+                                   << " and path " << DBUS_SERVICE_OBJ_PATH;
             // TODO: Should any unix signals be handled?
             retn = app.exec();
             connection.unregisterService(servicePath);
         } else {
             qCWarning(lcButeoPlugin) << "Unable to register dbus service"
-                        << servicePath << ", terminating.";
+                                     << servicePath << ", terminating.";
             retn = -1;
         }
         connection.unregisterObject(DBUS_SERVICE_OBJ_PATH);
