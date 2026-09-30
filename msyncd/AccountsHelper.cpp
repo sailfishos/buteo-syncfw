@@ -145,7 +145,7 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
 {
     account->selectService();
     // Always use the current enabled value since signals may be emitted with delays.
-    bool enabled = account->enabled();
+    bool enabled = account->isEnabled();
     const QList<SyncProfile *> profiles = getProfilesByAccountId(account->id());
     for (SyncProfile *profile : profiles) {
         qCDebug(lcButeoMsyncd) << "Changing profile enabled" << profile->name() << enabled;
@@ -155,7 +155,7 @@ void AccountsHelper::syncEnableWithAccount(Accounts::Account *account)
             Accounts::Service service = serviceForProfile(account, profile);
             if (service.isValid()) {
                 account->selectService(service);
-                serviceEnabled = account->enabled();
+                serviceEnabled = account->isEnabled();
             }
             qCDebug(lcButeoMsyncd) << "Enabled status for service ::" << profile->name() << serviceEnabled;
             if (profile->isEnabled() != serviceEnabled) {
@@ -283,7 +283,7 @@ bool AccountsHelper::addProfileForAccount(Accounts::Account *account,
         setSyncSchedule(profile, account->id(), true);
     }
     if (profile && (true == profile->boolKey(KEY_USE_ACCOUNTS, false))) {
-        profile->setEnabled(account->enabled() && serviceEnabled);
+        profile->setEnabled(account->isEnabled() && serviceEnabled);
         iProfileManager.updateProfile(*profile);
         emit scheduleUpdated(profile->name());
         if (profile->isSOCProfile()) {
