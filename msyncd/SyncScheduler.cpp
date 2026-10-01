@@ -224,7 +224,15 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
 
 #if defined(USE_KEEPALIVE)
         alarmEventID = 1;
-        iBackgroundActivity->set(aProfile->name(), QDateTime::currentDateTime().secsTo(nextSyncTime) + 1);
+        // Explicit-time schedules (specific time + days, e.g. the backup profile)
+        // must wake up close to the configured moment, so request an exact-time
+        // wakeup range instead of a coarse platform frequency slot.
+        const SyncSchedule schedule = aProfile->syncSchedule();
+        const bool exactTime = schedule.time().isValid()
+                               && schedule.days() != SyncSchedule::NoDays;
+        iBackgroundActivity->set(aProfile->name(),
+                                 QDateTime::currentDateTime().secsTo(nextSyncTime) + 1,
+                                 exactTime);
 
         if (aProfile->rushEnabled()) {
             QDateTime nextSyncSwitch = aProfile->nextRushSwitchTime(QDateTime::currentDateTime());

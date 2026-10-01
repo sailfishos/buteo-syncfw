@@ -31,6 +31,13 @@
 // 24 hours
 const int MAX_FREQUENCY = 1440;
 
+// For explicit-time schedules we arm a one-shot wakeup close to the exact
+// configured time instead of using a coarse, system-aligned frequency slot.
+// A small range is still used so that iphb can coalesce the wakeup with nearby
+// heartbeats for power efficiency, while staying within the acceptance window
+// checked by SyncSchedule::isSyncScheduled().
+const int EXACT_WAKEUP_RANGE_SLACK = 60; // seconds
+
 BackgroundSync::BackgroundSync(QObject *aParent)
     : QObject(aParent)
 {
@@ -81,17 +88,22 @@ bool BackgroundSync::remove(const QString &aProfName)
     return true;
 }
 
-bool BackgroundSync::set(const QString &aProfName, int seconds)
+bool BackgroundSync::set(const QString &aProfName, int seconds, bool aExactTime)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
     if (aProfName.isEmpty())
         return false;
 
+    // Explicit-time schedules and intervals too long to be expressed as a
+    // frequency slot are armed with a one-shot wakeup range near the target
+    // time instead of a coarse, system-aligned frequency slot.
+    const bool useWakeupRange = aExactTime || (seconds / 60 > MAX_FREQUENCY);
+
     if (iScheduledSyncs.contains(aProfName) == true) {
-        // Can't schedule sync for such long interval removing existent profile if it exists,
-        // new background activity will be added below
-        if ((seconds / 60 >  MAX_FREQUENCY)) {
+        // A wakeup range activity can't be updated via setWakeupFrequency(),
+        // so drop the existing activity and recreate it below.
+        if (useWakeupRange) {
             remove(aProfName);
         } else {
 
@@ -119,12 +131,15 @@ bool BackgroundSync::set(const QString &aProfName, int seconds)
     newAct.id = newAct.backgroundActivity->id();
     connect(newAct.backgroundActivity, SIGNAL(running()), this, SLOT(onBackgroundSyncStarted()));
 
-    if (seconds / 60 >  MAX_FREQUENCY) {
+    if (useWakeupRange) {
         newAct.frequency = BackgroundActivity::Range; // 0
-        newAct.backgroundActivity->wait(seconds);
+        const int minDelay = seconds < 0 ? 0 : seconds;
+        newAct.backgroundActivity->setWakeupRange(minDelay, minDelay + EXACT_WAKEUP_RANGE_SLACK);
+        newAct.backgroundActivity->wait();
         qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName
-                               << "without a valid frequency, waiting for"
-                               << seconds << "seconds.";
+                               << (aExactTime ? "with explicit-time" : "without a valid frequency")
+                               << "wakeup range, waiting" << minDelay << "to"
+                               << (minDelay + EXACT_WAKEUP_RANGE_SLACK) << "seconds.";
     } else {
         newAct.frequency = frequencyFromSeconds(seconds);
         newAct.backgroundActivity->setWakeupFrequency(newAct.frequency);

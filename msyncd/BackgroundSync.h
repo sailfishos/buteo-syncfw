@@ -66,13 +66,21 @@ public:
 
     /*! \brief Schedules a background sync for this profile.
      *
-     * The beat will be generated between minWaitTime and maxWaitTime seconds
+     * For interval based schedules the wakeup is mapped onto one of the
+     * platform frequency slots (see frequencyFromSeconds()), which are aligned
+     * to system-wide heartbeats and may fire well before or after the requested
+     * time. Explicit-time schedules (aExactTime == true) instead arm a one-shot
+     * wakeup range close to the requested moment, so the sync runs near the
+     * configured time rather than on a coarse frequency slot.
+     *
      * \param aProfName Name of the profile.
-     * \param seconds Sync frequency in seconds
+     * \param seconds Time until the next scheduled sync, in seconds.
+     * \param aExactTime When true, wake up close to \a seconds using a wakeup
+     *        range instead of a coarse frequency slot.
      * \return Success indicator.
      */
 
-    bool set(const QString &aProfName, int seconds);
+    bool set(const QString &aProfName, int seconds, bool aExactTime = false);
 
     /*! \brief Removes background sync for a profile.
      *
