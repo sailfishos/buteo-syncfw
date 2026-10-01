@@ -43,12 +43,13 @@ SyncScheduler::SyncScheduler(QObject *aParent)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #if defined(USE_KEEPALIVE)
-    iBackgroundActivity = new BackgroundSync(this);
+    iBackgroundSync = new BackgroundSync(this);
 
-    connect(iBackgroundActivity, SIGNAL(onBackgroundSyncRunning(QString)),
-            this, SLOT(doIPHeartbeatActions(QString)));
-    connect(iBackgroundActivity, SIGNAL(onBackgroundSwitchRunning(QString)),
-            this, SLOT(rescheduleBackgroundActivity(QString)));
+    connect(iBackgroundSync, &BackgroundSync::backgroundSyncRunning,
+            this, &SyncScheduler::doIPHeartbeatActions);
+    connect(iBackgroundSync, &BackgroundSync::backgroundSwitchRunning,
+            this, &SyncScheduler::rescheduleBackgroundActivity);
+
 #elif defined(USE_IPHB)
     iIPHeartBeatMan = new IPHeartBeat(this);
 
@@ -70,7 +71,7 @@ SyncScheduler::~SyncScheduler()
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #if defined(USE_KEEPALIVE)
-    iBackgroundActivity->removeAll();
+    iBackgroundSync->removeAll();
 #elif defined(USE_IPHB)
     removeAllAlarms();
     delete iAlarmInventory;
@@ -143,7 +144,7 @@ void SyncScheduler::removeProfile(const QString &aProfileName)
     FUNCTION_CALL_TRACE(lcButeoTrace);
 
 #if defined(USE_KEEPALIVE)
-    if (iBackgroundActivity->remove(aProfileName)) {
+    if (iBackgroundSync->remove(aProfileName)) {
         qCDebug(lcButeoMsyncd) << "Scheduled sync removed: profile =" << aProfileName;
     }
 #elif defined(USE_IPHB)
@@ -173,7 +174,7 @@ void SyncScheduler::syncStatusChanged(const QString &aProfileName, int aStatus,
                                << "and extra:" << aMessage << "," << aMoreDetails;
         iActiveBackgroundSyncProfiles.remove(aProfileName);
 #if defined(USE_KEEPALIVE)
-        iBackgroundActivity->onBackgroundSyncCompleted(aProfileName);
+        iBackgroundSync->onBackgroundSyncCompleted(aProfileName);
 
         // and schedule the next background sync if necessary.
         SyncProfile *profile = iProfileManager.syncProfile(aProfileName);
@@ -232,21 +233,21 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
         const SyncSchedule schedule = aProfile->syncSchedule();
         const bool exactTime = schedule.time().isValid()
                                && schedule.days() != SyncSchedule::NoDays;
-        iBackgroundActivity->set(aProfile->name(),
+        iBackgroundSync->set(aProfile->name(),
                                  QDateTime::currentDateTime().secsTo(nextSyncTime) + 1,
                                  exactTime);
 
         if (aProfile->rushEnabled()) {
             QDateTime nextSyncSwitch = aProfile->nextRushSwitchTime(QDateTime::currentDateTime());
             if (nextSyncSwitch.isValid()) {
-                iBackgroundActivity->setSwitch(aProfile->name(), nextSyncSwitch);
+                iBackgroundSync->setSwitch(aProfile->name(), nextSyncSwitch);
             } else {
-                iBackgroundActivity->removeSwitch(aProfile->name());
+                iBackgroundSync->removeSwitch(aProfile->name());
                 qCDebug(lcButeoMsyncd) << "Removing switch timer for"
                                        << aProfile->name() << " invalid switch timer";
             }
         } else {
-            iBackgroundActivity->removeSwitch(aProfile->name());
+            iBackgroundSync->removeSwitch(aProfile->name());
         }
 #elif defined(USE_IPHB)
         iAlarmInventory->addAlarm(nextSyncTime);
@@ -259,16 +260,16 @@ int SyncScheduler::setNextAlarm(const SyncProfile *aProfile, QDateTime aNextSync
 #if defined(USE_KEEPALIVE)
         // no valid next scheduled sync time for background sync.
         // stop the background activity to allow device suspend.
-        iBackgroundActivity->remove(aProfile->name());
+        iBackgroundSync->remove(aProfile->name());
         if (aProfile->rushEnabled()) {
             QDateTime nextSyncSwitch = aProfile->nextRushSwitchTime(QDateTime::currentDateTime());
             if (nextSyncSwitch.isValid()) {
-                iBackgroundActivity->setSwitch(aProfile->name(), nextSyncSwitch);
+                iBackgroundSync->setSwitch(aProfile->name(), nextSyncSwitch);
             } else {
-                iBackgroundActivity->removeSwitch(aProfile->name());
+                iBackgroundSync->removeSwitch(aProfile->name());
             }
         } else {
-            iBackgroundActivity->removeSwitch(aProfile->name());
+            iBackgroundSync->removeSwitch(aProfile->name());
         }
 #endif
         qCWarning(lcButeoMsyncd) << "Next sync time is not valid, sync not scheduled for profile"

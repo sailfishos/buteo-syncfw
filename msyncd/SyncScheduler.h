@@ -186,7 +186,7 @@ private: // data
 
 #if defined(USE_KEEPALIVE)
     /// BackgroundSync management object
-    BackgroundSync *iBackgroundActivity;
+    BackgroundSync *iBackgroundSync;
     ProfileManager iProfileManager;
 #elif defined(USE_IPHB)
     /// A list of sync schedule profiles
