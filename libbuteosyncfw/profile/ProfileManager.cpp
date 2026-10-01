@@ -137,8 +137,8 @@ Profile *ProfileManagerPrivate::load(const QString &aName, const QString &aType)
 
 SyncLog *ProfileManagerPrivate::loadLog(const QString &aProfileName)
 {
-    QString fileName = iConfigPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator() +
-                       LOG_DIRECTORY + QDir::separator() + aProfileName + LOG_EXT + FORMAT_EXT;
+    QString fileName = iConfigPath + QDir::separator() + Profile::TYPE_SYNC + QDir::separator()
+                       + LOG_DIRECTORY + QDir::separator() + aProfileName + LOG_EXT + FORMAT_EXT;
 
     if (!QFile::exists(fileName)) {
         return nullptr;
@@ -850,6 +850,7 @@ void ProfileManager::expand(Profile &aProfile)
     int prevSubCount = 0;
     QList<Profile *> subProfiles = aProfile.allSubProfiles();
     int subCount = subProfiles.size();
+
     while (subCount > prevSubCount) {
         foreach (Profile *sub, subProfiles) {
             if (!sub->isLoaded()) {

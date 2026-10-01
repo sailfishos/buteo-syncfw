@@ -106,7 +106,6 @@ bool BackgroundSync::set(const QString &aProfName, int seconds, bool aExactTime)
         if (useWakeupRange) {
             remove(aProfName);
         } else {
-
             BActivityStruct &newAct = iScheduledSyncs[aProfName];
             BackgroundActivity::Frequency frequency = frequencyFromSeconds(seconds);
 
@@ -129,11 +128,12 @@ bool BackgroundSync::set(const QString &aProfName, int seconds, bool aExactTime)
     BActivityStruct &newAct = iScheduledSyncs[aProfName];
     newAct.backgroundActivity = new BackgroundActivity(this);
     newAct.id = newAct.backgroundActivity->id();
-    connect(newAct.backgroundActivity, SIGNAL(running()), this, SLOT(onBackgroundSyncStarted()));
+    connect(newAct.backgroundActivity, &BackgroundActivity::running,
+            this, &BackgroundSync::onBackgroundSyncStarted);
 
     if (useWakeupRange) {
         newAct.frequency = BackgroundActivity::Range; // 0
-        const int minDelay = seconds < 0 ? 0 : seconds;
+        const int minDelay = qMax(0, seconds);
         newAct.backgroundActivity->setWakeupRange(minDelay, minDelay + EXACT_WAKEUP_RANGE_SLACK);
         newAct.backgroundActivity->wait();
         qCDebug(lcButeoMsyncd) << "BackgroundSync::set() profile name =" << aProfName
@@ -160,7 +160,7 @@ void BackgroundSync::onBackgroundSyncStarted()
 
     if (!profName.isEmpty()) {
         qCDebug(lcButeoMsyncd) << "BackgroundSync started, for profile = " << profName;
-        emit onBackgroundSyncRunning(profName);
+        emit backgroundSyncRunning(profName);
     } else {
         qCWarning(lcButeoMsyncd) << "BackgroundSync: Error: profile for background activity not found!  Stopping background activity.";
         tempAct->stop(); // but don't delete tempAct to avoid possible crash in later profile cleanup.
@@ -285,7 +285,8 @@ bool BackgroundSync::setSwitch(const QString &aProfName, const QDateTime &aSwitc
         BActivitySwitchStruct &newSwitch = iScheduledSwitch[aProfName];
         newSwitch.backgroundActivity = new BackgroundActivity(this);
         newSwitch.id = newSwitch.backgroundActivity->id();
-        connect(newSwitch.backgroundActivity, SIGNAL(running()), this, SLOT(onBackgroundSwitchStarted()));
+        connect(newSwitch.backgroundActivity, &BackgroundActivity::running,
+                this, &BackgroundSync::onBackgroundSwitchStarted);
         newSwitch.nextSwitch = aSwitchTime;
         newSwitch.backgroundActivity->wait(switchSecs);
         qCDebug(lcButeoMsyncd) << "BackgroundSync::setSwitch() Set switch for profile name =" << aProfName
@@ -304,7 +305,7 @@ void BackgroundSync::onBackgroundSwitchStarted()
 
     if (!profName.isEmpty()) {
         qCDebug(lcButeoMsyncd) << "BackgroundSync: switch timer started, for profile = " << profName;
-        emit onBackgroundSwitchRunning(profName);
+        emit backgroundSwitchRunning(profName);
     } else {
         qCWarning(lcButeoMsyncd) << "BackgroundSync: Error: profile for switch timer not found!  Stopping background activity.";
         tempAct->stop(); // but don't delete tempAct to avoid possible crash in later profile cleanup.

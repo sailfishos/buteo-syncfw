@@ -344,8 +344,8 @@ bool Profile::isValid() const
         }
         foreach (QString value, values) {
             if (!f->validate(value)) {
-                qCDebug(lcButeoCore) << "Error: Value" << value <<
-                           "is not valid for profile" << d_ptr->iName;
+                qCDebug(lcButeoCore) << "Error: Value" << value
+                                     << "is not valid for profile" << d_ptr->iName;
                 return false;
             }
 

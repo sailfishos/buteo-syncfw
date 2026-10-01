@@ -72,8 +72,8 @@ bool killProcess(const QString &exePath, const QStringList &args)
                     qCDebug(lcButeoCore) << "Process" << pid << "has been killed";
                     return true;
                 } else {
-                    qCWarning(lcButeoCore) << "Failed to kill" << exePath << args <<
-                                "[" << pid << "]" << strerror(errno);
+                    qCWarning(lcButeoCore) << "Failed to kill" << exePath << args
+                                           << "[" << pid << "]" << strerror(errno);
                     return false;
                 }
             }
@@ -413,18 +413,19 @@ QProcess *PluginManager::startOOPPlugin(const QString &aPluginName,
         qCInfo(lcButeoCore) << "Killed runaway plugin" << aProfileName;
     }
 
-    qCDebug(lcButeoCore) << "Starting out-of-process plugin " << aPluginFilePath <<
-               " with plugin name " << aPluginName <<
-               " and profile name " << aProfileName;
+    qCDebug(lcButeoCore) << "Starting out-of-process plugin " << aPluginFilePath
+                         << " with plugin name " << aPluginName
+                         << " and profile name " << aProfileName;
 
     QProcess *process = new QProcess();
     process->setProcessChannelMode(QProcess::ForwardedChannels);
     process->start(exePath, args);
 
-    const QString clientPluginDBusServiceName(QString(QLatin1String("com.buteo.msyncd.plugin.profile-%1")).arg(
-                                                  aProfileName));
-    const QString serverPluginDBusServiceName(QString(QLatin1String("com.buteo.msyncd.plugin.%1")).arg(aProfileName));
+    const QString clientPluginDBusServiceName(QString::fromLatin1("com.buteo.msyncd.plugin.profile-%1")
+                                                  .arg(aProfileName));
+    const QString serverPluginDBusServiceName(QString::fromLatin1("com.buteo.msyncd.plugin.%1").arg(aProfileName));
     bool pluginHasRegistered = false;
+
     for (int i = 0; i < 30; i++) { // wait for up to thirty seconds for the process to register with dbus
         QThread::sleep(1);         // sleep for a second to wait for the process to be scheduled, init and register with dbus
         QDBusReply<bool> clientServiceRegistered = QDBusConnection::sessionBus().interface()->isServiceRegistered(

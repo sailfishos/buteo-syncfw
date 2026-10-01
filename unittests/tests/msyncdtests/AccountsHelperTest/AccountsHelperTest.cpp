@@ -68,21 +68,19 @@ void AccountsHelperTest::cleanupTestCase()
         iAccount->sync();
         delete iAccount;
         iAccount = nullptr;
-    } // no else
+    }
 }
 
 void AccountsHelperTest::testProfileAdded()
 {
     // Ensure that the profile with the username was added correctly
-    SyncProfile *syncProfile = iProfileManager.syncProfile(SERVICE_NAME + "-" +
-                                                           iAccount->displayName());
+    SyncProfile *syncProfile = iProfileManager.syncProfile(SERVICE_NAME + "-" + iAccount->displayName());
     //QVERIFY(syncProfile != 0);
     Q_UNUSED(syncProfile);
 }
 
 void AccountsHelperTest::testAddAccountData()
 {
-
 }
 
 QTEST_MAIN(Buteo::AccountsHelperTest)

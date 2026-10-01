@@ -22,11 +22,13 @@
  * 02110-1301 USA
  *
  */
+
 #include "SyncSchedule.h"
 #include "SyncSchedule_p.h"
 #include "ProfileEngineDefs.h"
 #include "SyncCommonDefs.h"
 #include "LogMacros.h"
+
 #include <QDomDocument>
 #include <QStringList>
 #include <limits.h>
@@ -130,18 +132,15 @@ bool SyncSchedule::operator==(const SyncSchedule &aRhs) const
 QDomElement SyncSchedule::toXml(QDomDocument &aDoc) const
 {
     QDomElement root = aDoc.createElement(TAG_SCHEDULE);
-    root.setAttribute(ATTR_ENABLED, d_ptr->iEnabled ? BOOLEAN_TRUE :
-                      BOOLEAN_FALSE);
+    root.setAttribute(ATTR_ENABLED, d_ptr->iEnabled ? BOOLEAN_TRUE : BOOLEAN_FALSE);
     root.setAttribute(ATTR_TIME, d_ptr->iTime.toString(Qt::ISODate));
     root.setAttribute(ATTR_INTERVAL, QString::number(d_ptr->iInterval));
     root.setAttribute(ATTR_DAYS, d_ptr->createDays(d_ptr->iDays));
     root.setAttribute(ATTR_SYNC_CONFIGURE, d_ptr->iScheduleConfiguredTime.toString(Qt::ISODate));
 
     QDomElement rush = aDoc.createElement(TAG_RUSH);
-    rush.setAttribute(ATTR_ENABLED, d_ptr->iRushEnabled ? BOOLEAN_TRUE :
-                      BOOLEAN_FALSE);
-    rush.setAttribute(ATTR_EXTERNAL_SYNC, d_ptr->iExternalRushEnabled ? BOOLEAN_TRUE :
-                      BOOLEAN_FALSE);
+    rush.setAttribute(ATTR_ENABLED, d_ptr->iRushEnabled ? BOOLEAN_TRUE : BOOLEAN_FALSE);
+    rush.setAttribute(ATTR_EXTERNAL_SYNC, d_ptr->iExternalRushEnabled ? BOOLEAN_TRUE : BOOLEAN_FALSE);
     rush.setAttribute(ATTR_INTERVAL, QString::number(d_ptr->iRushInterval));
     rush.setAttribute(ATTR_BEGIN, d_ptr->iRushBegin.toString(Qt::ISODate));
     rush.setAttribute(ATTR_END, d_ptr->iRushEnd.toString(Qt::ISODate));
@@ -272,12 +271,8 @@ void SyncSchedule::setRushInterval(unsigned aInterval)
 
 bool SyncSchedule::inExternalSyncRushPeriod(const QDateTime &aDateTime) const
 {
-    if (d_ptr->iEnabled && d_ptr->iRushEnabled && d_ptr->iExternalRushEnabled) {
-        if (d_ptr->isRush(aDateTime)) {
-            return true;
-        }
-    }
-    return false;
+    return d_ptr->iEnabled && d_ptr->iRushEnabled && d_ptr->iExternalRushEnabled
+            && d_ptr->isRush(aDateTime);
 }
 
 QDateTime SyncSchedule::nextSyncTime(const QDateTime &aPrevSync) const
@@ -519,10 +514,7 @@ bool SyncSchedule::isSyncScheduled(const QDateTime &aActualDateTime, const QDate
         const QDate previousDay = aActualDate.addDays(-1);
         const bool previousDayMatch = SyncSchedulePrivate::daysMatch(d_ptr->iDays, previousDay.dayOfWeek());
         if (previousDayMatch) {
-            qint64 diff = QDateTime(previousDay, d_ptr->iTime).secsTo(aActualDateTime);
-            if (diff < 0) {
-                diff = -diff;
-            }
+            qint64 diff = qAbs(QDateTime(previousDay, d_ptr->iTime).secsTo(aActualDateTime));
             minDiffSecs = qMin(minDiffSecs, diff);
             qCDebug(lcButeoCore) << "Scheduled check (previous): scheduled=" << QDateTime(previousDay, d_ptr->iTime)
                                  << "actual=" << aActualDateTime << "diffSecs=" << diff;

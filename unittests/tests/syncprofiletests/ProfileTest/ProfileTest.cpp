@@ -386,13 +386,13 @@ Profile *ProfileTest::loadFromXmlFile(const QString &aName, const QString &aType
 
     if (!file.open(QIODevice::ReadOnly)) {
         return 0;
-    } // no else
+    }
 
     QDomDocument doc;
     if (!doc.setContent(&file)) {
         file.close();
         return 0;
-    } // no else
+    }
     file.close();
 
     return new Profile(doc.documentElement());
@@ -405,12 +405,11 @@ bool ProfileTest::saveToXmlFile(const Profile &aProfile, const QString &aName,
 
     QDir dir;
     dir.mkpath(profileDir + "/" + aProfile.type());
-    QFile file(profileDir + "/" + aProfile.type() + "/" +
-               aName + ".xml");
+    QFile file(profileDir + "/" + aProfile.type() + "/" + aName + ".xml");
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         return false;
-    } // no else
+    }
 
     QDomDocument doc;
     QDomProcessingInstruction xmlHeading =
@@ -421,7 +420,7 @@ bool ProfileTest::saveToXmlFile(const Profile &aProfile, const QString &aName,
     QDomElement root = aProfile.toXml(doc, aLocalOnly);
     if (root.isNull()) {
         return false;
-    } // no else
+    }
 
     doc.appendChild(root);
 
@@ -447,10 +446,9 @@ QString ProfileTest::profileFileToString(const QString &aName,
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream outputStream(&file);
         output = outputStream.readAll();
-    } // no else
+    }
 
     return output;
 }
-
 
 QTEST_GUILESS_MAIN(Buteo::ProfileTest)

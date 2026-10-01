@@ -53,6 +53,7 @@ void Buteo::configureLegacyLogging()
 {
     bool hasLegacyLoggingLevel = false;
     const int legacyLoggingLevel = QString(qgetenv("MSYNCD_LOGGING_LEVEL")).toInt(&hasLegacyLoggingLevel);
+
     if (hasLegacyLoggingLevel) {
         if (legacyLoggingLevel >= 8) {
             // LOG_TRACE: enable all logging, including trace debugs

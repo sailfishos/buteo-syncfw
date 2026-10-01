@@ -672,8 +672,7 @@ void ProfileManagerTest::testBackup()
     pm.setPaths(USERPROFILE_DIR + '/', SYSTEMPROFILE_DIR + '/');
 
     // Copy to backup.
-    QString fileName = USERPROFILE_DIR + '/' + Profile::TYPE_SYNC +
-                       '/' + OVI_CALENDAR + ".xml";
+    QString fileName = USERPROFILE_DIR + '/' + Profile::TYPE_SYNC + '/' + OVI_CALENDAR + ".xml";
     QFile file(fileName);
     QVERIFY(file.copy(fileName + ".bak"));
 

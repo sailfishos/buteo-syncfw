@@ -227,20 +227,24 @@ void SyncScheduleTest::testIsSyncScheduled()
     days |= SyncSchedule::Wednesday;
     days |= SyncSchedule::Monday;
     s.setDays(days);
+
     // This is a Tuesday.
     QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 27), QTime(15, 0))));
-    // These are valid within 10 minutes margin
+
+    // These are valid within 10 minutes margin (wednesday)
     QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 0))));
     QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 4, 59))));
     QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 55, 1))));
+
     // These are invalid
-    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 5))));
-    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 55))));
+    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(15, 6))));
+    QVERIFY(!s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(14, 54))));
 
     // Simply enabled, no rush.
     s.setTime(QTime());
     s.setInterval(3600);
     s.setScheduleEnabled(true);
+
     // Any time, any day should match
     QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 25), QTime(15, 0, 0, 0))));
     QVERIFY(s.isSyncScheduled(QDateTime(QDate(2019, 8, 28), QTime(5, 0, 0, 0))));

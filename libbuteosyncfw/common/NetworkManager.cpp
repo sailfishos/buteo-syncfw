@@ -77,43 +77,38 @@ NetworkManager::NetworkManager(QObject *parent /* = 0*/) :
     m_networkConfigManager = new QNetworkConfigurationManager();
 
     // check for network status and configuration change (switch wifi, ethernet, mobile) a
-    connect(m_networkConfigManager,
-            SIGNAL(onlineStateChanged(bool)),
-            SLOT(slotConfigurationChanged()),
+    connect(m_networkConfigManager, &QNetworkConfigurationManager::onlineStateChanged,
+            this, &NetworkManager::slotConfigurationChanged,
             Qt::QueuedConnection);
-    connect(m_networkConfigManager,
-            SIGNAL(configurationAdded(QNetworkConfiguration)),
-            SLOT(slotConfigurationChanged()),
+    connect(m_networkConfigManager, &QNetworkConfigurationManager::configurationAdded,
+            this, &NetworkManager::slotConfigurationChanged,
             Qt::QueuedConnection);
-    connect(m_networkConfigManager,
-            SIGNAL(configurationChanged(QNetworkConfiguration)),
-            SLOT(slotConfigurationChanged()),
+    connect(m_networkConfigManager, &QNetworkConfigurationManager::configurationChanged,
+            this, &NetworkManager::slotConfigurationChanged,
             Qt::QueuedConnection);
-    connect(m_networkConfigManager,
-            SIGNAL(configurationRemoved(QNetworkConfiguration)),
-            SLOT(slotConfigurationChanged()),
+    connect(m_networkConfigManager, &QNetworkConfigurationManager::configurationRemoved,
+            this, &NetworkManager::slotConfigurationChanged,
             Qt::QueuedConnection);
-    connect(m_networkConfigManager,
-            SIGNAL(updateCompleted()),
-            SLOT(slotConfigurationChanged()),
+    connect(m_networkConfigManager, &QNetworkConfigurationManager::updateCompleted,
+            this, &NetworkManager::slotConfigurationChanged,
             Qt::QueuedConnection);
 
-    connect(&m_idleRefreshTimer,
-            SIGNAL(timeout()),
-            SLOT(idleRefresh()),
+    connect(&m_idleRefreshTimer, &QTimer::timeout,
+            this, &NetworkManager::idleRefresh,
             Qt::QueuedConnection);
     m_idleRefreshTimer.setSingleShot(true);
 
     // check connection status on startup
     idleRefresh();
     qCInfo(lcButeoCore) << "Network status:";
-    qCInfo(lcButeoCore) << "\tOnline::" << m_isOnline;
-    qCInfo(lcButeoCore) << "\tConnection::" << m_connectionType;
+    qCInfo(lcButeoCore) << "\tOnline:" << m_isOnline;
+    qCInfo(lcButeoCore) << "\tConnection:" << m_connectionType;
 
     m_sessionTimer = new QTimer(this);
     m_sessionTimer->setSingleShot(true);
     m_sessionTimer->setInterval(10000);
-    connect(m_sessionTimer, SIGNAL(timeout()), this, SLOT(sessionConnectionTimeout()));
+    connect(m_sessionTimer, &QTimer::timeout,
+            this, &NetworkManager::sessionConnectionTimeout);
 }
 
 NetworkManager::~NetworkManager()
@@ -151,10 +146,11 @@ void NetworkManager::connectSession(bool connectInBackground /* = false*/)
         m_errorEmitted = false;
 
         connect(m_networkSession, SIGNAL(error(QNetworkSession::SessionError)),
-                SLOT(slotSessionError(QNetworkSession::SessionError)));
-        connect(m_networkSession, SIGNAL(stateChanged(QNetworkSession::State)),
-                SLOT(slotSessionState(QNetworkSession::State)));
-        connect(m_networkSession, SIGNAL(opened()), SIGNAL(connectionSuccess()));
+                this, SLOT(slotSessionError(QNetworkSession::SessionError)));
+        connect(m_networkSession, &QNetworkSession::stateChanged,
+                this, &NetworkManager::slotSessionState);
+        connect(m_networkSession, &QNetworkSession::opened,
+                this, &NetworkManager::connectionSuccess);
     }
     m_networkSession->setSessionProperty("ConnectInBackground", connectInBackground);
     if (!m_networkSession->isOpen()) {
@@ -238,6 +234,7 @@ void NetworkManager::disconnectSession()
 void NetworkManager::slotSessionState(QNetworkSession::State status)
 {
     FUNCTION_CALL_TRACE(lcButeoTrace);
+
     switch (status) {
     case QNetworkSession::Invalid:
         qCWarning(lcButeoCore) << "QNetworkSession::Invalid";
