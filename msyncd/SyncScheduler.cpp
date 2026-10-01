@@ -303,7 +303,7 @@ void SyncScheduler::removeAlarmEvent(int aAlarmEventID)
 
     bool err = iAlarmInventory->removeAlarm(aAlarmEventID);
 
-    if (err < false) {
+    if (err == false) {
         qCWarning(lcButeoMsyncd) << "No alarm found for ID " << aAlarmEventID;
     } else {
         qCDebug(lcButeoMsyncd) << "Removed alarm, ID =" << aAlarmEventID;
